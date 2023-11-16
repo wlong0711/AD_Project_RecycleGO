@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "655702546630",
+    "project_id": "recyclego-64b10",
+    "storage_bucket": "recyclego-64b10.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:655702546630:android:b56d665fe2a97bd9795fc7",
+        "android_client_info": {
+          "package_name": "com.example.recycle_go"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAXoXYby344tfSeRkXiNvDFNeLFsxT_aew"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
