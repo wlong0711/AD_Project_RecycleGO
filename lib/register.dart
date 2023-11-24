@@ -1,24 +1,77 @@
+// RegisterPage
 import 'package:flutter/material.dart';
-import 'package:recycle_go/wlcpage.dart';
-import 'forgot.dart';
-import 'register.dart'; // Import the RegisterPage
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'login.dart'; // Import the LoginPage
 
-class LoginPage extends StatefulWidget {
+class RegisterPage extends StatefulWidget {
   @override
-  _LoginPageState createState() => _LoginPageState();
+  _RegisterPageState createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _RegisterPageState extends State<RegisterPage> {
   bool _isPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
   TextEditingController _usernameController = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
+  TextEditingController _confirmPasswordController = TextEditingController();
+  Future<void> _register() async {
+    try {
+      // Create a new user with email and password
+      UserCredential userCredential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
+
+      // Add additional user data to Firestore
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userCredential.user!.uid)
+          .set({
+        'email': _emailController.text,
+        'username': _usernameController.text,
+        'points': 0,
+      });
+
+      // Registration successful, navigate to the next screen
+      // (you can replace this with your own logic)
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => LoginPage()),
+      );
+    } catch (e) {
+      print("Error during registration: $e");
+      // Handle registration failure (show a snackbar, etc.)
+    }
+  }
+
+  Widget _buildLoginText(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        // Navigate to the LoginPage when the text is clicked
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage()),
+        );
+      },
+      child: Text(
+        'Already a member? Login.',
+        style: TextStyle(
+          color: Colors.blue,
+          decoration: TextDecoration.underline,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text('Login'),
+        title: Text('Register'),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -33,30 +86,22 @@ class _LoginPageState extends State<LoginPage> {
 
           SizedBox(height: 20),
 
-          // Username Input Box
+          // Email Input Box (swapped with Username)
+          _buildInputBox("Email", _emailController, isPassword: false),
+
+          // Username Input Box (swapped with Email)
           _buildInputBox("Username", _usernameController, isPassword: false),
 
           // Password Input Box
           _buildPasswordInputBox(),
 
-          SizedBox(height: 10),
-
-          // Remember Me Checkbox and Forgot Password Link
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              // Remember Me Checkbox
-              _buildRememberMe(),
-
-              // Forgot Password Link
-              _buildForgotPasswordLink(),
-            ],
-          ),
+          // Confirm Password Input Box
+          _buildConfirmPasswordInputBox(),
 
           SizedBox(height: 10),
 
-          // Login Button
-          _buildButton("Login", Colors.blue),
+          // Register Button (formerly Login Button)
+          _buildButton("Register", Colors.green), // Change the color if needed
 
           SizedBox(height: 20),
 
@@ -87,8 +132,8 @@ class _LoginPageState extends State<LoginPage> {
 
           SizedBox(height: 20),
 
-          // "Not a member, create a new account" Text
-          _buildCreateAccountText(),
+          // "Already a member? Login." Text
+          _buildLoginText(context),
         ],
       ),
     );
@@ -144,38 +189,32 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  bool _rememberMe = false; // Add this variable to store the state
-
-  Widget _buildRememberMe() {
-    return Row(
-      children: [
-        Checkbox(
-          value: _rememberMe,
-          onChanged: (value) {
-            setState(() {
-              _rememberMe = value!;
-            });
-          },
-        ),
-        Text('Remember me'),
-      ],
-    );
-  }
-
-  Widget _buildForgotPasswordLink() {
-    return GestureDetector(
-      onTap: () {
-        // Navigate to the ForgotPasswordPage when the text is clicked
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => ForgotPasswordPage()),
-        );
-      },
-      child: Text(
-        'Forgot password?',
-        style: TextStyle(
-          color: Colors.blue,
-          decoration: TextDecoration.underline,
+  Widget _buildConfirmPasswordInputBox() {
+    return Container(
+      width: 300,
+      child: TextField(
+        controller: _confirmPasswordController,
+        obscureText: !_isConfirmPasswordVisible,
+        onChanged: (value) {
+          // Handle the input change and update the state as needed
+          setState(() {});
+        },
+        decoration: InputDecoration(
+          labelText:
+              _confirmPasswordController.text.isEmpty ? 'Confirm Password' : '',
+          border: OutlineInputBorder(),
+          suffixIcon: GestureDetector(
+            onTap: () {
+              setState(() {
+                _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+              });
+            },
+            child: Icon(
+              _isConfirmPasswordVisible
+                  ? Icons.visibility
+                  : Icons.visibility_off,
+            ),
+          ),
         ),
       ),
     );
@@ -190,28 +229,7 @@ class _LoginPageState extends State<LoginPage> {
         borderRadius: BorderRadius.circular(10),
       ),
       child: TextButton(
-        onPressed: () {
-          // Check if the username and password are not empty
-          if (_usernameController.text.isNotEmpty &&
-              _passwordController.text.isNotEmpty) {
-            // Add your authentication logic here if needed
-
-            // Navigate to WelcomePage when the login button is clicked
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) =>
-                      WelcomePage()), //change this to redirect to the homepage*********
-            );
-          } else {
-            // Show a snackbar or any other feedback for empty fields
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Please enter both username and password.'),
-              ),
-            );
-          }
-        },
+        onPressed: _register,
         child: Center(
           child: Text(
             label,
@@ -237,29 +255,10 @@ class _LoginPageState extends State<LoginPage> {
       ],
     );
   }
-
-  Widget _buildCreateAccountText() {
-    return GestureDetector(
-      onTap: () {
-        // Navigate to the RegisterPage when the text is clicked
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => RegisterPage()),
-        );
-      },
-      child: Text(
-        'Not a member? Create a new account.',
-        style: TextStyle(
-          color: Colors.blue,
-          decoration: TextDecoration.underline,
-        ),
-      ),
-    );
-  }
 }
 
 void main() {
   runApp(MaterialApp(
-    home: LoginPage(),
+    home: RegisterPage(),
   ));
 }

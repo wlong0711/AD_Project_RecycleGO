@@ -1,14 +1,19 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:recycle_go/register.dart';
+import 'package:recycle_go/wlcpage.dart';
+import 'forgot.dart';
+import 'login.dart';
 import 'map_screen.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'firebase_options.dart';
 
-Future main() async{
-  WidgetsFlutterBinding.ensureInitialized(); // Ensure plugin services are initialized
+Future main() async {
+  WidgetsFlutterBinding
+      .ensureInitialized(); // Ensure plugin services are initialized
   await Firebase.initializeApp(
-  options: DefaultFirebaseOptions.currentPlatform,
-);
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   await dotenv.load(fileName: ".env");
   runApp(const MyApp());
 }
@@ -24,9 +29,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-
-      home: const MapScreen(title: 'Google Map',),
+      home: WelcomePage(),
     );
   }
 }
-
