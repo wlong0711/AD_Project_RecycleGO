@@ -27,7 +27,7 @@ class _LoginPageState extends State<LoginPage> {
         children: [
           // Company Logo at the top center
           Image.network(
-            'https://example.com/your-company-logo-url.png',
+            'https://firebasestorage.googleapis.com/v0/b/recyclego-64b10.appspot.com/o/Company%20Logo%2FLogoWithSlogan.png?alt=media&token=5b939cb4-b9d8-42b5-adcb-8de58ee095e0',
             width: 100, // Set the width according to your design
             height: 100, // Set the height according to your design
           ),
@@ -101,7 +101,7 @@ class _LoginPageState extends State<LoginPage> {
     bool isPassword = false,
   }) {
     return Container(
-      width: 300,
+      width: 340,
       child: TextField(
         controller: controller,
         obscureText: isPassword && !_isPasswordVisible,
@@ -119,7 +119,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _buildPasswordInputBox() {
     return Container(
-      width: 300,
+      width: 340,
       child: TextField(
         controller: _passwordController,
         obscureText: !_isPasswordVisible,
@@ -148,25 +148,31 @@ class _LoginPageState extends State<LoginPage> {
   bool _rememberMe = false; // Add this variable to store the state
 
   Widget _buildRememberMe() {
-    return Row(
-      children: [
-        Checkbox(
-          value: _rememberMe,
-          onChanged: (value) {
-            setState(() {
-              _rememberMe = value!;
-            });
-          },
-        ),
-        Text('Remember me'),
-      ],
-    );
-  }
+  return Row(
+    children: [
+      SizedBox(width: 21),
+      Checkbox(
+        value: _rememberMe,
+        onChanged: (value) {
+          setState(() {
+            _rememberMe = value!;
+          });
+        },
+      ),
+      Padding(
+        padding: EdgeInsets.only(right: 4.0), // Adjust this value to control the spacing
+        child: Text('Remember me'),
+      ),
+    ],
+  );
+}
+
 
   Widget _buildForgotPasswordLink() {
-    return GestureDetector(
+  return Padding(
+    padding: EdgeInsets.only(right: 35.0), // Adjust this value to control the left indentation
+    child: GestureDetector(
       onTap: () {
-        // Navigate to the ForgotPasswordPage when the text is clicked
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => ForgotPasswordPage()),
@@ -179,8 +185,10 @@ class _LoginPageState extends State<LoginPage> {
           decoration: TextDecoration.underline,
         ),
       ),
-    );
-  }
+    ),
+  );
+}
+
 
   Widget _buildButton(String label, Color color) {
     return Container(
