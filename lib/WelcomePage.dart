@@ -14,14 +14,13 @@ class WelcomePage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Company logo centered at the top
           Center(
             child: Column(
               children: [
                 Image.network(
-                  'https://drive.google.com/your_company_logo_link',
-                  width: 100,
-                  height: 100,
+                  'https://firebasestorage.googleapis.com/v0/b/recyclego-64b10.appspot.com/o/Company%20Logo%2FLogoWithSlogan.png?alt=media&token=5b939cb4-b9d8-42b5-adcb-8de58ee095e0',
+                  width: 150,
+                  height: 150,
                 ),
                 SizedBox(height: 10),
                 Text(
@@ -66,9 +65,8 @@ class WelcomePage extends StatelessWidget {
             },
           ),
 
-          SizedBox(height: 20),
+          SizedBox(height: 40),
 
-          // RecycleGo and @2023AKA
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
