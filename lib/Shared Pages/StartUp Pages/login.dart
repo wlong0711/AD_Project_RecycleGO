@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:recycle_go/Admin%20Only%20Pages/map_screen_admin.dart';
 import 'package:recycle_go/Shared%20Pages/StartUp%20Pages/home_page.dart';
 import 'package:recycle_go/models/global_user.dart';
 import 'forgot.dart';
@@ -104,7 +103,7 @@ class _LoginPageState extends State<LoginPage> {
         children: [
           // Company Logo at the top center
           Image.network(
-            'https://firebasestorage.googleapis.com/v0/b/recyclego-64b10.appspot.com/o/Company%20Logo%2FLogoWithSlogan.png?alt=media&token=5b939cb4-b9d8-42b5-adcb-8de58ee095e0',
+            'https://example.com/your-company-logo-url.png',
             width: 100, // Set the width according to your design
             height: 100, // Set the height according to your design
           ),
@@ -178,7 +177,7 @@ class _LoginPageState extends State<LoginPage> {
     bool isPassword = false,
   }) {
     return Container(
-      width: 340,
+      width: 300,
       child: TextField(
         controller: controller,
         obscureText: isPassword && !_isPasswordVisible,
@@ -196,7 +195,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _buildPasswordInputBox() {
     return Container(
-      width: 340,
+      width: 300,
       child: TextField(
         controller: _passwordController,
         obscureText: !_isPasswordVisible,
@@ -225,31 +224,25 @@ class _LoginPageState extends State<LoginPage> {
   bool _rememberMe = false; // Add this variable to store the state
 
   Widget _buildRememberMe() {
-  return Row(
-    children: [
-      SizedBox(width: 21),
-      Checkbox(
-        value: _rememberMe,
-        onChanged: (value) {
-          setState(() {
-            _rememberMe = value!;
-          });
-        },
-      ),
-      Padding(
-        padding: EdgeInsets.only(right: 4.0), // Adjust this value to control the spacing
-        child: Text('Remember me'),
-      ),
-    ],
-  );
-}
-
+    return Row(
+      children: [
+        Checkbox(
+          value: _rememberMe,
+          onChanged: (value) {
+            setState(() {
+              _rememberMe = value!;
+            });
+          },
+        ),
+        Text('Remember me'),
+      ],
+    );
+  }
 
   Widget _buildForgotPasswordLink() {
-  return Padding(
-    padding: EdgeInsets.only(right: 35.0), // Adjust this value to control the left indentation
-    child: GestureDetector(
+    return GestureDetector(
       onTap: () {
+        // Navigate to the ForgotPasswordPage when the text is clicked
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => ForgotPasswordPage()),
@@ -262,10 +255,8 @@ class _LoginPageState extends State<LoginPage> {
           decoration: TextDecoration.underline,
         ),
       ),
-    ),
-  );
-}
-
+    );
+  }
 
   Widget _buildButton(String label, Color color, VoidCallback onPressed) {
     return Container(
@@ -276,28 +267,7 @@ class _LoginPageState extends State<LoginPage> {
         borderRadius: BorderRadius.circular(10),
       ),
       child: TextButton(
-        onPressed: () {
-          // Check if the username and password are not empty
-          if (_usernameController.text.isNotEmpty &&
-              _passwordController.text.isNotEmpty) {
-            // Add your authentication logic here if needed
-
-            // Navigate to WelcomePage when the login button is clicked
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) =>
-                     MapScreenAdmin(title: '',)), //change this to redirect to the homepage*********
-            );
-          } else {
-            // Show a snackbar or any other feedback for empty fields
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Please enter both username and password.'),
-              ),
-            );
-          }
-        },
+        onPressed: onPressed, // Use the provided onPressed function
         child: Center(
           child: Text(
             label,
