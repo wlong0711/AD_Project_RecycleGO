@@ -1,6 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:recycle_go/StartUp%20Pages/welcome_page.dart';
+import 'package:recycle_go/Shared%20Pages/StartUp%20Pages/welcome_page.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'firebase_options.dart';
 
