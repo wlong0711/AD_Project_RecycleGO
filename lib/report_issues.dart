@@ -6,7 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as Path;
 
 class ReportIssueScreen extends StatefulWidget {
-  const ReportIssueScreen({super.key});
+  const ReportIssueScreen({super.key, required String title});
 
   @override
   _ReportIssueScreenState createState() => _ReportIssueScreenState();
@@ -153,16 +153,70 @@ Future<void> _submitReport() async {
       });
 
       // Show a success message or navigate away
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Report submitted successfully')));
-      // Navigator.of(context).pop();
+      await _showSuccessDialog();      // Navigator.of(context).pop();
     } catch (e) {
       // Log the error
-      print('Error submitting report: $e');
+      _showErrorDialog(e.toString());
 
       // Show an error message
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to submit report. Please try again later.')));
     }
   }
+}
+
+Future<void> _showSuccessDialog() async {
+  return showDialog<void>(
+    context: context,
+    barrierDismissible: false, // User must tap button to close
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Report Submitted'),
+        content: SingleChildScrollView(
+          child: ListBody(
+            children: <Widget>[
+              Text('Your report has been successfully submitted.'),
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: Text('OK'),
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the dialog
+              Navigator.of(context).pop(); // Navigate back to the homepage
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+
+void _showErrorDialog(String message) {
+  showDialog<void>(
+    context: context,
+    barrierDismissible: false, 
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Error'),
+        content: SingleChildScrollView(
+          child: ListBody(
+            children: <Widget>[
+              Text(message),
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: Text('OK'),
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the dialog
+            },
+          ),
+        ],
+      );
+    },
+  );
 }
 
 }
