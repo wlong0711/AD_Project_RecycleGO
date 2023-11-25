@@ -5,11 +5,13 @@ import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:recycle_go/Shared%20Pages/StartUp%20Pages/home_page.dart';
+import 'package:recycle_go/models/global_user.dart';
 
 class UploadPage extends StatefulWidget {
   final String locationName;
+  final VoidCallback onUploadCompleted;
 
-  const UploadPage({Key? key, required this.locationName}) : super(key: key);
+  const UploadPage({Key? key, required this.locationName, required this.onUploadCompleted}) : super(key: key);
 
   @override
   _UploadPageState createState() => _UploadPageState();
@@ -51,8 +53,9 @@ class _UploadPageState extends State<UploadPage> {
         downloadUrls.add(downloadUrl);
       }
 
-      // Save the location name and image URLs in Firestore
+      // Save the user name, location name and image URLs in Firestore
       FirebaseFirestore.instance.collection('uploads').add({
+        'username' : GlobalUser.userName,
         'location': widget.locationName,
         'images': downloadUrls,
       });
@@ -102,6 +105,7 @@ class _UploadPageState extends State<UploadPage> {
 
     // Assuming you want to show the dialog for 2 seconds
     Future.delayed(const Duration(seconds: 2), () {
+      widget.onUploadCompleted(); // Call the callback to set the flag
       Navigator.of(context).pop(); // Close the dialog
       _navigateToHomePage(); // Navigate to home page
     });
