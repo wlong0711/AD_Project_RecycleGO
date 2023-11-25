@@ -33,19 +33,19 @@
     },
     {
       "name": "cloud_firestore",
-      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/cloud_firestore-4.13.0",
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/cloud_firestore-4.13.2",
       "packageUri": "lib/",
       "languageVersion": "2.18"
     },
     {
       "name": "cloud_firestore_platform_interface",
-      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/cloud_firestore_platform_interface-6.0.4",
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/cloud_firestore_platform_interface-6.0.6",
       "packageUri": "lib/",
       "languageVersion": "2.18"
     },
     {
       "name": "cloud_firestore_web",
-      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/cloud_firestore_web-3.8.4",
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/cloud_firestore_web-3.8.6",
       "packageUri": "lib/",
       "languageVersion": "2.18"
     },
@@ -123,19 +123,19 @@
     },
     {
       "name": "firebase_auth",
-      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_auth-4.13.0",
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_auth-4.14.1",
       "packageUri": "lib/",
       "languageVersion": "2.18"
     },
     {
       "name": "firebase_auth_platform_interface",
-      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_auth_platform_interface-7.0.4",
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_auth_platform_interface-7.0.5",
       "packageUri": "lib/",
       "languageVersion": "2.18"
     },
     {
       "name": "firebase_auth_web",
-      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_auth_web-5.8.7",
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_auth_web-5.8.8",
       "packageUri": "lib/",
       "languageVersion": "2.18"
     },
@@ -159,37 +159,19 @@
     },
     {
       "name": "firebase_database",
-      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_database-10.3.4",
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_database-10.3.5",
       "packageUri": "lib/",
       "languageVersion": "2.18"
     },
     {
       "name": "firebase_database_platform_interface",
-      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_database_platform_interface-0.2.5+12",
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_database_platform_interface-0.2.5+13",
       "packageUri": "lib/",
       "languageVersion": "2.18"
     },
     {
       "name": "firebase_database_web",
-      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_database_web-0.2.3+12",
-      "packageUri": "lib/",
-      "languageVersion": "2.18"
-    },
-    {
-      "name": "firebase_storage",
-      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_storage-11.5.2",
-      "packageUri": "lib/",
-      "languageVersion": "2.18"
-    },
-    {
-      "name": "firebase_storage_platform_interface",
-      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_storage_platform_interface-5.1.0",
-      "packageUri": "lib/",
-      "languageVersion": "2.18"
-    },
-    {
-      "name": "firebase_storage_web",
-      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_storage_web-3.6.14",
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_database_web-0.2.3+13",
       "packageUri": "lib/",
       "languageVersion": "2.18"
     },
@@ -207,9 +189,9 @@
     },
     {
       "name": "flutter_lints",
-      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_lints-2.0.3",
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_lints-3.0.1",
       "packageUri": "lib/",
-      "languageVersion": "2.19"
+      "languageVersion": "3.0"
     },
     {
       "name": "flutter_plugin_android_lifecycle",
@@ -333,9 +315,9 @@
     },
     {
       "name": "http",
-      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/http-1.1.0",
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/http-0.13.6",
       "packageUri": "lib/",
-      "languageVersion": "3.0"
+      "languageVersion": "2.19"
     },
     {
       "name": "http_parser",
@@ -405,7 +387,7 @@
     },
     {
       "name": "lints",
-      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/lints-2.1.1",
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/lints-3.0.0",
       "packageUri": "lib/",
       "languageVersion": "3.0"
     },
@@ -615,9 +597,9 @@
     },
     {
       "name": "win32",
-      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/win32-5.0.9",
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/win32-5.1.0",
       "packageUri": "lib/",
-      "languageVersion": "3.0"
+      "languageVersion": "3.1"
     },
     {
       "name": "xdg_directories",
@@ -632,7 +614,7 @@
       "languageVersion": "3.1"
     }
   ],
-  "generated": "2023-11-25T06:29:24.277328Z",
+  "generated": "2023-11-25T08:33:04.723815Z",
   "generator": "pub",
   "generatorVersion": "3.1.5"
 }

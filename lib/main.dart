@@ -1,10 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'map_screen.dart';
+import 'package:recycle_go/Shared%20Pages/StartUp%20Pages/welcome_page.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'firebase_options.dart';
 import 'qr_scan_screen.dart';
-import 'report_issues.dart';
 
 Future main() async{
   WidgetsFlutterBinding.ensureInitialized(); // Ensure plugin services are initialized
@@ -27,8 +26,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
 
-      home: const ReportIssueScreen(),
+      home: const QRScanScreen(title: 'Scan Code',),
     );
   }
 }
-
