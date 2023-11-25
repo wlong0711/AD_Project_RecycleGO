@@ -63,26 +63,53 @@ class _MapScreenState extends State<MapScreenAdmin> {
     ));
   }
 
-  void _loadDropPoints() {
+  // Declare a list to hold the filter criteria. This list will be updated based on user selections.
+List<String> _filterCriteria = [];
+
+void _loadDropPoints() {
   FirebaseFirestore.instance.collection('drop_points').snapshots().listen((snapshot) {
     setState(() {
       _markers.clear();
       for (var doc in snapshot.docs) {
         Map<String, dynamic> pointData = doc.data();
-        LatLng point = LatLng(pointData['latitude'], pointData['longitude']);
-        _markers.add(Marker(
-          markerId: MarkerId(doc.id),
-          position: point,
-          infoWindow: InfoWindow(
-            title: pointData['title'],
-            snippet: pointData['address'],
-            onTap: () {
-              _showDropPointDetails(pointData);
-            }
-          ),
-        ));
+        // Check if the drop point matches the filter criteria
+        if (_matchesFilter(pointData['recycleItems'])) {
+          LatLng point = LatLng(pointData['latitude'], pointData['longitude']);
+          _markers.add(Marker(
+            markerId: MarkerId(doc.id),
+            position: point,
+            infoWindow: InfoWindow(
+              title: pointData['title'],
+              snippet: pointData['address'],
+              onTap: () {
+                _showDropPointDetails(pointData);
+              }
+            ),
+          ));
+        }
       }
     });
+  });
+}
+
+// Helper function to determine if a drop point matches the filter criteria
+bool _matchesFilter(List<dynamic> dropPointItems) {
+  if (_filterCriteria.isEmpty) {
+    return true; // If no filter criteria, everything matches
+  }
+  for (var item in _filterCriteria) {
+    if (!dropPointItems.contains(item)) {
+      return false; // If any item in the filter is not present, it's not a match
+    }
+  }
+  return true; // All filter items are present
+}
+
+// Define a method to update the filter criteria based on user selection
+void _updateFilterCriteria(List<String> newCriteria) {
+  setState(() {
+    _filterCriteria = newCriteria;
+    _loadDropPoints(); // Reload points with the new filter
   });
 }
 
@@ -161,6 +188,54 @@ class _MapScreenState extends State<MapScreenAdmin> {
     }
   }
 
+List<String> _selectedFilters = [];
+
+void _showFilterDialog() async {
+  // Assuming you have a list of all recyclable items
+  List<String> recyclableItems = ['Paper', 'Glass', 'Cans', 'Plastic'];
+
+  await showDialog(
+    context: context,
+    builder: (context) {
+      return StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+          return AlertDialog(
+            title: Text('Select Recyclable Items'),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: recyclableItems.map((item) {
+                  return CheckboxListTile(
+                    value: _selectedFilters.contains(item),
+                    title: Text(item),
+                    onChanged: (bool? value) {
+                      setState(() {
+                        if (value == true) {
+                          _selectedFilters.add(item);
+                        } else {
+                          _selectedFilters.remove(item);
+                        }
+                      });
+                    },
+                  );
+                }).toList(),
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: Text('Apply'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  _updateFilterCriteria(_selectedFilters); // Update the filter criteria based on the selection
+                },
+              ),
+            ],
+          );
+        },
+      );
+    },
+  );
+}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -191,7 +266,8 @@ class _MapScreenState extends State<MapScreenAdmin> {
             },
           ),
         ],
-      ),
+    ),
+
       body: GoogleMap(
         onMapCreated: _onMapCreated,
         initialCameraPosition: CameraPosition(
@@ -203,29 +279,46 @@ class _MapScreenState extends State<MapScreenAdmin> {
         zoomControlsEnabled: true,
         mapType: MapType.normal,
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
-      floatingActionButton: Padding(
-      padding: const EdgeInsets.only(top: 180.0, right: 0.0),
-      child: Container(
-        height: 40.0, // Specify the height of the button
-        width: 40.0, // Specify the width of the button
-        child: FloatingActionButton(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.zero, // This makes the button square
+      
+      floatingActionButton: SafeArea(
+        child: Align(
+          alignment: Alignment.topLeft,
+          child: Padding(
+            padding: EdgeInsets.only(top: 120.0, left: 25.0), // Adjust these values as needed
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min, // Important for proper spacing
+              children: [
+                FloatingActionButton(
+                  onPressed: _showFilterDialog,
+                  child: Icon(Icons.filter_list),
+                  tooltip: 'Filter Drop Points',
+                  heroTag: 'filterBtn',
+                ),
+                SizedBox(height: 10),
+                FloatingActionButton(
+                  onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const DropPointMap())),
+                  child: Icon(Icons.settings),
+                  tooltip: 'Manage Drop Points',
+                  heroTag: 'manageBtn',
+                ),
+              ],
+            ),
           ),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const DropPointMap()),
-            );
-          },
-          child: Icon(Icons.settings, size: 20.0), // Changed icon
-          tooltip: 'Manage Drop Points',
         ),
       ),
-    ),
+    );
+  }
+
+  Widget _buildActionButton({required IconData icon, required VoidCallback onPressed, required String tooltip}) {
+    return Container(
+      height: 45.0, // Standard FAB size
+      width: 45.0,  // Standard FAB size
+      child: FloatingActionButton(
+        onPressed: onPressed,
+        child: Icon(icon, size: 24.0), // Adjust icon size if needed
+        tooltip: tooltip,
+      ),
     );
   }
 }
-
-
