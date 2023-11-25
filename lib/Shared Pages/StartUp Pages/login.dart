@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:recycle_go/Shared%20Pages/StartUp%20Pages/home_page.dart';
+import 'package:recycle_go/models/global_user.dart';
 import 'forgot.dart';
 import 'register.dart'; // Import the RegisterPage
 
@@ -30,10 +32,27 @@ class _LoginPageState extends State<LoginPage> {
 
       // If the signIn is successful, navigate to HomePage
       if (userCredential.user != null) {
-        Navigator.pushReplacement( // Use pushReplacement to prevent going back to login screen
-          context,
-          MaterialPageRoute(builder: (context) => HomePage()), // HomePage should be the landing page after login
-        );
+
+        // Fetch the username from Firestore using the email
+        String userEmail = _usernameController.text.trim();
+        var usersCollection = FirebaseFirestore.instance.collection('users');
+        var querySnapshot = await usersCollection.where('email', isEqualTo: userEmail).get();
+
+         if (querySnapshot.docs.isNotEmpty) {
+          // Assuming 'username' is the field name in your Firestore collection
+          var userDocument = querySnapshot.docs.first;
+          GlobalUser.userName = userDocument['username'];
+          GlobalUser.userLevel = userDocument['level'];
+          GlobalUser.userPoints = userDocument['points'];
+
+          // Navigate to HomePage
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => HomePage()),
+          );
+        } else {
+          _showErrorSnackBar('User data not found in database.');
+        }
       }
     } on FirebaseAuthException catch (e) {
       // Log the error code for debugging
