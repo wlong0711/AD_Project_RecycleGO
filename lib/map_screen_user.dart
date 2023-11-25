@@ -172,22 +172,34 @@ void _updateFilterCriteria(List<String> newCriteria) {
   }
 
   Future<void> _searchAndNavigate() async {
-    if (_searchController.text.isEmpty) return;
-    try {
-      List<Location> locations = await locationFromAddress(_searchController.text);
-      if (locations.isNotEmpty) {
-        mapController?.animateCamera(CameraUpdate.newCameraPosition(
-          CameraPosition(
-            target: LatLng(locations.first.latitude, locations.first.longitude),
-            zoom: 14.0,
-          ),
-        ));
-      }
-    } catch (e) {
-      // Handle error or no result
-      print('Error: ${e.toString()}');
-    }
+  String searchText = _searchController.text.trim();
+
+  if (searchText.isEmpty) return;
+
+  // Query Firestore for drop points with a matching name
+  var querySnapshot = await FirebaseFirestore.instance
+      .collection('drop_points')
+      .where('title', isEqualTo: searchText)
+      .get();
+
+  if (querySnapshot.docs.isNotEmpty) {
+    var dropPointData = querySnapshot.docs.first.data();
+    LatLng point = LatLng(dropPointData['latitude'], dropPointData['longitude']);
+
+    // Navigate to the drop point location
+    mapController?.animateCamera(CameraUpdate.newCameraPosition(
+      CameraPosition(
+        target: point,
+        zoom: 20.0,
+      ),
+    ));
+  } else {
+    // Handle the case where no matching drop points are found
+    // For example, display a dialog or a toast message
+    print("No matching drop points found");
   }
+}
+
 
   List<String> _selectedFilters = [];
 
