@@ -1,6 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:recycle_go/WelcomePage.dart';
-import 'package:recycle_go/map_screen_admin.dart';
+import 'package:recycle_go/Admin%20Only%20Pages/map_screen_admin.dart';
+import 'package:recycle_go/Shared%20Pages/StartUp%20Pages/home_page.dart';
+import 'package:recycle_go/models/global_user.dart';
 import 'forgot.dart';
 import 'register.dart'; // Import the RegisterPage
 
@@ -13,6 +16,80 @@ class _LoginPageState extends State<LoginPage> {
   bool _isPasswordVisible = false;
   TextEditingController _usernameController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
+
+  void _login() async {
+    if (_usernameController.text.isEmpty || _passwordController.text.isEmpty) {
+      // Show a snackbar for empty fields
+      _showErrorSnackBar('Please enter both email and password.');
+      return;
+    }
+    
+    try {
+      // Sign in with email and password
+      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _usernameController.text,
+        password: _passwordController.text,
+      );
+
+      // If the signIn is successful, navigate to HomePage
+      if (userCredential.user != null) {
+
+        // Fetch the username from Firestore using the email
+        String userEmail = _usernameController.text.trim();
+        var usersCollection = FirebaseFirestore.instance.collection('users');
+        var querySnapshot = await usersCollection.where('email', isEqualTo: userEmail).get();
+
+         if (querySnapshot.docs.isNotEmpty) {
+          // Assuming 'username' is the field name in your Firestore collection
+          var userDocument = querySnapshot.docs.first;
+          GlobalUser.userName = userDocument['username'];
+          GlobalUser.userLevel = userDocument['level'];
+          GlobalUser.userPoints = userDocument['points'];
+
+          // Navigate to HomePage
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => HomePage()),
+          );
+        } else {
+          _showErrorSnackBar('User data not found in database.');
+        }
+      }
+    } on FirebaseAuthException catch (e) {
+      // Log the error code for debugging
+      print('FirebaseAuthException with code: ${e.code}');
+      // Match the error code and display an appropriate error message
+      String errorMessage;
+      switch (e.code) {
+        case 'invalid-email':
+          errorMessage = 'The email address is not valid.';
+          break;
+        case 'user-not-found':
+          errorMessage = 'There is no user corresponding to the email address.';
+          break;
+        case 'invalid-credential':
+          errorMessage = 'The password is invalid for the given email address.';
+          break;
+        default:
+          errorMessage = 'An error occurred. Please try again later.';
+          break;
+      }
+      _showErrorSnackBar(errorMessage);
+    } catch (e) {
+      // General error handling
+      _showErrorSnackBar('Login failed. Please try again.');
+      print(e); // For debugging purposes
+    }
+  }
+
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +134,7 @@ class _LoginPageState extends State<LoginPage> {
           SizedBox(height: 10),
 
           // Login Button
-          _buildButton("Login", Colors.blue),
+          _buildButton("Login", Colors.blue, _login),
 
           SizedBox(height: 20),
 
@@ -190,7 +267,7 @@ class _LoginPageState extends State<LoginPage> {
 }
 
 
-  Widget _buildButton(String label, Color color) {
+  Widget _buildButton(String label, Color color, VoidCallback onPressed) {
     return Container(
       width: 200,
       height: 50,

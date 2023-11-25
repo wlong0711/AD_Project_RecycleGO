@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
-import 'drop_point_map.dart';
+import 'manage_drop_point_map.dart';
 
 class MapScreenAdmin extends StatefulWidget {
   const MapScreenAdmin({Key? key, required this.title}) : super(key: key);

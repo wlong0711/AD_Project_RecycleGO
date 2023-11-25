@@ -33,6 +33,7 @@ class _RegisterPageState extends State<RegisterPage> {
         'email': _emailController.text,
         'username': _usernameController.text,
         'points': 0,
+        'level' :0, //0 for user, 1 for admin
       });
 
       // Registration successful, navigate to the next screen
