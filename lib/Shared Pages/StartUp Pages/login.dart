@@ -103,7 +103,7 @@ class _LoginPageState extends State<LoginPage> {
         children: [
           // Company Logo at the top center
           Image.network(
-            'https://example.com/your-company-logo-url.png',
+            'https://firebasestorage.googleapis.com/v0/b/recyclego-64b10.appspot.com/o/Company%20Logo%2FLogoWithSlogan.png?alt=media&token=5b939cb4-b9d8-42b5-adcb-8de58ee095e0',
             width: 100, // Set the width according to your design
             height: 100, // Set the height according to your design
           ),
