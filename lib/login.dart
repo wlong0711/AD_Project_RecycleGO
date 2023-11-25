@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:recycle_go/wlcpage.dart';
+import 'package:recycle_go/WelcomePage.dart';
+import 'package:recycle_go/map_screen_admin.dart';
 import 'forgot.dart';
 import 'register.dart'; // Import the RegisterPage
 
@@ -201,7 +202,7 @@ class _LoginPageState extends State<LoginPage> {
               context,
               MaterialPageRoute(
                   builder: (context) =>
-                      WelcomePage()), //change this to redirect to the homepage*********
+                     MapScreenAdmin(title: '',)), //change this to redirect to the homepage*********
             );
           } else {
             // Show a snackbar or any other feedback for empty fields
