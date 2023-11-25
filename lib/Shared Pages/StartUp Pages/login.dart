@@ -177,7 +177,7 @@ class _LoginPageState extends State<LoginPage> {
     bool isPassword = false,
   }) {
     return Container(
-      width: 300,
+      width: 330,
       child: TextField(
         controller: controller,
         obscureText: isPassword && !_isPasswordVisible,
@@ -195,7 +195,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _buildPasswordInputBox() {
     return Container(
-      width: 300,
+      width: 330,
       child: TextField(
         controller: _passwordController,
         obscureText: !_isPasswordVisible,
@@ -224,25 +224,31 @@ class _LoginPageState extends State<LoginPage> {
   bool _rememberMe = false; // Add this variable to store the state
 
   Widget _buildRememberMe() {
-    return Row(
-      children: [
-        Checkbox(
-          value: _rememberMe,
-          onChanged: (value) {
-            setState(() {
-              _rememberMe = value!;
-            });
-          },
-        ),
-        Text('Remember me'),
-      ],
-    );
-  }
+  return Row(
+    children: [
+      SizedBox(width: 22.0),
+      Checkbox(
+        value: _rememberMe,
+        onChanged: (value) {
+          setState(() {
+            _rememberMe = value!;
+          });
+        },
+      ),
+      Padding(
+        padding: EdgeInsets.only(right: 4.0), // Adjust this value to control the spacing
+        child: Text('Remember me'),
+      ),
+    ],
+  );
+}
+
 
   Widget _buildForgotPasswordLink() {
-    return GestureDetector(
+  return Padding(
+    padding: EdgeInsets.only(right: 35.0), // Adjust this value to control the left indentation
+    child: GestureDetector(
       onTap: () {
-        // Navigate to the ForgotPasswordPage when the text is clicked
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => ForgotPasswordPage()),
@@ -255,8 +261,10 @@ class _LoginPageState extends State<LoginPage> {
           decoration: TextDecoration.underline,
         ),
       ),
-    );
-  }
+    ),
+  );
+}
+
 
   Widget _buildButton(String label, Color color, VoidCallback onPressed) {
     return Container(
