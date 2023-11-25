@@ -1,9 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:flutter_google_places/flutter_google_places.dart';
 
 class MapScreenUser extends StatefulWidget {
   const MapScreenUser({Key? key, required this.title}) : super(key: key);

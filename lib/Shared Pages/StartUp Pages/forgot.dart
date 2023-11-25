@@ -9,7 +9,7 @@ class ForgotPasswordPage extends StatefulWidget {
 
 class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   bool _isNewPasswordVisible = false;
-  bool _isConfirmPasswordVisible = false;
+  //bool _isConfirmPasswordVisible = false; 
   TextEditingController _usernameController = TextEditingController();
   TextEditingController _newPasswordController = TextEditingController();
   TextEditingController _confirmPasswordController = TextEditingController();

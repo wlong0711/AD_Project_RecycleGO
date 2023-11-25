@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
-import 'package:recycle_go/upload_page.dart';
+import 'package:recycle_go/Shared%20Pages/QR%20Scan%20&%20Upload%20Page/upload_page.dart';
 
 class QRScanScreen extends StatefulWidget {
   const QRScanScreen({super.key, required this.title});
@@ -17,6 +17,7 @@ class _QRScanScreenState extends State<QRScanScreen> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   QRViewController? controller; // Nullable controller
   Barcode? result; // Nullable result
+  bool uploadCompleted = false;
 
   @override
   void reassemble() {
@@ -56,12 +57,10 @@ class _QRScanScreenState extends State<QRScanScreen> {
               ),
             ),
           ),
-          Expanded(
+          const Expanded(
             flex: 1,
             child: Center(
-              child: (result != null)
-                  ? Text('Barcode Type: ${result!.format}   Data: ${result!.code}')
-                  : const Text('Scan a code'),
+              child:  Text('Scan a code'),
             ),
           )
         ],
@@ -92,17 +91,24 @@ class _QRScanScreenState extends State<QRScanScreen> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => UploadPage(locationName: locationName),
+          builder: (context) => UploadPage(
+            locationName: locationName,
+            onUploadCompleted: () {
+              setState(() {
+                uploadCompleted = true; // Use setState to update the flag
+              });
+            },
+          ),
         ),
       ).then((value) {
-        // Resume camera when returning to the QR scan page
-        if (mounted && controller != null) {
+        // Check if upload was completed and only resume camera if it wasn't
+        if (!uploadCompleted && mounted && controller != null) {
           controller?.resumeCamera();
         }
       });
     } catch (e) {
       // Handle or show error that QR didn't contain valid data
-      print('The scanned data is not in the expected format');
+      print('Error parsing scanned data: $e');
     }
   }
 
