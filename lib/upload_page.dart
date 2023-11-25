@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:recycle_go/home_page.dart';
+import 'package:recycle_go/StartUp%20Pages/home_page.dart';
 
 class UploadPage extends StatefulWidget {
   final String locationName;
