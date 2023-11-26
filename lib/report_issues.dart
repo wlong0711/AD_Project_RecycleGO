@@ -72,12 +72,7 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
                 keyboardType: TextInputType.phone,
               ),
               SizedBox(height: 16),
-              _image == null
-                  ? ElevatedButton(
-                      child: Text("Upload Image"),
-                      onPressed: _pickImage,
-                    )
-                  : Image.file(_image!),
+              _buildImageUploadSection(),
               SizedBox(height: 16),
               ElevatedButton(
                 child: Text("Submit Report"),
@@ -180,7 +175,7 @@ Future<void> _showSuccessDialog() async {
         ),
         actions: <Widget>[
           TextButton(
-            child: Text('OK'),
+            child: Text('Back To Homepage'),
             onPressed: () {
               Navigator.of(context).pop(); // Close the dialog
               Navigator.of(context).pop(); // Navigate back to the homepage
@@ -218,5 +213,41 @@ void _showErrorDialog(String message) {
     },
   );
 }
+
+Widget _buildImageUploadSection() {
+    return _image == null
+        ? ElevatedButton(
+            child: Text("Upload Image"),
+            onPressed: _pickImage,
+          )
+        : Column(
+            children: [
+              Image.file(_image!),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: _pickImage,
+                    child: Text("Re-upload Image"),
+                  ),
+                  SizedBox(width: 8),
+                  ElevatedButton(
+                    onPressed: _deleteImage,
+                    child: Text("Delete Image"),
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.red, // Background color
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          );
+  }
+
+  void _deleteImage() {
+    setState(() {
+      _image = null;
+    });
+  }
 
 }
