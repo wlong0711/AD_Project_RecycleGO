@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:recycle_go/Admin%20Only%20Pages/view_report_issues.dart';
 import 'package:recycle_go/Shared%20Pages/QR%20Scan%20&%20Upload%20Page/qr_scan_screen.dart';
 import 'package:recycle_go/Admin%20Only%20Pages/verify_reward.dart';
 import 'package:recycle_go/models/global_user.dart';
@@ -57,6 +58,15 @@ class HomePage extends StatelessWidget {
             );
           },
           child: const Text('Verify for Rewards'),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => AdminReportsPage()),
+            );
+          },
+          child: const Text('View Reports'),
         ),
       ],
     );
