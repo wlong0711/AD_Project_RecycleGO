@@ -111,7 +111,7 @@ class _LoginPageState extends State<LoginPage> {
           SizedBox(height: 20),
 
           // Username Input Box
-          _buildInputBox("Username", _usernameController, isPassword: false),
+          _buildInputBox("Email", _usernameController, isPassword: false),
 
           // Password Input Box
           _buildPasswordInputBox(),
