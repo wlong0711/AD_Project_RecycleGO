@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:recycle_go/Admin%20Only%20Pages/view_report_issues.dart';
 import 'package:recycle_go/Shared%20Pages/QR%20Scan%20&%20Upload%20Page/qr_scan_screen.dart';
 import 'package:recycle_go/Admin%20Only%20Pages/verify_reward.dart';
@@ -56,7 +57,7 @@ class HomePage extends StatelessWidget {
           items: documents.map((doc) => Container(
             child: Center(
               child: Image.network(
-                doc[''],
+                doc['imageUrl'],
                 fit: BoxFit.cover,
                 width: 1000,
               ),
@@ -192,6 +193,7 @@ class HomePage extends StatelessWidget {
   //     ],
   //   );
   // }
+
   // Widget _commonButtons(BuildContext context) {
   // return GridView.count(
   //   crossAxisCount: 1,
