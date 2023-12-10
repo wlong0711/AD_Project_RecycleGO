@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:video_player/video_player.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class Upload {
   String locationName;
-  List<String> videoUrls;
+  String videoUrl;
   String? userName;
   String? docId;
 
   Upload({
     required this.locationName,
-    required this.videoUrls,
+    required this.videoUrl,
     this.userName,
     this.docId,
   });
@@ -19,7 +20,7 @@ class Upload {
     Map data = doc.data() as Map;
     return Upload(
       locationName: data['location'] ?? '',
-      videoUrls: List<String>.from(data['videos'] ?? []),
+      videoUrl: data['video'] ?? '', // Assuming there is a single 'video' field
       userName: data['username'] ?? '',
       docId: doc.id,
     );
@@ -50,13 +51,105 @@ class _VerifyRewardPageState extends State<VerifyRewardPage> {
     setState(() => uploads = fetchedUploads);
   }
 
-  void _verifyUpload(Upload upload) {
-    // Add your verification logic here
-  }
+  void _verifyUpload(Upload upload) async {
+  // Assuming you are adding a fixed number of points for a verified upload
+  const int pointsToAdd = 100;
 
-  void _rejectUpload(Upload upload) {
-    // Add your rejection logic here
+  // Retrieve the document ID for the specific upload
+  String? uploadDocId = upload.docId; // Directly using the document ID
+
+  if (uploadDocId != null) {
+    try {
+      var userDoc = await FirebaseFirestore.instance.collection('users')
+          .where('username', isEqualTo: upload.userName)
+          .limit(1)
+          .get();
+
+      if (userDoc.docs.isNotEmpty) {
+        var userRef = userDoc.docs.first.reference;
+        var userData = userDoc.docs.first.data();
+        var newPoints = (userData['points'] ?? 0) + pointsToAdd;
+
+        // Update the user's points
+        await userRef.update({'points': newPoints});
+
+        // Delete video from Firebase Storage
+        if (upload.videoUrl.isNotEmpty) {
+          await firebase_storage.FirebaseStorage.instance.refFromURL(upload.videoUrl).delete();
+        }
+
+        // Delete the document from Firestore
+        await FirebaseFirestore.instance.collection('uploads').doc(uploadDocId).delete();
+
+        // Update the UI to remove the verified upload
+        setState(() {
+          uploads.removeWhere((u) => u.docId == uploadDocId);
+          selectedUpload = null;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Verification successful, points added!'),
+          backgroundColor: Colors.green,
+        ));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('User not found.'),
+          backgroundColor: Colors.red,
+        ));
+      }
+    } catch (e) {
+      print('Error during verification: $e');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Verification failed. Error during deletion.'),
+        backgroundColor: Colors.red,
+      ));
+    }
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('Upload document not found.'),
+      backgroundColor: Colors.red,
+    ));
   }
+}
+
+void _rejectUpload(Upload upload) async {
+  String? uploadDocId = upload.docId; // Directly using the document ID
+
+  if (uploadDocId != null) {
+    try {
+      // Delete video from Firebase Storage
+      if (upload.videoUrl.isNotEmpty) {
+        await firebase_storage.FirebaseStorage.instance.refFromURL(upload.videoUrl).delete();
+      }
+
+      // Delete the document from Firestore
+      await FirebaseFirestore.instance.collection('uploads').doc(uploadDocId).delete();
+
+      // Update the UI to remove the rejected upload
+      setState(() {
+        uploads.removeWhere((u) => u.docId == uploadDocId);
+        selectedUpload = null;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Upload rejected and deleted successfully.'),
+        backgroundColor: Colors.green,
+      ));
+    } catch (e) {
+      print('Error during rejection: $e');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Rejection failed. Error during deletion.'),
+        backgroundColor: Colors.red,
+      ));
+    }
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('Upload document not found.'),
+      backgroundColor: Colors.red,
+    ));
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -66,12 +159,7 @@ class _VerifyRewardPageState extends State<VerifyRewardPage> {
         body: Column(
           children: [
             Expanded(
-              child: ListView.builder(
-                itemCount: selectedUpload!.videoUrls.length,
-                itemBuilder: (context, index) {
-                  return VideoPlayerItem(videoUrl: selectedUpload!.videoUrls[index]);
-                },
-              ),
+              child: VideoPlayerItem(videoUrl: selectedUpload!.videoUrl),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
