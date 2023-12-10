@@ -39,70 +39,76 @@ class HomePage extends StatelessWidget {
   }
 
   Widget _adminOnlyButtons(BuildContext context) {
-    return Column(
-      children: [
-        ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const MapScreenAdmin(title: 'Admin View Map')),
-            );
-          },
-          child: const Text('Map for Admin'),
-        ),
-        ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const VerifyRewardPage()),
-            );
-          },
-          child: const Text('Verify for Rewards'),
-        ),
-        ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => AdminReportsPage()),
-            );
-          },
-          child: const Text('View Reports'),
-        ),
-      ],
-    );
-  }
+  return Column(
+    children: [
+      ElevatedButton.icon(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const MapScreenAdmin(title: 'Admin View Map')),
+          );
+        },
+        icon: Icon(Icons.admin_panel_settings), // Icon for Admin Map
+        label: const Text('Map for Admin'),
+      ),
+      ElevatedButton.icon(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const VerifyRewardPage()),
+          );
+        },
+        icon: Icon(Icons.verified_user), // Icon for Verify Rewards
+        label: const Text('Verify for Rewards'),
+      ),
+      ElevatedButton.icon(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => AdminReportsPage()),
+          );
+        },
+        icon: Icon(Icons.view_list), // Icon for View Reports
+        label: const Text('View Reports'),
+      ),
+    ],
+  );
+}
 
   Widget _commonButtons(BuildContext context) {
-    return Column(
-      children: [
-        ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const MapScreenUser(title: 'User View Map')),
-            );
-          },
-          child: const Text('Map'),
-        ),
-        ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const QRScanScreen(title: 'Scan QR')),
-            );
-          },
-          child: const Text('Scan QR'),
-        ),
-        ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const ReportIssueScreen(title: 'Report an Issue')),
-            );
-          },
-          child: const Text('Report Issue'),
-        ),
-      ],
-    );
-  }
+  return Column(
+    children: [
+      ElevatedButton.icon(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const MapScreenUser(title: 'User View Map')),
+          );
+        },
+        icon: Icon(Icons.map), // Icon for Map
+        label: const Text('Map'),
+      ),
+      ElevatedButton.icon(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const QRScanScreen(title: 'Scan QR')),
+          );
+        },
+        icon: Icon(Icons.qr_code_scanner), // Icon for QR Scan
+        label: const Text('Scan QR'),
+      ),
+      ElevatedButton.icon(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const ReportIssueScreen(title: 'Report an Issue')),
+          );
+        },
+        icon: Icon(Icons.report_problem), // Icon for Report Issue
+        label: const Text('Report Issue'),
+      ),
+    ],
+  );
+}
 }
