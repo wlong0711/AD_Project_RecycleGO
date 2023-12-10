@@ -20,7 +20,7 @@ class Upload {
     Map data = doc.data() as Map;
     return Upload(
       locationName: data['location'] ?? '',
-      videoUrl: data['video'] ?? '', // Assuming there is a single 'video' field
+      videoUrl: data['videoUrl'] ?? '', // Assuming there is a single 'video' field
       userName: data['username'] ?? '',
       docId: doc.id,
     );
