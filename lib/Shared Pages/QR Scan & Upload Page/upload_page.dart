@@ -89,10 +89,10 @@ class _UploadPageState extends State<UploadPage> {
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        return AlertDialog(
+        return const AlertDialog(
           content: Column(
             mainAxisSize: MainAxisSize.min,
-            children: const <Widget>[
+            children: <Widget>[
               CircularProgressIndicator(),
               SizedBox(height: 20),
               Text("Upload Successful"),
@@ -114,7 +114,7 @@ class _UploadPageState extends State<UploadPage> {
   void _navigateToHomePage() {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => HomePage()), // Replace with your HomePage widget
+      MaterialPageRoute(builder: (context) => const HomePage()), // Replace with your HomePage widget
     );
   }
 
@@ -126,13 +126,13 @@ class _UploadPageState extends State<UploadPage> {
         title: Text('Upload Picture for ${widget.locationName}'),
       ),
       body : _isUploading 
-                ? Center(child: CircularProgressIndicator()) // Show loading indicator
+                ? const Center(child: CircularProgressIndicator()) // Show loading indicator
            : SingleChildScrollView(
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Text('Image before throw:'),
+              const Text('Image before throw:'),
               if (images.isNotEmpty)
                 Column(
                   children: [
@@ -152,7 +152,7 @@ class _UploadPageState extends State<UploadPage> {
                   child: const Text('Select Image'),
                 ),
 
-              Text('Image after throw:'),
+              const Text('Image after throw:'),
               if (images.length > 1)
                 Column(
                   children: [
