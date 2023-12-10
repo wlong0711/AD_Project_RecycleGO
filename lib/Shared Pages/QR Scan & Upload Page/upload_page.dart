@@ -115,7 +115,7 @@ class _UploadPageState extends State<UploadPage> {
   void _navigateToHomePage() {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => HomePage()), // Replace with your HomePage widget
+      MaterialPageRoute(builder: (context) => HomePage()),
     );
   }
 
@@ -125,41 +125,21 @@ class _UploadPageState extends State<UploadPage> {
       appBar: AppBar(
         title: Text('Upload Video for ${widget.locationName}'),
       ),
-      body : _isUploading 
-                ? Center(child: CircularProgressIndicator()) // Show loading indicator
-           : SingleChildScrollView(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text('Image before throw:'),
-              if (images.isNotEmpty)
-                Column(
-                  children: [
-                    SizedBox(
-                      height: 200,
-                      child: Image.file(File(images[0].path), fit: BoxFit.cover),
-                    ),
+      body: _isUploading
+          ? Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    if (videoFile != null)
+                      Icon(Icons.video_library, size: 100),
+                    SizedBox(height: 20),
                     ElevatedButton(
-                      onPressed: () => _reselectImage(0),
-                      child: const Text('Reselect Image'),
+                      onPressed: _pickVideo,
+                      child: Text(videoFile == null ? 'Select Video' : 'Reselect Video'),
                     ),
-                  ],
-                )
-              else
-                ElevatedButton(
-                  onPressed: () => _pickImage(),
-                  child: const Text('Select Image'),
-                ),
-
-              Text('Image after throw:'),
-              if (images.length > 1)
-                Column(
-                  children: [
-                    SizedBox(
-                      height: 200,
-                      child: Image.file(File(images[1].path), fit: BoxFit.cover),
-                    ),
+                    SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: _uploadVideo,
                       child: Text('Submit Video'),
