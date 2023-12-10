@@ -31,40 +31,24 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildTopCarousel() {
-    return FutureBuilder<QuerySnapshot>(
-      future: FirebaseFirestore.instance.collection('Banner').get(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
-        }
+ Widget _buildTopCarousel() {
+    final List<String> imageUrls = [
+      'https://firebasestorage.googleapis.com/v0/b/recyclego-64b10.appspot.com/o/Banner%2FRecycle-Right-Banner.jpg?alt=media&token=0f09deef-3e48-4833-9614-b299289bf226',
+      'https://firebasestorage.googleapis.com/v0/b/recyclego-64b10.appspot.com/o/Banner%2Frecycling-poster-final.webp?alt=media&token=f1e1d089-ee91-4883-bf38-0ff17bfcc4a3',
+      'https://firebasestorage.googleapis.com/v0/b/recyclego-64b10.appspot.com/o/Banner%2Ft-t-4256-eco-and-recycling-the-future-of-the-planet-display-poster_ver_1.webp?alt=media&token=c95bb98d-a132-4909-a295-71cd92bbf9c7',
+    ];
 
-        if (snapshot.hasError) {
-          return Center(child: Text('Error fetching images'));
-        }
-
-        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-          return Center(child: Text('No images found'));
-        }
-
-        List<DocumentSnapshot> documents = snapshot.data!.docs;
-        return CarouselSlider(
-          options: CarouselOptions(
-            autoPlay: true,
-            aspectRatio: 2.0,
-            enlargeCenterPage: true,
-          ),
-          items: documents.map((doc) => Container(
-            child: Center(
-              child: Image.network(
-                doc['name'],
-                fit: BoxFit.cover,
-                width: 1000,
-              ),
-            ),
-          )).toList(),
-        );
-      },
+    return CarouselSlider(
+      options: CarouselOptions(
+        autoPlay: true,
+        aspectRatio: 2.0,
+        enlargeCenterPage: true,
+      ),
+      items: imageUrls.map((url) => Container(
+        child: Center(
+          child: Image.network(url, fit: BoxFit.cover, width: 1000),
+        ),
+      )).toList(),
     );
   }
 
