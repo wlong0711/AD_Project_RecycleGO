@@ -57,7 +57,7 @@ class HomePage extends StatelessWidget {
           items: documents.map((doc) => Container(
             child: Center(
               child: Image.network(
-                doc[''],
+                doc['imageUrl'],
                 fit: BoxFit.cover,
                 width: 1000,
               ),
@@ -193,7 +193,7 @@ class HomePage extends StatelessWidget {
   //     ],
   //   );
   // }
-sad
+
   // Widget _commonButtons(BuildContext context) {
   // return GridView.count(
   //   crossAxisCount: 1,

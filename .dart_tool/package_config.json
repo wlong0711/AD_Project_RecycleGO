@@ -614,6 +614,36 @@
       "languageVersion": "2.14"
     },
     {
+      "name": "video_player",
+      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/video_player-2.8.1",
+      "packageUri": "lib/",
+      "languageVersion": "3.1"
+    },
+    {
+      "name": "video_player_android",
+      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/video_player_android-2.4.10",
+      "packageUri": "lib/",
+      "languageVersion": "2.19"
+    },
+    {
+      "name": "video_player_avfoundation",
+      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/video_player_avfoundation-2.5.3",
+      "packageUri": "lib/",
+      "languageVersion": "3.2"
+    },
+    {
+      "name": "video_player_platform_interface",
+      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/video_player_platform_interface-6.2.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.19"
+    },
+    {
+      "name": "video_player_web",
+      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/video_player_web-2.1.2",
+      "packageUri": "lib/",
+      "languageVersion": "3.1"
+    },
+    {
       "name": "web",
       "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/web-0.3.0",
       "packageUri": "lib/",
@@ -638,7 +668,7 @@
       "languageVersion": "3.1"
     }
   ],
-  "generated": "2023-12-10T05:25:42.125861Z",
+  "generated": "2023-12-10T06:19:06.557479Z",
   "generator": "pub",
   "generatorVersion": "3.2.0"
 }
