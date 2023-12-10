@@ -6,6 +6,8 @@ import 'package:recycle_go/models/voucher.dart';
 import 'add_voucher_page.dart'; // Assume this is the file where the Voucher class is defined
 
 class ViewRewardPage extends StatefulWidget {
+  const ViewRewardPage({super.key});
+
   @override
   _ViewRewardPageState createState() => _ViewRewardPageState();
 }
@@ -31,7 +33,7 @@ class _ViewRewardPageState extends State<ViewRewardPage> {
   void navigateToAddVoucherPage() {
   Navigator.push(
     context,
-    MaterialPageRoute(builder: (context) => AddVoucherPage()),
+    MaterialPageRoute(builder: (context) => const AddVoucherPage()),
   );
 }
 
@@ -40,11 +42,11 @@ class _ViewRewardPageState extends State<ViewRewardPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('View Rewards'),
+        title: const Text('View Rewards'),
         actions: [
           if (GlobalUser.userLevel == 1) // Check if user is admin
             IconButton(
-              icon: Icon(Icons.add),
+              icon: const Icon(Icons.add),
               onPressed: navigateToAddVoucherPage,
             ),
         ],
