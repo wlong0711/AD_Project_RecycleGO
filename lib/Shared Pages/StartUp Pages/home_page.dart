@@ -40,6 +40,7 @@ class HomePage extends StatelessWidget {
     return CarouselSlider(
       options: CarouselOptions(
         autoPlay: true,
+        autoPlayInterval: Duration(seconds: 3),
         aspectRatio: 2.0,
         enlargeCenterPage: true,
       ),

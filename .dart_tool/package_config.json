@@ -668,7 +668,11 @@
       "languageVersion": "3.1"
     }
   ],
+<<<<<<< HEAD
   "generated": "2023-12-10T07:06:38.917102Z",
+=======
+  "generated": "2023-12-10T07:11:35.314869Z",
+>>>>>>> d0f642cd95235039d9a4660612c6ea2538781374
   "generator": "pub",
   "generatorVersion": "3.2.0"
 }
