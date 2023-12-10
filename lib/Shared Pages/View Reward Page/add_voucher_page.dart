@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AddVoucherPage extends StatefulWidget {
+  const AddVoucherPage({super.key});
+
   @override
   _AddVoucherPageState createState() => _AddVoucherPageState();
 }
@@ -42,7 +44,7 @@ class _AddVoucherPageState extends State<AddVoucherPage> {
           'expiredDate': _selectedDate,
         });
         ScaffoldMessenger.of(context).showSnackBar(
-           SnackBar(
+           const SnackBar(
               content: Text('Voucher added successfully!'),
               backgroundColor: Colors.green, 
             ),
@@ -67,23 +69,23 @@ class _AddVoucherPageState extends State<AddVoucherPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Voucher'),
+        title: const Text('Add Voucher'),
         actions: [
           IconButton(
-            icon: Icon(Icons.save),
+            icon: const Icon(Icons.save),
             onPressed: _addVoucher,
           ),
         ],
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: ListView(
             children: [
               TextFormField(
                 controller: _voucherIDController,
-                decoration: InputDecoration(labelText: 'Voucher ID'),
+                decoration: const InputDecoration(labelText: 'Voucher ID'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter voucher ID';
@@ -93,7 +95,7 @@ class _AddVoucherPageState extends State<AddVoucherPage> {
               ),
               TextFormField(
                 controller: _voucherNameController,
-                decoration: InputDecoration(labelText: 'Voucher Name'),
+                decoration: const InputDecoration(labelText: 'Voucher Name'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter voucher name';
@@ -105,7 +107,7 @@ class _AddVoucherPageState extends State<AddVoucherPage> {
                 title: Text(_selectedDate == null
                     ? 'Pick Expiry Date'
                     : 'Expiry Date: ${_selectedDate!.toLocal()}'),
-                trailing: Icon(Icons.calendar_today),
+                trailing: const Icon(Icons.calendar_today),
                 onTap: _pickDate,
               ),
             ],

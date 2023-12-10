@@ -10,7 +10,7 @@ import '../../Admin Only Pages/map_screen_admin.dart';
 import '../../User Only Pages/map_screen_user.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +41,7 @@ class HomePage extends StatelessWidget {
     return CarouselSlider(
       options: CarouselOptions(
         autoPlay: true,
-        autoPlayInterval: Duration(seconds: 3),
+        autoPlayInterval: const Duration(seconds: 3),
         aspectRatio: 2.0,
         enlargeCenterPage: true,
       ),
@@ -55,10 +55,10 @@ class HomePage extends StatelessWidget {
 
   Widget _buildWelcomeText() {
     return Padding(
-      padding: EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(16.0),
       child: Text(
         'Welcome, ${GlobalUser.userName ?? 'User'}!',
-        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         textAlign: TextAlign.center,
       ),
     );
@@ -68,7 +68,7 @@ class HomePage extends StatelessWidget {
     return GridView.count(
       crossAxisCount: 2,
       shrinkWrap: true, 
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       children: <Widget>[
         // Common User Actions
         _buildMenuButton(context, Icons.map, 'Map', () {
@@ -89,10 +89,10 @@ class HomePage extends StatelessWidget {
             MaterialPageRoute(builder: (context) => const ReportIssueScreen(title: 'Report an Issue')),
           );
         }),
-        _buildMenuButton(context, Icons.report_problem, 'View Reward', () {
+        _buildMenuButton(context, Icons.discount, 'View Reward', () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => ViewRewardPage()),
+            MaterialPageRoute(builder: (context) => const ViewRewardPage()),
           );
         }),
         
@@ -112,7 +112,7 @@ class HomePage extends StatelessWidget {
         if (GlobalUser.userLevel == 1) _buildMenuButton(context, Icons.view_list, 'View Reports', () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => AdminReportsPage()),
+            MaterialPageRoute(builder: (context) => const AdminReportsPage()),
           );
         }),
       ],
@@ -128,7 +128,7 @@ class HomePage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(icon, size: 50.0),
-            Text(label, style: TextStyle(fontSize: 16.0))
+            Text(label, style: const TextStyle(fontSize: 16.0))
           ],
         ),
       ),

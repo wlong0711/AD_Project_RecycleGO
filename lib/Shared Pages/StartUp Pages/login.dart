@@ -7,14 +7,16 @@ import 'forgot.dart';
 import 'register.dart'; // Import the RegisterPage
 
 class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
   @override
   _LoginPageState createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
   bool _isPasswordVisible = false;
-  TextEditingController _usernameController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   void _login() async {
     if (_usernameController.text.isEmpty || _passwordController.text.isEmpty) {
@@ -48,7 +50,7 @@ class _LoginPageState extends State<LoginPage> {
           // Navigate to HomePage
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => HomePage()),
+            MaterialPageRoute(builder: (context) => const HomePage()),
           );
         } else {
           _showErrorSnackBar('User data not found in database.');
@@ -95,7 +97,7 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text('Login'),
+        title: const Text('Login'),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -108,7 +110,7 @@ class _LoginPageState extends State<LoginPage> {
             height: 100, // Set the height according to your design
           ),
 
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
 
           // Username Input Box
           _buildInputBox("Email", _usernameController, isPassword: false),
@@ -116,7 +118,7 @@ class _LoginPageState extends State<LoginPage> {
           // Password Input Box
           _buildPasswordInputBox(),
 
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
 
           // Remember Me Checkbox and Forgot Password Link
           Row(
@@ -130,15 +132,15 @@ class _LoginPageState extends State<LoginPage> {
             ],
           ),
 
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
 
           // Login Button
           _buildButton("Login", Colors.blue, _login),
 
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
 
           // Horizontal Bar and "or" text
-          Row(
+          const Row(
             children: [
               Expanded(
                 child: Divider(
@@ -146,7 +148,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
+                padding: EdgeInsets.symmetric(horizontal: 8),
                 child: Text('or'),
               ),
               Expanded(
@@ -157,12 +159,12 @@ class _LoginPageState extends State<LoginPage> {
             ],
           ),
 
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
 
           // Other Login Methods
           _buildOtherLoginMethods(),
 
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
 
           // "Not a member, create a new account" Text
           _buildCreateAccountText(),
@@ -176,7 +178,7 @@ class _LoginPageState extends State<LoginPage> {
     TextEditingController controller, {
     bool isPassword = false,
   }) {
-    return Container(
+    return SizedBox(
       width: 330,
       child: TextField(
         controller: controller,
@@ -187,14 +189,14 @@ class _LoginPageState extends State<LoginPage> {
         },
         decoration: InputDecoration(
           labelText: controller.text.isEmpty ? label : '',
-          border: OutlineInputBorder(),
+          border: const OutlineInputBorder(),
         ),
       ),
     );
   }
 
   Widget _buildPasswordInputBox() {
-    return Container(
+    return SizedBox(
       width: 330,
       child: TextField(
         controller: _passwordController,
@@ -205,7 +207,7 @@ class _LoginPageState extends State<LoginPage> {
         },
         decoration: InputDecoration(
           labelText: _passwordController.text.isEmpty ? 'Password' : '',
-          border: OutlineInputBorder(),
+          border: const OutlineInputBorder(),
           suffixIcon: GestureDetector(
             onTap: () {
               setState(() {
@@ -226,7 +228,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget _buildRememberMe() {
   return Row(
     children: [
-      SizedBox(width: 22.0),
+      const SizedBox(width: 22.0),
       Checkbox(
         value: _rememberMe,
         onChanged: (value) {
@@ -235,7 +237,7 @@ class _LoginPageState extends State<LoginPage> {
           });
         },
       ),
-      Padding(
+      const Padding(
         padding: EdgeInsets.only(right: 4.0), // Adjust this value to control the spacing
         child: Text('Remember me'),
       ),
@@ -246,15 +248,15 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _buildForgotPasswordLink() {
   return Padding(
-    padding: EdgeInsets.only(right: 35.0), // Adjust this value to control the left indentation
+    padding: const EdgeInsets.only(right: 35.0), // Adjust this value to control the left indentation
     child: GestureDetector(
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => ForgotPasswordPage()),
+          MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
         );
       },
-      child: Text(
+      child: const Text(
         'Forgot password?',
         style: TextStyle(
           color: Colors.blue,
@@ -279,7 +281,7 @@ class _LoginPageState extends State<LoginPage> {
         child: Center(
           child: Text(
             label,
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,
             ),
@@ -290,7 +292,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _buildOtherLoginMethods() {
-    return Row(
+    return const Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Icon(Icons.facebook, size: 40),
@@ -308,10 +310,10 @@ class _LoginPageState extends State<LoginPage> {
         // Navigate to the RegisterPage when the text is clicked
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => RegisterPage()),
+          MaterialPageRoute(builder: (context) => const RegisterPage()),
         );
       },
-      child: Text(
+      child: const Text(
         'Not a member? Create a new account.',
         style: TextStyle(
           color: Colors.blue,
@@ -323,7 +325,7 @@ class _LoginPageState extends State<LoginPage> {
 }
 
 void main() {
-  runApp(MaterialApp(
+  runApp(const MaterialApp(
     home: LoginPage(),
   ));
 }

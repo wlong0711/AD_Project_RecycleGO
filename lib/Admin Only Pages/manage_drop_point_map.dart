@@ -20,7 +20,7 @@ class _DropPointMapState extends State<DropPointMap> {
   LatLng _currentPosition = const LatLng(0.0, 0.0);
   String _dropPointTitle = '';
   String _operationHours = '';
-  List<String> _recycleItems = [];
+  final List<String> _recycleItems = [];
 
   final DatabaseReference = FirebaseDatabase.instance.ref();
 
@@ -35,7 +35,7 @@ class _DropPointMapState extends State<DropPointMap> {
     setState(() {
       tempPoint = point;
       tempMarker = Marker(
-        markerId: MarkerId("temp"),
+        markerId: const MarkerId("temp"),
         position: point,
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
       );
@@ -103,12 +103,12 @@ void _showDropPointDetails(Map<String, dynamic> pointData, String docId) {
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text(pointData['title'], style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(pointData['title'], style: const TextStyle(fontWeight: FontWeight.bold)),
         content: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text(
+              const Text(
                 'Operating Hours:',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
@@ -116,7 +116,7 @@ void _showDropPointDetails(Map<String, dynamic> pointData, String docId) {
                 padding: const EdgeInsets.only(bottom: 8.0),
                 child: Text(pointData['operationHours'] ?? 'Not available'),
               ),
-              Text(
+              const Text(
                 'Recyclable Items:',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
@@ -127,8 +127,8 @@ void _showDropPointDetails(Map<String, dynamic> pointData, String docId) {
                     padding: const EdgeInsets.only(top: 2.0, bottom: 2.0),
                     child: Row(
                       children: <Widget>[
-                        Icon(Icons.check, color: Colors.green),
-                        SizedBox(width: 8),
+                        const Icon(Icons.check, color: Colors.green),
+                        const SizedBox(width: 8),
                         Text(item.toString()),
                       ],
                     ),
@@ -258,7 +258,7 @@ void _modifyDropPointDetails(Map<String, dynamic> pointData, String docId) async
                         }
                       },
                     );
-                  }).toList(),
+                  }),
                 ],
               ),
             ),
@@ -357,7 +357,7 @@ void _loadDropPoints() {
         title: const Text('Enter Location Name'),
         content: TextField(
           controller: textFieldController,
-          decoration: InputDecoration(hintText: "Location name"),
+          decoration: const InputDecoration(hintText: "Location name"),
         ),
         actions: <Widget>[
           TextButton(
@@ -431,8 +431,8 @@ void _loadDropPoints() {
                       title: Text(item),
                       trailing: IconButton(
                         icon: _recycleItems.contains(item) 
-                          ? Icon(Icons.check_circle, color: Colors.blue) 
-                          : Icon(Icons.circle_outlined, color: Colors.grey),
+                          ? const Icon(Icons.check_circle, color: Colors.blue) 
+                          : const Icon(Icons.circle_outlined, color: Colors.grey),
                         onPressed: () {
                           setStateDialog(() {
                             if (_recycleItems.contains(item)) {
@@ -444,7 +444,7 @@ void _loadDropPoints() {
                         },
                       ),
                     );
-                  }).toList(),
+                  }),
                 ],
               ),
             ),
@@ -509,7 +509,7 @@ void _loadDropPoints() {
   });
 }
 
-List<String> _selectedFilters = [];
+final List<String> _selectedFilters = [];
 
 void _showFilterDialog() async {
   // Assuming you have a list of all recyclable items
@@ -521,7 +521,7 @@ void _showFilterDialog() async {
       return StatefulBuilder(
         builder: (BuildContext context, StateSetter setState) {
           return AlertDialog(
-            title: Text('Select Recyclable Items'),
+            title: const Text('Select Recyclable Items'),
             content: SingleChildScrollView(
               child: ListBody(
                 children: recyclableItems.map((item) {
@@ -543,7 +543,7 @@ void _showFilterDialog() async {
             ),
             actions: <Widget>[
               TextButton(
-                child: Text('Apply'),
+                child: const Text('Apply'),
                 onPressed: () {
                   Navigator.of(context).pop();
                   _updateFilterCriteria(_selectedFilters); // Update the filter criteria based on the selection
@@ -599,23 +599,23 @@ void _updateFilterCriteria(List<String> newCriteria) {
         child: Align(
           alignment: Alignment.topLeft,
           child: Padding(
-            padding: EdgeInsets.only(top: 120.0, left: 25.0), // Adjust these values as needed
+            padding: const EdgeInsets.only(top: 120.0, left: 25.0), // Adjust these values as needed
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               mainAxisSize: MainAxisSize.min, // Important for proper spacing
               children: [
                 FloatingActionButton(
                   onPressed: _showFilterDialog,
-                  child: Icon(Icons.filter_list),
                   tooltip: 'Filter Drop Points',
                   heroTag: 'filterBtn',
+                  child: const Icon(Icons.filter_list),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 FloatingActionButton(
                    onPressed: _onAddDropPointPressed,
-                  child: Icon(Icons.settings),
                   tooltip: 'Manage Drop Points',
                   heroTag: 'manageBtn',
+                  child: const Icon(Icons.settings),
                 ),
               ],
             ),

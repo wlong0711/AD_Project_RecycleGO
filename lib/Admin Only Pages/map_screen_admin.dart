@@ -5,7 +5,7 @@ import 'package:geolocator/geolocator.dart';
 import 'manage_drop_point_map.dart';
 
 class MapScreenAdmin extends StatefulWidget {
-  const MapScreenAdmin({Key? key, required this.title}) : super(key: key);
+  const MapScreenAdmin({super.key, required this.title});
 
   final String title;
 
@@ -15,9 +15,9 @@ class MapScreenAdmin extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreenAdmin> {
   GoogleMapController? mapController;
-  TextEditingController _searchController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
   LatLng _initialPosition = const LatLng(0.0, 0.0);
-  Set<Marker> _markers = {};
+  final Set<Marker> _markers = {};
 
   @override
   void initState() {
@@ -117,26 +117,26 @@ void _updateFilterCriteria(List<String> newCriteria) {
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text(pointData['title'], style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+        title: Text(pointData['title'], style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
         content: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text(
+              const Text(
                 'Address:',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.blue),
               ),
-              Text(pointData['address'] ?? 'Not available', style: TextStyle(fontSize: 14)),
-              SizedBox(height: 10),
-              Divider(),
-              Text(
+              Text(pointData['address'] ?? 'Not available', style: const TextStyle(fontSize: 14)),
+              const SizedBox(height: 10),
+              const Divider(),
+              const Text(
                 'Operating Hours:',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.blue),
               ),
-              Text(pointData['operationHours'] ?? 'Not available', style: TextStyle(fontSize: 14)),
-              SizedBox(height: 10),
-              Divider(),
-              Text(
+              Text(pointData['operationHours'] ?? 'Not available', style: const TextStyle(fontSize: 14)),
+              const SizedBox(height: 10),
+              const Divider(),
+              const Text(
                 'Recyclable Items:',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.blue),
               ),
@@ -145,7 +145,7 @@ void _updateFilterCriteria(List<String> newCriteria) {
                 children: (pointData['recycleItems'] as List<dynamic>).map((item) {
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 4.0),
-                    child: Text(item.toString(), style: TextStyle(fontSize: 14)),
+                    child: Text(item.toString(), style: const TextStyle(fontSize: 14)),
                   );
                 }).toList(),
               ),
@@ -199,7 +199,7 @@ void _updateFilterCriteria(List<String> newCriteria) {
 }
 
 
-List<String> _selectedFilters = [];
+final List<String> _selectedFilters = [];
 
 void _showFilterDialog() async {
   // Assuming you have a list of all recyclable items
@@ -211,7 +211,7 @@ void _showFilterDialog() async {
       return StatefulBuilder(
         builder: (BuildContext context, StateSetter setState) {
           return AlertDialog(
-            title: Text('Select Recyclable Items'),
+            title: const Text('Select Recyclable Items'),
             content: SingleChildScrollView(
               child: ListBody(
                 children: recyclableItems.map((item) {
@@ -233,7 +233,7 @@ void _showFilterDialog() async {
             ),
             actions: <Widget>[
               TextButton(
-                child: Text('Apply'),
+                child: const Text('Apply'),
                 onPressed: () {
                   Navigator.of(context).pop();
                   _updateFilterCriteria(_selectedFilters); // Update the filter criteria based on the selection
@@ -260,7 +260,7 @@ void _showFilterDialog() async {
           child: TextField(
             controller: _searchController,
             onSubmitted: (value) => _searchAndNavigate(),
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               icon: Icon(Icons.search, color: Colors.black),
               hintText: 'Enter location name',
               border: InputBorder.none,
@@ -295,23 +295,23 @@ void _showFilterDialog() async {
         child: Align(
           alignment: Alignment.topLeft,
           child: Padding(
-            padding: EdgeInsets.only(top: 120.0, left: 25.0), // Adjust these values as needed
+            padding: const EdgeInsets.only(top: 120.0, left: 25.0), // Adjust these values as needed
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               mainAxisSize: MainAxisSize.min, // Important for proper spacing
               children: [
                 FloatingActionButton(
                   onPressed: _showFilterDialog,
-                  child: Icon(Icons.filter_list),
                   tooltip: 'Filter Drop Points',
                   heroTag: 'filterBtn',
+                  child: const Icon(Icons.filter_list),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 FloatingActionButton(
                   onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const DropPointMap())),
-                  child: Icon(Icons.settings),
                   tooltip: 'Manage Drop Points',
                   heroTag: 'manageBtn',
+                  child: const Icon(Icons.settings),
                 ),
               ],
             ),
@@ -322,13 +322,13 @@ void _showFilterDialog() async {
   }
 
   Widget _buildActionButton({required IconData icon, required VoidCallback onPressed, required String tooltip}) {
-    return Container(
+    return SizedBox(
       height: 45.0, // Standard FAB size
       width: 45.0,  // Standard FAB size
       child: FloatingActionButton(
-        onPressed: onPressed,
-        child: Icon(icon, size: 24.0), // Adjust icon size if needed
+        onPressed: onPressed, // Adjust icon size if needed
         tooltip: tooltip,
+        child: Icon(icon, size: 24.0),
       ),
     );
   }

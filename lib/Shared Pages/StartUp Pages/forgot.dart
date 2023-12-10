@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'login.dart'; // Import the LoginPage
 
 class ForgotPasswordPage extends StatefulWidget {
+  const ForgotPasswordPage({super.key});
+
   @override
   _ForgotPasswordPageState createState() => _ForgotPasswordPageState();
 }
@@ -10,16 +12,16 @@ class ForgotPasswordPage extends StatefulWidget {
 class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   bool _isNewPasswordVisible = false;
   //bool _isConfirmPasswordVisible = false; 
-  TextEditingController _usernameController = TextEditingController();
-  TextEditingController _newPasswordController = TextEditingController();
-  TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _newPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text('Forgot Password'),
+        title: const Text('Forgot Password'),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -32,10 +34,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             height: 100, // Set the height according to your design
           ),
 
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
 
           // "Reset Account Password" text below the logo
-          Text(
+          const Text(
             'Reset Account Password',
             style: TextStyle(
               fontSize: 18,
@@ -43,7 +45,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             ),
           ),
 
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
 
           // Username Input Box
           _buildInputBox("Username", _usernameController, isPassword: false),
@@ -55,7 +57,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           _buildPasswordInputBox(
               _confirmPasswordController, 'Confirm Password'),
 
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
 
           // Save Changes Button (formerly Login Button)
           _buildButton(
@@ -70,7 +72,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     TextEditingController controller, {
     bool isPassword = false,
   }) {
-    return Container(
+    return SizedBox(
       width: 300,
       child: TextField(
         controller: controller,
@@ -81,7 +83,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         },
         decoration: InputDecoration(
           labelText: controller.text.isEmpty ? label : '',
-          border: OutlineInputBorder(),
+          border: const OutlineInputBorder(),
         ),
       ),
     );
@@ -91,7 +93,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     TextEditingController controller,
     String labelText,
   ) {
-    return Container(
+    return SizedBox(
       width: 300,
       child: TextField(
         controller: controller,
@@ -102,7 +104,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         },
         decoration: InputDecoration(
           labelText: controller.text.isEmpty ? labelText : '',
-          border: OutlineInputBorder(),
+          border: const OutlineInputBorder(),
           suffixIcon: GestureDetector(
             onTap: () {
               setState(() {
@@ -134,13 +136,13 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) => LoginPage(),
+                builder: (context) => const LoginPage(),
               ),
             );
           },
           child: Text(
             label,
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,
             ),
@@ -152,7 +154,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 }
 
 void main() {
-  runApp(MaterialApp(
+  runApp(const MaterialApp(
     home: ForgotPasswordPage(),
   ));
 }

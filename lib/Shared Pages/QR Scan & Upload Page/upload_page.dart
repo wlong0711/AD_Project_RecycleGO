@@ -11,7 +11,7 @@ class UploadPage extends StatefulWidget {
   final String locationName;
   final VoidCallback onUploadCompleted;
 
-  const UploadPage({Key? key, required this.locationName, required this.onUploadCompleted}) : super(key: key);
+  const UploadPage({super.key, required this.locationName, required this.onUploadCompleted});
 
   @override
   _UploadPageState createState() => _UploadPageState();
@@ -33,7 +33,7 @@ class _UploadPageState extends State<UploadPage> {
 
   Future<void> _uploadVideo() async {
     if (videoFile == null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text("Please select a video first."),
         backgroundColor: Colors.red,
       ));
@@ -63,7 +63,7 @@ class _UploadPageState extends State<UploadPage> {
       });
 
       // Notify user of success
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text("Upload successful!"),
         backgroundColor: Colors.green,
       ));
@@ -89,10 +89,10 @@ class _UploadPageState extends State<UploadPage> {
     context: context,
     barrierDismissible: false,
     builder: (BuildContext context) {
-      return AlertDialog(
+      return const AlertDialog(
         content: Column(
           mainAxisSize: MainAxisSize.min,
-          children: const <Widget>[
+          children: <Widget>[
             CircularProgressIndicator(),
             SizedBox(height: 20),
             Text("Upload Successful"),
@@ -115,7 +115,7 @@ class _UploadPageState extends State<UploadPage> {
   void _navigateToHomePage() {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => HomePage()),
+      MaterialPageRoute(builder: (context) => const HomePage()),
     );
   }
 
@@ -126,23 +126,23 @@ class _UploadPageState extends State<UploadPage> {
         title: Text('Upload Video for ${widget.locationName}'),
       ),
       body: _isUploading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               child: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     if (videoFile != null)
-                      Icon(Icons.video_library, size: 100),
-                    SizedBox(height: 20),
+                      const Icon(Icons.video_library, size: 100),
+                    const SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: _pickVideo,
                       child: Text(videoFile == null ? 'Select Video' : 'Reselect Video'),
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: _uploadVideo,
-                      child: Text('Submit Video'),
+                      child: const Text('Submit Video'),
                     ),
                   ],
                 ),

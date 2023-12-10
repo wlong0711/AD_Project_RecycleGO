@@ -23,16 +23,16 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Report Issue"),
+        title: const Text("Report Issue"),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: ListView(
             children: <Widget>[
               TextFormField(
-                decoration: InputDecoration(labelText: 'Title'),
+                decoration: const InputDecoration(labelText: 'Title'),
                 onSaved: (value) => _title = value,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -41,9 +41,9 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
                   return null;
                 },
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               TextFormField(
-                decoration: InputDecoration(labelText: 'Description'),
+                decoration: const InputDecoration(labelText: 'Description'),
                 onSaved: (value) => _description = value,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -55,7 +55,7 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
                 maxLines: null,
               ),
               TextFormField(
-                decoration: InputDecoration(labelText: 'Phone number'),
+                decoration: const InputDecoration(labelText: 'Phone number'),
                 onSaved: (value) => _phoneNumber = value,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -71,12 +71,12 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
                 },
                 keyboardType: TextInputType.phone,
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               _buildImageUploadSection(),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               ElevatedButton(
-                child: Text("Submit Report"),
                 onPressed: _submitReport,
+                child: const Text("Submit Report"),
               ),
             ],
           ),
@@ -86,7 +86,7 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
   }
 
 void _pickImage() async {
-  final ImagePicker _picker = ImagePicker();
+  final ImagePicker picker = ImagePicker();
   final XFile? pickedFile;
 
   // Show the option dialog
@@ -111,7 +111,7 @@ void _pickImage() async {
 
   // Check the choice and act accordingly
   if (choice != null) {
-    pickedFile = await _picker.pickImage(source: choice);
+    pickedFile = await picker.pickImage(source: choice);
 
     if (pickedFile != null) {
       setState(() {
@@ -154,7 +154,7 @@ Future<void> _submitReport() async {
       _showErrorDialog(e.toString());
 
       // Show an error message
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to submit report. Please try again later.')));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Failed to submit report. Please try again later.')));
     }
   }
 }
@@ -165,8 +165,8 @@ Future<void> _showSuccessDialog() async {
     barrierDismissible: false, // User must tap button to close
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text('Report Submitted'),
-        content: SingleChildScrollView(
+        title: const Text('Report Submitted'),
+        content: const SingleChildScrollView(
           child: ListBody(
             children: <Widget>[
               Text('Your report has been successfully submitted.'),
@@ -175,7 +175,7 @@ Future<void> _showSuccessDialog() async {
         ),
         actions: <Widget>[
           TextButton(
-            child: Text('Back To Homepage'),
+            child: const Text('Back To Homepage'),
             onPressed: () {
               Navigator.of(context).pop(); // Close the dialog
               Navigator.of(context).pop(); // Navigate back to the homepage
@@ -193,7 +193,7 @@ void _showErrorDialog(String message) {
     barrierDismissible: false, 
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text('Error'),
+        title: const Text('Error'),
         content: SingleChildScrollView(
           child: ListBody(
             children: <Widget>[
@@ -203,7 +203,7 @@ void _showErrorDialog(String message) {
         ),
         actions: <Widget>[
           TextButton(
-            child: Text('OK'),
+            child: const Text('OK'),
             onPressed: () {
               Navigator.of(context).pop(); // Close the dialog
             },
@@ -217,8 +217,8 @@ void _showErrorDialog(String message) {
 Widget _buildImageUploadSection() {
     return _image == null
         ? ElevatedButton(
-            child: Text("Upload Image"),
             onPressed: _pickImage,
+            child: const Text("Upload Image"),
           )
         : Column(
             children: [
@@ -228,15 +228,15 @@ Widget _buildImageUploadSection() {
                 children: [
                   ElevatedButton(
                     onPressed: _pickImage,
-                    child: Text("Re-upload Image"),
+                    child: const Text("Re-upload Image"),
                   ),
-                  SizedBox(width: 8),
+                  const SizedBox(width: 8),
                   ElevatedButton(
                     onPressed: _deleteImage,
-                    child: Text("Delete Image"),
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.red, // Background color
+                      backgroundColor: Colors.red, // Background color
                     ),
+                    child: const Text("Delete Image"),
                   ),
                 ],
               ),
