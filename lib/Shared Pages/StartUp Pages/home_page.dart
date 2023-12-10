@@ -57,7 +57,7 @@ class HomePage extends StatelessWidget {
           items: documents.map((doc) => Container(
             child: Center(
               child: Image.network(
-                doc['https://console.firebase.google.com/u/0/project/recyclego-64b10/storage/recyclego-64b10.appspot.com/files/~2FBanner'], // Assuming 'url' is the field name in Firestore
+                doc[''],
                 fit: BoxFit.cover,
                 width: 1000,
               ),
@@ -193,7 +193,7 @@ class HomePage extends StatelessWidget {
   //     ],
   //   );
   // }
-
+a
   // Widget _commonButtons(BuildContext context) {
   // return GridView.count(
   //   crossAxisCount: 1,
