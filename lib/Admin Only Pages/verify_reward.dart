@@ -223,18 +223,42 @@ class VideoPlayerItem extends StatefulWidget {
 
 class _VideoPlayerItemState extends State<VideoPlayerItem> {
   late VideoPlayerController _controller;
+  bool _isLoading = true;
+  String? _error;
 
   @override
   void initState() {
     super.initState();
     _controller = VideoPlayerController.network(widget.videoUrl)
       ..initialize().then((_) {
-        setState(() {});
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      }).catchError((error) {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+            _error = error.toString();
+          });
+        }
       });
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_error != null) {
+      return Center(child: Text('Error loading video: $_error'));
+    }
+
+    if (_isLoading) {
+      return Container(
+        height: 200,
+        child: Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return _controller.value.isInitialized
         ? AspectRatio(
             aspectRatio: _controller.value.aspectRatio,
@@ -242,7 +266,7 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
           )
         : Container(
             height: 200,
-            child: Center(child: CircularProgressIndicator()),
+            child: Center(child: Text('Video not available')),
           );
   }
 
@@ -252,3 +276,4 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
     super.dispose();
   }
 }
+
