@@ -19,54 +19,64 @@ class UploadPage extends StatefulWidget {
 
 class _UploadPageState extends State<UploadPage> {
   final ImagePicker _picker = ImagePicker();
-  List<XFile> images = [];
+  XFile? videoFile;
   bool _isUploading = false;
 
-  Future<void> _pickImage() async {
-    final XFile? selected = await _picker.pickImage(source: ImageSource.gallery);
-    if (selected != null && images.length < 2) {
+  Future<void> _pickVideo() async {
+    final XFile? selected = await _picker.pickVideo(source: ImageSource.gallery);
+    if (selected != null) {
       setState(() {
-        images.add(selected);
+        videoFile = selected;
       });
     }
   }
 
-  Future<void> _uploadImages() async {
+  Future<void> _uploadVideo() async {
+    if (videoFile == null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("Please select a video first."),
+        backgroundColor: Colors.red,
+      ));
+      return;
+    }
 
     setState(() {
       _isUploading = true; // Start uploading
     });
 
     try {
-      List<String> downloadUrls = [];
+      String fileName = 'videos/${DateTime.now().millisecondsSinceEpoch}_${videoFile!.name}';
+      firebase_storage.UploadTask uploadTask = 
+          firebase_storage.FirebaseStorage.instance.ref(fileName).putFile(File(videoFile!.path));
 
-      for (var img in images) {
-        String fileName = 'images/${DateTime.now().millisecondsSinceEpoch}_${img.path.split('/').last}';
-        firebase_storage.UploadTask uploadTask = 
-            firebase_storage.FirebaseStorage.instance.ref(fileName).putFile(File(img.path));
+      // Wait for the upload to complete
+      await uploadTask.whenComplete(() {});
+      String downloadUrl = await firebase_storage.FirebaseStorage.instance
+          .ref(fileName)
+          .getDownloadURL();
 
-        // Wait for the upload to complete
-        await uploadTask.whenComplete(() {});
-        String downloadUrl = await firebase_storage.FirebaseStorage.instance
-            .ref(fileName)
-            .getDownloadURL();
-        downloadUrls.add(downloadUrl);
-      }
-
-      // Save the user name, location name and image URLs in Firestore
-      FirebaseFirestore.instance.collection('uploads').add({
+      // Save the user name, location name and video URL in Firestore
+      await FirebaseFirestore.instance.collection('uploads').add({
         'username' : GlobalUser.userName,
         'location': widget.locationName,
-        'images': downloadUrls,
+        'videoUrl': downloadUrl,
       });
 
       // Notify user of success
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Upload successful!")));
-      _showSuccessDialog(); // Show the success message and navigate
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("Upload successful!"),
+        backgroundColor: Colors.green,
+      ));
+
+      widget.onUploadCompleted(); // Trigger the onUploadCompleted callback
+      _navigateToHomePage(); // Navigate to home page
     } catch (e) {
       // Handle errors
-      print('Error during upload: $e');
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Upload error: $e")));
+      print('Error during video upload: $e');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("Upload error: $e"),
+        backgroundColor: Colors.red,
+      ));
     } finally {
       setState(() {
         _isUploading = false; // Stop uploading
@@ -74,65 +84,55 @@ class _UploadPageState extends State<UploadPage> {
     }
   }
 
-  Future<void> _reselectImage(int index) async {
-    final XFile? selected = await _picker.pickImage(source: ImageSource.gallery);
-
-    if (selected != null) {
-      setState(() {
-        images[index] = selected; // Replace the image at the specified index
-      });
-    }
-  }
-
   void _showSuccessDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return const AlertDialog(
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              CircularProgressIndicator(),
-              SizedBox(height: 20),
-              Text("Upload Successful"),
-              Text("Redirecting... Please wait"),
-            ],
-          ),
-        );
-      },
-    );
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: const <Widget>[
+            CircularProgressIndicator(),
+            SizedBox(height: 20),
+            Text("Upload Successful"),
+            Text("Redirecting... Please wait"),
+          ],
+        ),
+      );
+    },
+  );
 
-    // Assuming you want to show the dialog for 2 seconds
-    Future.delayed(const Duration(seconds: 2), () {
-      widget.onUploadCompleted(); // Call the callback to set the flag
-      Navigator.of(context).pop(); // Close the dialog
-      _navigateToHomePage(); // Navigate to home page
-    });
-  }
+  // Assuming you want to show the dialog for 2 seconds
+  Future.delayed(const Duration(seconds: 2), () {
+    widget.onUploadCompleted(); // Call the callback to set the flag
+    Navigator.of(context).pop(); // Close the dialog
+    _navigateToHomePage(); // Navigate to home page
+  });
+}
+
 
   void _navigateToHomePage() {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const HomePage()), // Replace with your HomePage widget
+      MaterialPageRoute(builder: (context) => HomePage()), // Replace with your HomePage widget
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Upload Picture for ${widget.locationName}'),
+        title: Text('Upload Video for ${widget.locationName}'),
       ),
       body : _isUploading 
-                ? const Center(child: CircularProgressIndicator()) // Show loading indicator
+                ? Center(child: CircularProgressIndicator()) // Show loading indicator
            : SingleChildScrollView(
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              const Text('Image before throw:'),
+              Text('Image before throw:'),
               if (images.isNotEmpty)
                 Column(
                   children: [
@@ -152,7 +152,7 @@ class _UploadPageState extends State<UploadPage> {
                   child: const Text('Select Image'),
                 ),
 
-              const Text('Image after throw:'),
+              Text('Image after throw:'),
               if (images.length > 1)
                 Column(
                   children: [
@@ -161,26 +161,13 @@ class _UploadPageState extends State<UploadPage> {
                       child: Image.file(File(images[1].path), fit: BoxFit.cover),
                     ),
                     ElevatedButton(
-                      onPressed: () => _reselectImage(1),
-                      child: const Text('Reselect Image'),
+                      onPressed: _uploadVideo,
+                      child: Text('Submit Video'),
                     ),
                   ],
-                )
-              else if (images.length == 1)
-                ElevatedButton(
-                  onPressed: () => _pickImage(),
-                  child: const Text('Select Image'),
                 ),
-
-              if (images.length == 2)
-                ElevatedButton(
-                  onPressed: _uploadImages,
-                  child: const Text('Submit Images'),
-                ),
-            ],
-          ),
-        ),
-      ),
+              ),
+            ),
     );
   }
 }
