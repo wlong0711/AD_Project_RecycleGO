@@ -21,13 +21,14 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         centerTitle: true,
         title: Text('Forgot Password'),
       ),
-      body: Column(
+      body: Center(
+        child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           // Company Logo at the top center
           Image.network(
-            'https://example.com/your-company-logo-url.png',
+            'https://firebasestorage.googleapis.com/v0/b/recyclego-64b10.appspot.com/o/Company%20Logo%2FLogoWithSlogan.png?alt=media&token=5b939cb4-b9d8-42b5-adcb-8de58ee095e0',
             width: 100, // Set the width according to your design
             height: 100, // Set the height according to your design
           ),
@@ -62,6 +63,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               "Save Changes", Colors.blue), // Change the color if needed
         ],
       ),
+     )
     );
   }
 
