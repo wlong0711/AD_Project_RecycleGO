@@ -5,9 +5,12 @@ import 'package:recycle_go/Shared%20Pages/StartUp%20Pages/home_page.dart';
 import 'package:recycle_go/models/global_user.dart';
 import 'forgot.dart';
 import 'register.dart'; // Import the RegisterPage
+import 'package:shared_preferences/shared_preferences.dart';
+import 'remember_me.dart'; // Import the RememberMeWidget
+
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  const LoginPage({Key? key}) : super(key: key);
 
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -17,8 +20,31 @@ class _LoginPageState extends State<LoginPage> {
   bool _isPasswordVisible = false;
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool _rememberMe = false; // Add this variable to store the state
+
+  @override
+  void initState() {
+    super.initState();
+    // Load saved authentication state
+    _loadAuthenticationState();
+  }
+
+  void _loadAuthenticationState() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _usernameController.text = prefs.getString('username') ?? '';
+      _rememberMe = prefs.getBool('rememberMe') ?? false;
+      if (_rememberMe) {
+        _passwordController.text = prefs.getString('password') ?? '';
+      }
+    });
+  }
 
   void _login() async {
+    // Clear saved authentication state when Remember Me is unchecked
+  if (!_rememberMe) {
+    _clearAuthenticationState();
+  }
     if (_usernameController.text.isEmpty || _passwordController.text.isEmpty) {
       // Show a snackbar for empty fields
       _showErrorSnackBar('Please enter both email and password.');
@@ -46,6 +72,11 @@ class _LoginPageState extends State<LoginPage> {
           GlobalUser.userName = userDocument['username'];
           GlobalUser.userLevel = userDocument['level'];
           GlobalUser.userPoints = userDocument['points'];
+
+        // Save authentication state if "Remember Me" is checked
+        if (_rememberMe) {
+          _saveAuthenticationState();
+        }
 
           // Navigate to HomePage
           Navigator.pushReplacement(
@@ -83,6 +114,21 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  void _clearAuthenticationState() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  prefs.remove('username');
+  prefs.remove('password');
+  }
+
+  void _saveAuthenticationState() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('username', _usernameController.text);
+    prefs.setBool('rememberMe', _rememberMe);
+    if (_rememberMe) {
+      prefs.setString('password', _passwordController.text);
+    }
+  }
+
   void _showErrorSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -113,34 +159,92 @@ class _LoginPageState extends State<LoginPage> {
           const SizedBox(height: 20),
 
           // Username Input Box
-          _buildInputBox("Email", _usernameController, isPassword: false),
+          SizedBox(
+            width: 330,
+            child: TextField(
+              controller: _usernameController,
+              obscureText: _isPasswordVisible,
+              onChanged: (value) {
+                // Handle the input change and update the state as needed
+                setState(() {});
+              },
+              decoration: InputDecoration(
+                labelText: _usernameController.text.isEmpty ? 'Email' : '',
+                border: const OutlineInputBorder(),
+              ),
+            ),
+          ),
 
           // Password Input Box
-          _buildPasswordInputBox(),
+          SizedBox(
+            width: 330,
+            child: TextField(
+              controller: _passwordController,
+              obscureText: !_isPasswordVisible,
+              onChanged: (value) {
+                // Handle the input change and update the state as needed
+                setState(() {});
+              },
+              decoration: InputDecoration(
+                labelText: _passwordController.text.isEmpty ? 'Password' : '',
+                border: const OutlineInputBorder(),
+                suffixIcon: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _isPasswordVisible = !_isPasswordVisible;
+                    });
+                  },
+                  child: Icon(
+                    _isPasswordVisible
+                        ? Icons.visibility
+                        : Icons.visibility_off,
+                  ),
+                ),
+              ),
+            ),
+          ),
 
           const SizedBox(height: 10),
 
-          // Remember Me Checkbox and Forgot Password Link
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              // Remember Me Checkbox
-              _buildRememberMe(),
-
-              // Forgot Password Link
-              _buildForgotPasswordLink(),
-            ],
+          // Remember Me Widget
+          RememberMeWidget(
+            usernameController: _usernameController,
+            passwordController: _passwordController,
+            onRememberMeChanged: (value) {
+              setState(() {
+                _rememberMe = value;
+              });
+            },
           ),
 
           const SizedBox(height: 10),
 
           // Login Button
-          _buildButton("Login", Colors.blue, _login),
+          Container(
+            width: 200,
+            height: 50,
+            decoration: BoxDecoration(
+              color: Colors.blue,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: TextButton(
+              onPressed: _login,
+              child: Center(
+                child: Text(
+                  'Login',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ),
 
           const SizedBox(height: 20),
 
           // Horizontal Bar and "or" text
-          const Row(
+          Row(
             children: [
               Expanded(
                 child: Divider(
@@ -222,9 +326,7 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
-
-  bool _rememberMe = false; // Add this variable to store the state
-
+  
   Widget _buildRememberMe() {
   return Row(
     children: [
