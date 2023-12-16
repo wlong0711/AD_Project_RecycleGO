@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:recycle_go/Admin%20Only%20Pages/view_report_issues.dart';
@@ -17,6 +18,7 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home Page'),
+        backgroundColor: Colors.green, // Eco-friendly green color
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -28,6 +30,7 @@ class HomePage extends StatelessWidget {
           ],
         ),
       ),
+      backgroundColor: Colors.lightGreen[50], // Light green background
     );
   }
 
@@ -65,70 +68,61 @@ class HomePage extends StatelessWidget {
   }
 
   Widget _buildGridMenu(BuildContext context) {
-    return GridView.count(
-      crossAxisCount: 2,
-      shrinkWrap: true, 
-      physics: NeverScrollableScrollPhysics(),
-      children: <Widget>[
-        // Common User Actions
-        _buildMenuButton(context, Icons.map, 'Map', () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const MapScreenUser(title: 'User View Map')),
-          );
-        }),
-        _buildMenuButton(context, Icons.qr_code_scanner, 'Scan QR', () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const QRScanScreen(title: 'Scan QR')),
-          );
-        }),
-        _buildMenuButton(context, Icons.report_problem, 'Report Issue', () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const ReportIssueScreen(title: 'Report an Issue')),
-          );
-        }),
-        
-        // Admin-Only Actions
-        if (GlobalUser.userLevel == 1) _buildMenuButton(context, Icons.admin_panel_settings, 'Map for Admin', () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const MapScreenAdmin(title: 'Admin View Map')),
-          );
-        }),
-        if (GlobalUser.userLevel == 1) _buildMenuButton(context, Icons.verified_user, 'Verify for Rewards', () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const VerifyRewardPage()),
-          );
-        }),
-        if (GlobalUser.userLevel == 1) _buildMenuButton(context, Icons.view_list, 'View Reports', () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => AdminReportsPage()),
-          );
-        }),
-      ],
-    );
+  List<Widget> gridItems = [
+    // Common User Actions
+    _buildMenuButton(context, Icons.map, 'Map', MapScreenUser(title: 'User View Map')),
+    _buildMenuButton(context, Icons.qr_code_scanner, 'Scan QR', QRScanScreen(title: 'Scan QR')),
+    _buildMenuButton(context, Icons.report_problem, 'Report Issue', ReportIssueScreen(title: 'Report an Issue')),
+  ];
+
+  // Admin-Only Actions
+  if (GlobalUser.userLevel == 1) {
+    gridItems.addAll([
+      _buildMenuButton(context, Icons.admin_panel_settings, 'Map for Admin', MapScreenAdmin(title: 'Admin View Map')),
+      _buildMenuButton(context, Icons.verified_user, 'Verify for Rewards', VerifyRewardPage()),
+      _buildMenuButton(context, Icons.view_list, 'View Reports', AdminReportsPage()),
+    ]);
   }
 
-  Widget _buildMenuButton(BuildContext context, IconData icon, String label, VoidCallback onPressed) {
+  return GridView.count(
+    crossAxisCount: 2,
+    shrinkWrap: true,
+    physics: NeverScrollableScrollPhysics(),
+    children: gridItems,
+  );
+}
+
+    
+  Widget _buildMenuButton(BuildContext context, IconData icon, String label, Widget page) {
     return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      elevation: 5,
+      margin: EdgeInsets.all(8),
       child: InkWell(
-        onTap: onPressed,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 50.0),
-            Text(label, style: TextStyle(fontSize: 16.0))
-          ],
+        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => page)),
+        borderRadius: BorderRadius.circular(15),
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.greenAccent, Colors.green],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 50.0, color: Colors.white),
+              Text(label, style: TextStyle(fontSize: 16.0, color: Colors.white))
+            ],
+          ),
         ),
       ),
     );
   }
-
+  
   // Widget _buildNewsFeed() {
   //   // Fetch news articles or posts from a database or API
   //   // Display them here as a list or cards
