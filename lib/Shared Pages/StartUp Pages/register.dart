@@ -5,6 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'login.dart'; // Import the LoginPage
 
 class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
+
   @override
   _RegisterPageState createState() => _RegisterPageState();
 }
@@ -12,10 +14,10 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
-  TextEditingController _usernameController = TextEditingController();
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
-  TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
   Future<void> _register() async {
     try {
       // Create a new user with email and password
@@ -40,7 +42,7 @@ class _RegisterPageState extends State<RegisterPage> {
       // (you can replace this with your own logic)
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => LoginPage()),
+        MaterialPageRoute(builder: (context) => const LoginPage()),
       );
     } catch (e) {
       print("Error during registration: $e");
@@ -54,10 +56,10 @@ class _RegisterPageState extends State<RegisterPage> {
         // Navigate to the LoginPage when the text is clicked
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => LoginPage()),
+          MaterialPageRoute(builder: (context) => const LoginPage()),
         );
       },
-      child: Text(
+      child: const Text(
         'Already a member? Login.',
         style: TextStyle(
           color: Colors.blue,
@@ -72,7 +74,7 @@ class _RegisterPageState extends State<RegisterPage> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text('Register'),
+        title: const Text('Register'),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -85,7 +87,7 @@ class _RegisterPageState extends State<RegisterPage> {
             height: 100, // Set the height according to your design
           ),
 
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
 
           // Email Input Box (swapped with Username)
           _buildInputBox("Email", _emailController, isPassword: false),
@@ -99,15 +101,15 @@ class _RegisterPageState extends State<RegisterPage> {
           // Confirm Password Input Box
           _buildConfirmPasswordInputBox(),
 
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
 
           // Register Button (formerly Login Button)
           _buildButton("Register", Colors.green), // Change the color if needed
 
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
 
           // Horizontal Bar and "or" text
-          Row(
+          const Row(
             children: [
               Expanded(
                 child: Divider(
@@ -115,7 +117,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
+                padding: EdgeInsets.symmetric(horizontal: 8),
                 child: Text('or'),
               ),
               Expanded(
@@ -126,12 +128,12 @@ class _RegisterPageState extends State<RegisterPage> {
             ],
           ),
 
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
 
           // Other Login Methods
           _buildOtherLoginMethods(),
 
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
 
           // "Already a member? Login." Text
           _buildLoginText(context),
@@ -145,7 +147,7 @@ class _RegisterPageState extends State<RegisterPage> {
     TextEditingController controller, {
     bool isPassword = false,
   }) {
-    return Container(
+    return SizedBox(
       width: 300,
       child: TextField(
         controller: controller,
@@ -156,14 +158,14 @@ class _RegisterPageState extends State<RegisterPage> {
         },
         decoration: InputDecoration(
           labelText: controller.text.isEmpty ? label : '',
-          border: OutlineInputBorder(),
+          border: const OutlineInputBorder(),
         ),
       ),
     );
   }
 
   Widget _buildPasswordInputBox() {
-    return Container(
+    return SizedBox(
       width: 300,
       child: TextField(
         controller: _passwordController,
@@ -174,7 +176,7 @@ class _RegisterPageState extends State<RegisterPage> {
         },
         decoration: InputDecoration(
           labelText: _passwordController.text.isEmpty ? 'Password' : '',
-          border: OutlineInputBorder(),
+          border: const OutlineInputBorder(),
           suffixIcon: GestureDetector(
             onTap: () {
               setState(() {
@@ -191,7 +193,7 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Widget _buildConfirmPasswordInputBox() {
-    return Container(
+    return SizedBox(
       width: 300,
       child: TextField(
         controller: _confirmPasswordController,
@@ -203,7 +205,7 @@ class _RegisterPageState extends State<RegisterPage> {
         decoration: InputDecoration(
           labelText:
               _confirmPasswordController.text.isEmpty ? 'Confirm Password' : '',
-          border: OutlineInputBorder(),
+          border: const OutlineInputBorder(),
           suffixIcon: GestureDetector(
             onTap: () {
               setState(() {
@@ -234,7 +236,7 @@ class _RegisterPageState extends State<RegisterPage> {
         child: Center(
           child: Text(
             label,
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,
             ),
@@ -245,7 +247,7 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Widget _buildOtherLoginMethods() {
-    return Row(
+    return const Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Icon(Icons.facebook, size: 40),
@@ -259,7 +261,7 @@ class _RegisterPageState extends State<RegisterPage> {
 }
 
 void main() {
-  runApp(MaterialApp(
+  runApp(const MaterialApp(
     home: RegisterPage(),
   ));
 }

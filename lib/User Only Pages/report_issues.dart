@@ -75,8 +75,8 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
               _buildImageUploadSection(),
               const SizedBox(height: 16),
               ElevatedButton(
-                child: const Text("Submit Report"),
                 onPressed: _submitReport,
+                child: const Text("Submit Report"),
               ),
             ],
           ),
@@ -86,7 +86,7 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
   }
 
 void _pickImage() async {
-  final ImagePicker _picker = ImagePicker();
+  final ImagePicker picker = ImagePicker();
   final XFile? pickedFile;
 
   // Show the option dialog
@@ -111,7 +111,7 @@ void _pickImage() async {
 
   // Check the choice and act accordingly
   if (choice != null) {
-    pickedFile = await _picker.pickImage(source: choice);
+    pickedFile = await picker.pickImage(source: choice);
 
     if (pickedFile != null) {
       setState(() {
@@ -217,8 +217,8 @@ void _showErrorDialog(String message) {
 Widget _buildImageUploadSection() {
     return _image == null
         ? ElevatedButton(
-            child: const Text("Upload Image"),
             onPressed: _pickImage,
+            child: const Text("Upload Image"),
           )
         : Column(
             children: [
@@ -233,10 +233,10 @@ Widget _buildImageUploadSection() {
                   const SizedBox(width: 8),
                   ElevatedButton(
                     onPressed: _deleteImage,
-                    child: const Text("Delete Image"),
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.red, // Background color
+                      backgroundColor: Colors.red, // Background color
                     ),
+                    child: const Text("Delete Image"),
                   ),
                 ],
               ),

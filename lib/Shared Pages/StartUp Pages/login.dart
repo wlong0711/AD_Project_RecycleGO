@@ -5,18 +5,46 @@ import 'package:recycle_go/Shared%20Pages/StartUp%20Pages/home_page.dart';
 import 'package:recycle_go/models/global_user.dart';
 import 'forgot.dart';
 import 'register.dart'; // Import the RegisterPage
+import 'package:shared_preferences/shared_preferences.dart';
+import 'remember_me.dart'; // Import the RememberMeWidget
+
 
 class LoginPage extends StatefulWidget {
+  const LoginPage({Key? key}) : super(key: key);
+
   @override
   _LoginPageState createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
   bool _isPasswordVisible = false;
-  TextEditingController _usernameController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  bool _rememberMe = false; // Add this variable to store the state
+
+  @override
+  void initState() {
+    super.initState();
+    // Load saved authentication state
+    _loadAuthenticationState();
+  }
+
+  void _loadAuthenticationState() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _usernameController.text = prefs.getString('username') ?? '';
+      _rememberMe = prefs.getBool('rememberMe') ?? false;
+      if (_rememberMe) {
+        _passwordController.text = prefs.getString('password') ?? '';
+      }
+    });
+  }
 
   void _login() async {
+    // Clear saved authentication state when Remember Me is unchecked
+  if (!_rememberMe) {
+    _clearAuthenticationState();
+  }
     if (_usernameController.text.isEmpty || _passwordController.text.isEmpty) {
       // Show a snackbar for empty fields
       _showErrorSnackBar('Please enter both email and password.');
@@ -45,10 +73,15 @@ class _LoginPageState extends State<LoginPage> {
           GlobalUser.userLevel = userDocument['level'];
           GlobalUser.userPoints = userDocument['points'];
 
+        // Save authentication state if "Remember Me" is checked
+        if (_rememberMe) {
+          _saveAuthenticationState();
+        }
+
           // Navigate to HomePage
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => HomePage()),
+            MaterialPageRoute(builder: (context) => const HomePage()),
           );
         } else {
           _showErrorSnackBar('User data not found in database.');
@@ -81,6 +114,21 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  void _clearAuthenticationState() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  prefs.remove('username');
+  prefs.remove('password');
+  }
+
+  void _saveAuthenticationState() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('username', _usernameController.text);
+    prefs.setBool('rememberMe', _rememberMe);
+    if (_rememberMe) {
+      prefs.setString('password', _passwordController.text);
+    }
+  }
+
   void _showErrorSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -95,7 +143,7 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text('Login'),
+        title: const Text('Login'),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -108,34 +156,96 @@ class _LoginPageState extends State<LoginPage> {
             height: 100, // Set the height according to your design
           ),
 
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
 
           // Username Input Box
-          _buildInputBox("Email", _usernameController, isPassword: false),
+          SizedBox(
+            width: 330,
+            child: TextField(
+              controller: _usernameController,
+              obscureText: _isPasswordVisible,
+              onChanged: (value) {
+                // Handle the input change and update the state as needed
+                setState(() {});
+              },
+              decoration: InputDecoration(
+                labelText: _usernameController.text.isEmpty ? 'Email' : '',
+                border: const OutlineInputBorder(),
+              ),
+            ),
+          ),
 
           // Password Input Box
-          _buildPasswordInputBox(),
+          SizedBox(
+            width: 330,
+            child: TextField(
+              controller: _passwordController,
+              obscureText: !_isPasswordVisible,
+              onChanged: (value) {
+                // Handle the input change and update the state as needed
+                setState(() {});
+              },
+              decoration: InputDecoration(
+                labelText: _passwordController.text.isEmpty ? 'Password' : '',
+                border: const OutlineInputBorder(),
+                suffixIcon: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _isPasswordVisible = !_isPasswordVisible;
+                    });
+                  },
+                  child: Icon(
+                    _isPasswordVisible
+                        ? Icons.visibility
+                        : Icons.visibility_off,
+                  ),
+                ),
+              ),
+            ),
+          ),
 
-          SizedBox(height: 10),
-
-          // Remember Me Checkbox and Forgot Password Link
+          const SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // Remember Me Checkbox
-              _buildRememberMe(),
-
-              // Forgot Password Link
+              RememberMeWidget(
+                usernameController: _usernameController,
+                passwordController: _passwordController,
+                onRememberMeChanged: (value) {
+                  setState(() {
+                    _rememberMe = value;
+                  });
+                },
+              ),
               _buildForgotPasswordLink(),
             ],
           ),
 
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
 
           // Login Button
-          _buildButton("Login", Colors.blue, _login),
+          Container(
+            width: 200,
+            height: 50,
+            decoration: BoxDecoration(
+              color: Colors.blue,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: TextButton(
+              onPressed: _login,
+              child: Center(
+                child: Text(
+                  'Login',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ),
 
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
 
           // Horizontal Bar and "or" text
           Row(
@@ -146,7 +256,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
+                padding: EdgeInsets.symmetric(horizontal: 8),
                 child: Text('or'),
               ),
               Expanded(
@@ -157,12 +267,11 @@ class _LoginPageState extends State<LoginPage> {
             ],
           ),
 
-          SizedBox(height: 10),
-
+          const SizedBox(height: 10),
           // Other Login Methods
           _buildOtherLoginMethods(),
 
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
 
           // "Not a member, create a new account" Text
           _buildCreateAccountText(),
@@ -176,7 +285,7 @@ class _LoginPageState extends State<LoginPage> {
     TextEditingController controller, {
     bool isPassword = false,
   }) {
-    return Container(
+    return SizedBox(
       width: 330,
       child: TextField(
         controller: controller,
@@ -187,14 +296,14 @@ class _LoginPageState extends State<LoginPage> {
         },
         decoration: InputDecoration(
           labelText: controller.text.isEmpty ? label : '',
-          border: OutlineInputBorder(),
+          border: const OutlineInputBorder(),
         ),
       ),
     );
   }
 
   Widget _buildPasswordInputBox() {
-    return Container(
+    return SizedBox(
       width: 330,
       child: TextField(
         controller: _passwordController,
@@ -205,7 +314,7 @@ class _LoginPageState extends State<LoginPage> {
         },
         decoration: InputDecoration(
           labelText: _passwordController.text.isEmpty ? 'Password' : '',
-          border: OutlineInputBorder(),
+          border: const OutlineInputBorder(),
           suffixIcon: GestureDetector(
             onTap: () {
               setState(() {
@@ -220,13 +329,11 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
-
-  bool _rememberMe = false; // Add this variable to store the state
-
+  
   Widget _buildRememberMe() {
   return Row(
     children: [
-      SizedBox(width: 22.0),
+      const SizedBox(width: 22.0),
       Checkbox(
         value: _rememberMe,
         onChanged: (value) {
@@ -235,7 +342,7 @@ class _LoginPageState extends State<LoginPage> {
           });
         },
       ),
-      Padding(
+      const Padding(
         padding: EdgeInsets.only(right: 4.0), // Adjust this value to control the spacing
         child: Text('Remember me'),
       ),
@@ -246,15 +353,15 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _buildForgotPasswordLink() {
   return Padding(
-    padding: EdgeInsets.only(right: 35.0), // Adjust this value to control the left indentation
+    padding: const EdgeInsets.only(right: 35.0), // Adjust this value to control the left indentation
     child: GestureDetector(
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => ForgotPasswordPage()),
+          MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
         );
       },
-      child: Text(
+      child: const Text(
         'Forgot password?',
         style: TextStyle(
           color: Colors.blue,
@@ -279,7 +386,7 @@ class _LoginPageState extends State<LoginPage> {
         child: Center(
           child: Text(
             label,
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,
             ),
@@ -290,7 +397,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _buildOtherLoginMethods() {
-    return Row(
+    return const Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Icon(Icons.facebook, size: 40),
@@ -308,10 +415,10 @@ class _LoginPageState extends State<LoginPage> {
         // Navigate to the RegisterPage when the text is clicked
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => RegisterPage()),
+          MaterialPageRoute(builder: (context) => const RegisterPage()),
         );
       },
-      child: Text(
+      child: const Text(
         'Not a member? Create a new account.',
         style: TextStyle(
           color: Colors.blue,
@@ -323,7 +430,7 @@ class _LoginPageState extends State<LoginPage> {
 }
 
 void main() {
-  runApp(MaterialApp(
+  runApp(const MaterialApp(
     home: LoginPage(),
   ));
 }
