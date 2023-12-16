@@ -215,7 +215,7 @@ void _rejectUpload(Upload upload) async {
 class VideoPlayerItem extends StatefulWidget {
   final String videoUrl;
 
-  const VideoPlayerItem({Key? key, required this.videoUrl}) : super(key: key);
+  const VideoPlayerItem({super.key, required this.videoUrl});
 
   @override
   _VideoPlayerItemState createState() => _VideoPlayerItemState();
@@ -255,7 +255,7 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
               ],
             ),
           )
-        : Container(
+        : const SizedBox(
             height: 200,
             child: Center(child: CircularProgressIndicator()),
           );

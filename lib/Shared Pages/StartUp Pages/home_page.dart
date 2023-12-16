@@ -69,26 +69,26 @@ class HomePage extends StatelessWidget {
   Widget _buildGridMenu(BuildContext context) {
   List<Widget> gridItems = [
     // Common User Actions
-    _buildMenuButton(context, Icons.map, 'Map', MapScreenUser(title: 'User View Map')),
-    _buildMenuButton(context, Icons.qr_code_scanner, 'Scan QR', QRScanScreen(title: 'Scan QR')),
-    _buildMenuButton(context, Icons.report_problem, 'Report Issue', ReportIssueScreen(title: 'Report an Issue')),
-    _buildMenuButton(context, Icons.discount, 'View Reward', ViewRewardPage()),
+    _buildMenuButton(context, Icons.map, 'Map', const MapScreenUser(title: 'User View Map')),
+    _buildMenuButton(context, Icons.qr_code_scanner, 'Scan QR', const QRScanScreen(title: 'Scan QR')),
+    _buildMenuButton(context, Icons.report_problem, 'Report Issue', const ReportIssueScreen(title: 'Report an Issue')),
+    _buildMenuButton(context, Icons.discount, 'View Reward', const ViewRewardPage()),
 
   ];
 
   // Admin-Only Actions
   if (GlobalUser.userLevel == 1) {
     gridItems.addAll([
-      _buildMenuButton(context, Icons.admin_panel_settings, 'Map for Admin', MapScreenAdmin(title: 'Admin View Map')),
-      _buildMenuButton(context, Icons.verified_user, 'Verify for Rewards', VerifyRewardPage()),
-      _buildMenuButton(context, Icons.view_list, 'View Reports', AdminReportsPage()),
+      _buildMenuButton(context, Icons.admin_panel_settings, 'Map for Admin', const MapScreenAdmin(title: 'Admin View Map')),
+      _buildMenuButton(context, Icons.verified_user, 'Verify for Rewards', const VerifyRewardPage()),
+      _buildMenuButton(context, Icons.view_list, 'View Reports', const AdminReportsPage()),
     ]);
   }
 
   return GridView.count(
     crossAxisCount: 2,
     shrinkWrap: true,
-    physics: NeverScrollableScrollPhysics(),
+    physics: const NeverScrollableScrollPhysics(),
     children: gridItems,
   );
 }
@@ -98,13 +98,13 @@ class HomePage extends StatelessWidget {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       elevation: 5,
-      margin: EdgeInsets.all(8),
+      margin: const EdgeInsets.all(8),
       child: InkWell(
         onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => page)),
         borderRadius: BorderRadius.circular(15),
         child: Container(
           decoration: BoxDecoration(
-            gradient: LinearGradient(
+            gradient: const LinearGradient(
               colors: [Colors.greenAccent, Colors.green],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -116,7 +116,7 @@ class HomePage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(icon, size: 50.0, color: Colors.white),
-              Text(label, style: TextStyle(fontSize: 16.0, color: Colors.white))
+              Text(label, style: const TextStyle(fontSize: 16.0, color: Colors.white))
             ],
           ),
         ),
