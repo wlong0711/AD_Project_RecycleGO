@@ -609,31 +609,22 @@ void _updateFilterCriteria(List<String> newCriteria) {
           alignment: Alignment.topLeft,
           child: Padding(
             padding: const EdgeInsets.only(top: 120.0, left: 25.0), // Adjust these values as needed
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.greenAccent, Colors.green],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min, // Important for proper spacing
+              children: [
+                _buildGradientFAB(
+                  onPressed: _showFilterDialog,
+                  tooltip: 'Filter Drop Points',
+                  icon: Icons.filter_list,
                 ),
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.greenAccent.withOpacity(0.5),
-                    spreadRadius: 2,
-                    blurRadius: 10,
-                    offset: Offset(0, 3),
-                  ),
-                ],
-              ),
-              child: FloatingActionButton(
-                onPressed: _showFilterDialog,
-                tooltip: 'Filter Drop Points',
-                heroTag: 'filterBtn',
-                child: const Icon(Icons.filter_list),
-                backgroundColor: Colors.transparent, // Makes FAB transparent to reveal gradient container
-                elevation: 0, // Removes shadow
-              ),
+                const SizedBox(height: 10),
+                _buildGradientFAB(
+                  onPressed: _onAddDropPointPressed,
+                  tooltip: 'Manage Drop Points',
+                  icon: Icons.add_location_alt_rounded,
+                ),
+              ],
             ),
           ),
         ),
@@ -641,3 +632,32 @@ void _updateFilterCriteria(List<String> newCriteria) {
     );
   }
 }
+
+Widget _buildGradientFAB({required VoidCallback onPressed, required String tooltip, required IconData icon}) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Colors.greenAccent, Colors.green],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.greenAccent.withOpacity(0.5),
+            spreadRadius: 2,
+            blurRadius: 10,
+            offset: Offset(0, 3),
+          ),
+        ],
+      ),
+      child: FloatingActionButton(
+        onPressed: onPressed,
+        tooltip: tooltip,
+        heroTag: null, // Use null or unique tag for each FAB
+        child: Icon(icon, color: Colors.white),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
+    );
+  }
