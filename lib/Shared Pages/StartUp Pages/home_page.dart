@@ -1,5 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:recycle_go/Admin%20Only%20Pages/view_report_issues.dart';
@@ -74,6 +72,8 @@ class HomePage extends StatelessWidget {
     _buildMenuButton(context, Icons.map, 'Map', MapScreenUser(title: 'User View Map')),
     _buildMenuButton(context, Icons.qr_code_scanner, 'Scan QR', QRScanScreen(title: 'Scan QR')),
     _buildMenuButton(context, Icons.report_problem, 'Report Issue', ReportIssueScreen(title: 'Report an Issue')),
+    _buildMenuButton(context, Icons.discount, 'View Reward', ViewRewardPage()),
+
   ];
 
   // Admin-Only Actions
