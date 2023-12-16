@@ -155,7 +155,18 @@ void _rejectUpload(Upload upload) async {
   Widget build(BuildContext context) {
     if (selectedUpload != null) {
       return Scaffold(
-        appBar: AppBar(title: Text(selectedUpload!.locationName)),
+        appBar: AppBar(
+        title: const Text("Verify Rewards"),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.greenAccent, Colors.green],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+        ),
+      ),
         body: Column(
           children: [
             Expanded(
@@ -183,7 +194,18 @@ void _rejectUpload(Upload upload) async {
     } else if (selectedLocation != null) {
       List<Upload> locationUploads = uploads.where((u) => u.locationName == selectedLocation).toList();
       return Scaffold(
-        appBar: AppBar(title: Text("@${selectedLocation!}")),
+        appBar: AppBar(
+        title: Text("@${selectedLocation!}"),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.greenAccent, Colors.green],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+        ),
+      ),
         body: ListView.builder(
           itemCount: locationUploads.length,
           itemBuilder: (context, index) {
@@ -197,7 +219,18 @@ void _rejectUpload(Upload upload) async {
     } else {
       Set<String> locations = uploads.map((u) => u.locationName).toSet();
       return Scaffold(
-        appBar: AppBar(title: const Text('Select Location')),
+        appBar: AppBar(
+        title: const Text("Select Location"),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.greenAccent, Colors.green],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+        ),
+      ),
         body: ListView(
           children: locations.map((location) => ListTile(
             title: Text(location),
@@ -215,7 +248,7 @@ void _rejectUpload(Upload upload) async {
 class VideoPlayerItem extends StatefulWidget {
   final String videoUrl;
 
-  const VideoPlayerItem({Key? key, required this.videoUrl}) : super(key: key);
+  const VideoPlayerItem({super.key, required this.videoUrl});
 
   @override
   _VideoPlayerItemState createState() => _VideoPlayerItemState();
@@ -255,7 +288,7 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
               ],
             ),
           )
-        : Container(
+        : const SizedBox(
             height: 200,
             child: Center(child: CircularProgressIndicator()),
           );

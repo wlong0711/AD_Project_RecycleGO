@@ -9,8 +9,16 @@ class WelcomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
-        title: const Text('RecycleGo'),
+        title: const Text("RecycleGo"),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.greenAccent, Colors.green],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+        ),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -20,7 +28,7 @@ class WelcomePage extends StatelessWidget {
             child: Column(
               children: [
                 Image.network(
-                  'https://firebasestorage.googleapis.com/v0/b/recyclego-64b10.appspot.com/o/Company%20Logo%2FLogoWithSlogan.png?alt=media&token=5b939cb4-b9d8-42b5-adcb-8de58ee095e0',
+                  'https://firebasestorage.googleapis.com/v0/b/recyclego-64b10.appspot.com/o/Company%20Logo%2FLogo.png?alt=media&token=aac89fba-a30d-4a9a-8c39-d6cd85e1f4d5',
                   width: 150,
                   height: 150,
                 ),
@@ -30,7 +38,7 @@ class WelcomePage extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 30,
                     fontWeight: FontWeight.bold,
-                    color: Colors.blue, // Customize the color as needed
+                    color: Colors.green,
                   ),
                 ),
               ],
@@ -42,7 +50,7 @@ class WelcomePage extends StatelessWidget {
           // Register Button
           _buildButton(
             "Register",
-            Colors.white,
+            Colors.green, // Changed button color to green
             () {
               // Navigate to the RegisterPage when the button is clicked
               Navigator.push(
@@ -57,7 +65,7 @@ class WelcomePage extends StatelessWidget {
           // Login Button
           _buildButton(
             "Login",
-            Colors.white,
+            Colors.green, // Changed button color to green
             () {
               // Navigate to the LoginPage when the button is clicked
               Navigator.push(
@@ -72,9 +80,15 @@ class WelcomePage extends StatelessWidget {
           const Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('RecycleGo'),
+              Text(
+                'RecycleGo',
+                style: TextStyle(color: Colors.green), // Text color changed to green
+              ),
               SizedBox(width: 20),
-              Text('@2023AKA'),
+              Text(
+                '@2023AKA',
+                style: TextStyle(color: Colors.green), // Text color changed to green
+              ),
             ],
           ),
         ],
@@ -88,7 +102,7 @@ class WelcomePage extends StatelessWidget {
       height: 50,
       decoration: BoxDecoration(
         color: color,
-        border: Border.all(color: Colors.blue), // Add border for a cleaner look
+        border: Border.all(color: Colors.white), // Changed border color to white for contrast
         borderRadius: BorderRadius.circular(10),
       ),
       child: TextButton(
@@ -97,7 +111,7 @@ class WelcomePage extends StatelessWidget {
           child: Text(
             label,
             style: const TextStyle(
-              color: Colors.blue, // Set text color to match the border
+              color: Colors.white, // Changed text color to white for better visibility
               fontWeight: FontWeight.bold,
             ),
           ),

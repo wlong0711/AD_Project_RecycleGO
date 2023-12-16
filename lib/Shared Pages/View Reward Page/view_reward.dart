@@ -5,7 +5,7 @@ import 'package:recycle_go/models/global_user.dart';
 import 'package:recycle_go/models/voucher.dart';
 
 class ViewRewardPage extends StatefulWidget {
-  const ViewRewardPage({Key? key}) : super(key: key);
+  const ViewRewardPage({super.key});
 
   @override
   _ViewRewardPageState createState() => _ViewRewardPageState();
@@ -67,6 +67,17 @@ class _ViewRewardPageState extends State<ViewRewardPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('View Rewards'),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.greenAccent, Colors.green],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+        ),
+        elevation: 10,
+        shadowColor: Colors.greenAccent.withOpacity(0.5),
         actions: [
           if (GlobalUser.userLevel == 1)
             IconButton(
@@ -91,11 +102,11 @@ class _ViewRewardPageState extends State<ViewRewardPage> {
             trailing: Text('ID: ${voucher.voucherID}'),
             onTap: isClaimed ? null : () => claimVoucher(voucher.voucherID),
             leading: ElevatedButton(
-              child: Text(isClaimed ? 'Claimed' : 'Claim'),
               onPressed: isClaimed ? null : () => claimVoucher(voucher.voucherID),
               style: ElevatedButton.styleFrom(
-                primary: isClaimed ? Colors.grey : Colors.blue,
+                backgroundColor: isClaimed ? Colors.grey : Colors.blue,
               ),
+              child: Text(isClaimed ? 'Claimed' : 'Claim'),
             ),
           );
         },
