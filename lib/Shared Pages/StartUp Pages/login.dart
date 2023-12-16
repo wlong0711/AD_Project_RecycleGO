@@ -8,7 +8,7 @@ import 'register.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+  const LoginPage({super.key});
 
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -345,14 +345,14 @@ Widget build(BuildContext context) {
   }
 
   Widget _buildOrSeparator() {
-    return Row(
+    return const Row(
       children: [
         Expanded(
           child: Divider(thickness: 2),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: const Text('or'),
+          padding: EdgeInsets.symmetric(horizontal: 8),
+          child: Text('or'),
         ),
         Expanded(
           child: Divider(thickness: 2),
@@ -376,7 +376,7 @@ Widget build(BuildContext context) {
                 color: Colors.black.withOpacity(0.5), // Semi-transparent overlay
                 borderRadius: BorderRadius.circular(10), // Rounded corners
               ),
-              child: Center(
+              child: const Center(
                 child: CircularProgressIndicator(),
               ),
             ),
