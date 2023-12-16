@@ -205,20 +205,16 @@ class _LoginPageState extends State<LoginPage> {
           ),
 
           const SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              RememberMeWidget(
-                usernameController: _usernameController,
-                passwordController: _passwordController,
-                onRememberMeChanged: (value) {
-                  setState(() {
-                    _rememberMe = value;
-                  });
-                },
-              ),
-              _buildForgotPasswordLink(),
-            ],
+
+          // Remember Me Widget
+          RememberMeWidget(
+            usernameController: _usernameController,
+            passwordController: _passwordController,
+            onRememberMeChanged: (value) {
+              setState(() {
+                _rememberMe = value;
+              });
+            },
           ),
 
           const SizedBox(height: 10),
@@ -268,6 +264,7 @@ class _LoginPageState extends State<LoginPage> {
           ),
 
           const SizedBox(height: 10),
+
           // Other Login Methods
           _buildOtherLoginMethods(),
 
