@@ -249,7 +249,7 @@ void _showFilterDialog() async {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+      return Scaffold(
       appBar: AppBar(
         title: Container(
           padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -267,8 +267,17 @@ void _showFilterDialog() async {
             ),
           ),
         ),
-        backgroundColor: Colors.blue,
-        elevation: 0,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.greenAccent, Colors.green],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+        ),
+        elevation: 10,
+        shadowColor: Colors.greenAccent.withOpacity(0.5),
         actions: [
           IconButton(
             icon: const Icon(Icons.clear),
@@ -277,7 +286,7 @@ void _showFilterDialog() async {
             },
           ),
         ],
-    ),
+      ),
 
       body: GoogleMap(
         onMapCreated: _onMapCreated,
@@ -300,23 +309,50 @@ void _showFilterDialog() async {
               mainAxisAlignment: MainAxisAlignment.start,
               mainAxisSize: MainAxisSize.min, // Important for proper spacing
               children: [
-                FloatingActionButton(
+                _buildGradientFAB(
                   onPressed: _showFilterDialog,
                   tooltip: 'Filter Drop Points',
-                  heroTag: 'filterBtn',
-                  child: const Icon(Icons.filter_list),
+                  icon: Icons.filter_list,
                 ),
                 const SizedBox(height: 10),
-                FloatingActionButton(
+                _buildGradientFAB(
                   onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const DropPointMap())),
                   tooltip: 'Manage Drop Points',
-                  heroTag: 'manageBtn',
-                  child: const Icon(Icons.settings),
+                  icon: Icons.add_location_alt_rounded,
                 ),
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildGradientFAB({required VoidCallback onPressed, required String tooltip, required IconData icon}) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Colors.greenAccent, Colors.green],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.greenAccent.withOpacity(0.5),
+            spreadRadius: 2,
+            blurRadius: 10,
+            offset: Offset(0, 3),
+          ),
+        ],
+      ),
+      child: FloatingActionButton(
+        onPressed: onPressed,
+        tooltip: tooltip,
+        heroTag: null, // Use null or unique tag for each FAB
+        child: Icon(icon, color: Colors.white),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
     );
   }

@@ -67,6 +67,17 @@ class _ViewRewardPageState extends State<ViewRewardPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('View Rewards'),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.greenAccent, Colors.green],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+        ),
+        elevation: 10,
+        shadowColor: Colors.greenAccent.withOpacity(0.5),
         actions: [
           if (GlobalUser.userLevel == 1)
             IconButton(

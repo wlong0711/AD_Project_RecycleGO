@@ -130,19 +130,30 @@ class _LoginPageState extends State<LoginPage> {
 
 @override
 Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: AppBar(
-      centerTitle: true,
-      title: const Text('Login'),
-    ),
-    body: Stack(
-      children: [
-        Center(child: _buildLoginForm()), // Wrap with Center here
-        if (_isLoading) _buildLoadingOverlay(),
-      ],
-    ),
-  );
-}
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Login'),
+        centerTitle: true,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.greenAccent, Colors.green],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+        ),
+        elevation: 10,
+        shadowColor: Colors.greenAccent.withOpacity(0.5),
+      ),
+      body: Stack(
+        children: [
+          Center(child: _buildLoginForm()),
+          if (_isLoading) _buildLoadingOverlay(),
+        ],
+      ),
+    );
+  }
 
   Widget _buildLoginForm() {
   return SingleChildScrollView(
@@ -157,7 +168,7 @@ Widget build(BuildContext context) {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Image.network(
-            'https://firebasestorage.googleapis.com/v0/b/recyclego-64b10.appspot.com/o/Company%20Logo%2FLogoWithSlogan.png?alt=media&token=5b939cb4-b9d8-42b5-adcb-8de58ee095e0',
+            'https://firebasestorage.googleapis.com/v0/b/recyclego-64b10.appspot.com/o/Company%20Logo%2FLogo.png?alt=media&token=aac89fba-a30d-4a9a-8c39-d6cd85e1f4d5',
             width: 100,
             height: 100,
           ),
@@ -235,67 +246,66 @@ Widget build(BuildContext context) {
       ),
     );
   }
-  
-  Widget _buildRememberMe() {
-  return Row(
-    children: [
-      const SizedBox(width: 22.0),
-      Checkbox(
-        value: _rememberMe,
-        onChanged: (value) {
-          setState(() {
-            _rememberMe = value!;
-          });
-        },
-      ),
-      const Padding(
-        padding: EdgeInsets.only(right: 4.0), // Adjust this value to control the spacing
-        child: Text('Remember me'),
-      ),
-    ],
-  );
-}
-
-
-  Widget _buildForgotPasswordLink() {
-  return Padding(
-    padding: const EdgeInsets.only(right: 35.0), // Adjust this value to control the left indentation
-    child: GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
-        );
-      },
-      child: const Text(
-        'Forgot password?',
-        style: TextStyle(
-          color: Colors.blue,
-          decoration: TextDecoration.underline,
-        ),
-      ),
-    ),
-  );
-}
-
 
   Widget _buildButton(String label, Color color, VoidCallback onPressed) {
     return Container(
       width: 200,
       height: 50,
       decoration: BoxDecoration(
-        color: color,
+        color: Colors.green, // Changed button color to green
         borderRadius: BorderRadius.circular(10),
       ),
       child: TextButton(
-        onPressed: onPressed, // Use the provided onPressed function
+        onPressed: onPressed,
         child: Center(
           child: Text(
             label,
             style: const TextStyle(
-              color: Colors.white,
+              color: Colors.white, // Set text color to white
               fontWeight: FontWeight.bold,
             ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Modify _buildRememberMe and _buildForgotPasswordLink to match the green theme
+  Widget _buildRememberMe() {
+    return Row(
+      children: [
+        const SizedBox(width: 22.0),
+        Checkbox(
+          value: _rememberMe,
+          onChanged: (value) {
+            setState(() {
+              _rememberMe = value!;
+            });
+          },
+        ),
+        const Padding(
+          padding: EdgeInsets.only(right: 4.0),
+          child: Text('Remember me', style: TextStyle(color: Colors.green)), // Green text color
+        ),
+      ],
+    );
+  }
+
+  Widget _buildForgotPasswordLink() {
+    return Padding(
+      padding: const EdgeInsets.only(right: 35.0),
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
+          );
+        },
+        child: const Text(
+          'Forgot password?',
+          style: TextStyle(
+            color: Colors.green, // Green text color
+            decoration: TextDecoration.underline,
           ),
         ),
       ),

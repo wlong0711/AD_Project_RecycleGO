@@ -267,19 +267,23 @@ void _updateFilterCriteria(List<String> newCriteria) {
             ),
           ),
         ),
-        backgroundColor: Colors.blue,
-        elevation: 0,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.greenAccent, Colors.green],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+        ),
+        elevation: 10,
+        shadowColor: Colors.greenAccent.withOpacity(0.5),
         actions: [
           IconButton(
             icon: const Icon(Icons.clear),
             onPressed: () {
               _searchController.clear();
             },
-          ),
-
-          IconButton(
-            icon: const Icon(Icons.filter_list),
-            onPressed: _showFilterDialog,
           ),
         ],
       ),
@@ -296,20 +300,41 @@ void _updateFilterCriteria(List<String> newCriteria) {
       ),
        
       floatingActionButton: SafeArea(
-      child: Align(
-        alignment: Alignment.topLeft,
-        child: Padding(
-          padding: const EdgeInsets.only(top: 120.0, left: 25.0), // Adjust these values as needed
-          child: FloatingActionButton(
-            onPressed: _showFilterDialog,
-            tooltip: 'Filter Drop Points',
-            heroTag: 'filterBtn',
-            child: const Icon(Icons.filter_list),
+        child: Align(
+          alignment: Alignment.topLeft,
+          child: Padding(
+            padding: const EdgeInsets.only(top: 120.0, left: 25.0), // Adjust these values as needed
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.greenAccent, Colors.green],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.greenAccent.withOpacity(0.5),
+                    spreadRadius: 2,
+                    blurRadius: 10,
+                    offset: Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: FloatingActionButton(
+                onPressed: _showFilterDialog,
+                tooltip: 'Filter Drop Points',
+                heroTag: 'filterBtn',
+                child: const Icon(Icons.filter_list),
+                backgroundColor: Colors.transparent, // Makes FAB transparent to reveal gradient container
+                elevation: 0, // Removes shadow
+              ),
+            ),
           ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }
 
   Widget _buildActionButton({required IconData icon, required VoidCallback onPressed, required String tooltip}) {
@@ -323,4 +348,3 @@ void _updateFilterCriteria(List<String> newCriteria) {
       ),
     );
   }
-}

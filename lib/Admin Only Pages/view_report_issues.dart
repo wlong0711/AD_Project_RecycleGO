@@ -16,7 +16,16 @@ class _AdminReportsPageState extends State<AdminReportsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Reported Issues'),
+        title: const Text("View Issues"),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.greenAccent, Colors.green],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+        ),
       ),
       body: StreamBuilder(
         stream: _firestore.collection('reports issues').snapshots(),

@@ -582,6 +582,15 @@ void _updateFilterCriteria(List<String> newCriteria) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Manage Drop Point'),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.greenAccent, Colors.green],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+        ),
       ),
       body: GoogleMap(
         onMapCreated: (controller) => mapController = controller,
@@ -595,29 +604,36 @@ void _updateFilterCriteria(List<String> newCriteria) {
         myLocationButtonEnabled: true,
       ),
       
-      floatingActionButton: SafeArea(
+       floatingActionButton: SafeArea(
         child: Align(
           alignment: Alignment.topLeft,
           child: Padding(
             padding: const EdgeInsets.only(top: 120.0, left: 25.0), // Adjust these values as needed
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min, // Important for proper spacing
-              children: [
-                FloatingActionButton(
-                  onPressed: _showFilterDialog,
-                  tooltip: 'Filter Drop Points',
-                  heroTag: 'filterBtn',
-                  child: const Icon(Icons.filter_list),
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.greenAccent, Colors.green],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
-                const SizedBox(height: 10),
-                FloatingActionButton(
-                   onPressed: _onAddDropPointPressed,
-                  tooltip: 'Manage Drop Points',
-                  heroTag: 'manageBtn',
-                  child: const Icon(Icons.settings),
-                ),
-              ],
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.greenAccent.withOpacity(0.5),
+                    spreadRadius: 2,
+                    blurRadius: 10,
+                    offset: Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: FloatingActionButton(
+                onPressed: _showFilterDialog,
+                tooltip: 'Filter Drop Points',
+                heroTag: 'filterBtn',
+                child: const Icon(Icons.filter_list),
+                backgroundColor: Colors.transparent, // Makes FAB transparent to reveal gradient container
+                elevation: 0, // Removes shadow
+              ),
             ),
           ),
         ),
