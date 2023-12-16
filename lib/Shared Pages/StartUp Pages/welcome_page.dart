@@ -3,12 +3,14 @@ import 'register.dart'; // Import the RegisterPage
 import 'login.dart'; // Import the LoginPage
 
 class WelcomePage extends StatelessWidget {
+  const WelcomePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text('RecycleGo'),
+        title: const Text('RecycleGo'),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -22,8 +24,8 @@ class WelcomePage extends StatelessWidget {
                   width: 150,
                   height: 150,
                 ),
-                SizedBox(height: 10),
-                Text(
+                const SizedBox(height: 10),
+                const Text(
                   'WELCOME',
                   style: TextStyle(
                     fontSize: 30,
@@ -35,7 +37,7 @@ class WelcomePage extends StatelessWidget {
             ),
           ),
 
-          SizedBox(height: 40),
+          const SizedBox(height: 40),
 
           // Register Button
           _buildButton(
@@ -45,12 +47,12 @@ class WelcomePage extends StatelessWidget {
               // Navigate to the RegisterPage when the button is clicked
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => RegisterPage()),
+                MaterialPageRoute(builder: (context) => const RegisterPage()),
               );
             },
           ),
 
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
 
           // Login Button
           _buildButton(
@@ -60,14 +62,14 @@ class WelcomePage extends StatelessWidget {
               // Navigate to the LoginPage when the button is clicked
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => LoginPage()),
+                MaterialPageRoute(builder: (context) => const LoginPage()),
               );
             },
           ),
 
-          SizedBox(height: 40),
+          const SizedBox(height: 40),
 
-          Row(
+          const Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text('RecycleGo'),
@@ -94,7 +96,7 @@ class WelcomePage extends StatelessWidget {
         child: Center(
           child: Text(
             label,
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.blue, // Set text color to match the border
               fontWeight: FontWeight.bold,
             ),
@@ -106,7 +108,7 @@ class WelcomePage extends StatelessWidget {
 }
 
 void main() {
-  runApp(MaterialApp(
+  runApp(const MaterialApp(
     home: WelcomePage(),
   ));
 }

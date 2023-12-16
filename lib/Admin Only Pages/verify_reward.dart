@@ -20,7 +20,7 @@ class Upload {
     Map data = doc.data() as Map;
     return Upload(
       locationName: data['location'] ?? '',
-      videoUrl: data['video'] ?? '', // Assuming there is a single 'video' field
+      videoUrl: data['videoUrl'] ?? '', // Assuming there is a single 'video' field
       userName: data['username'] ?? '',
       docId: doc.id,
     );
@@ -28,7 +28,7 @@ class Upload {
 }
 
 class VerifyRewardPage extends StatefulWidget {
-  const VerifyRewardPage({Key? key}) : super(key: key);
+  const VerifyRewardPage({super.key});
 
   @override
   _VerifyRewardPageState createState() => _VerifyRewardPageState();
@@ -87,25 +87,25 @@ class _VerifyRewardPageState extends State<VerifyRewardPage> {
           selectedUpload = null;
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text('Verification successful, points added!'),
           backgroundColor: Colors.green,
         ));
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text('User not found.'),
           backgroundColor: Colors.red,
         ));
       }
     } catch (e) {
       print('Error during verification: $e');
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('Verification failed. Error during deletion.'),
         backgroundColor: Colors.red,
       ));
     }
   } else {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
       content: Text('Upload document not found.'),
       backgroundColor: Colors.red,
     ));
@@ -131,19 +131,19 @@ void _rejectUpload(Upload upload) async {
         selectedUpload = null;
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('Upload rejected and deleted successfully.'),
         backgroundColor: Colors.green,
       ));
     } catch (e) {
       print('Error during rejection: $e');
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('Rejection failed. Error during deletion.'),
         backgroundColor: Colors.red,
       ));
     }
   } else {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
       content: Text('Upload document not found.'),
       backgroundColor: Colors.red,
     ));
@@ -166,24 +166,24 @@ void _rejectUpload(Upload upload) async {
               children: [
                 ElevatedButton(
                   onPressed: () => _verifyUpload(selectedUpload!),
-                  child: Text('Verify'),
-                  style: ElevatedButton.styleFrom(primary: Colors.green),
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                  child: const Text('Verify'),
                 ),
                 ElevatedButton(
                   onPressed: () => _rejectUpload(selectedUpload!),
-                  child: Text('Reject'),
-                  style: ElevatedButton.styleFrom(primary: Colors.red),
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                  child: const Text('Reject'),
                 ),
               ],
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
           ],
         ),
       );
     } else if (selectedLocation != null) {
       List<Upload> locationUploads = uploads.where((u) => u.locationName == selectedLocation).toList();
       return Scaffold(
-        appBar: AppBar(title: Text("@" + selectedLocation!)),
+        appBar: AppBar(title: Text("@${selectedLocation!}")),
         body: ListView.builder(
           itemCount: locationUploads.length,
           itemBuilder: (context, index) {
@@ -197,7 +197,7 @@ void _rejectUpload(Upload upload) async {
     } else {
       Set<String> locations = uploads.map((u) => u.locationName).toSet();
       return Scaffold(
-        appBar: AppBar(title: Text('Select Location')),
+        appBar: AppBar(title: const Text('Select Location')),
         body: ListView(
           children: locations.map((location) => ListTile(
             title: Text(location),
@@ -223,57 +223,71 @@ class VideoPlayerItem extends StatefulWidget {
 
 class _VideoPlayerItemState extends State<VideoPlayerItem> {
   late VideoPlayerController _controller;
-  bool _isLoading = true;
-  String? _error;
+  bool _isPlaying = false;
 
   @override
   void initState() {
     super.initState();
     _controller = VideoPlayerController.network(widget.videoUrl)
       ..initialize().then((_) {
-        if (mounted) {
-          setState(() {
-            _isLoading = false;
-          });
-        }
-      }).catchError((error) {
-        if (mounted) {
-          setState(() {
-            _isLoading = false;
-            _error = error.toString();
-          });
-        }
+        setState(() {});
       });
+
+    _controller.addListener(() {
+      if (!mounted) return;
+      setState(() {
+        _isPlaying = _controller.value.isPlaying;
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_error != null) {
-      return Center(child: Text('Error loading video: $_error'));
-    }
-
-    if (_isLoading) {
-      return Container(
-        height: 200,
-        child: Center(child: CircularProgressIndicator()),
-      );
-    }
-
     return _controller.value.isInitialized
         ? AspectRatio(
             aspectRatio: _controller.value.aspectRatio,
-            child: VideoPlayer(_controller),
+            child: Stack(
+              alignment: Alignment.bottomCenter,
+              children: [
+                VideoPlayer(_controller),
+                _buildPlayPauseOverlay(),
+                VideoProgressIndicator(_controller, allowScrubbing: true),
+              ],
+            ),
           )
         : Container(
             height: 200,
-            child: Center(child: Text('Video not available')),
+            child: Center(child: CircularProgressIndicator()),
           );
+  }
+
+  Widget _buildPlayPauseOverlay() {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          if (_controller.value.isPlaying) {
+            _controller.pause();
+          } else {
+            _controller.play();
+          }
+        });
+      },
+      child: Center(
+        child: Icon(
+          _isPlaying ? Icons.pause : Icons.play_arrow,
+          size: 100.0,
+          color: Colors.white,
+        ),
+      ),
+    );
   }
 
   @override
   void dispose() {
+    _controller.removeListener(() {});
     _controller.dispose();
     super.dispose();
   }
 }
+
 

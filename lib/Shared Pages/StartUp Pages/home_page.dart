@@ -5,13 +5,14 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:recycle_go/Admin%20Only%20Pages/view_report_issues.dart';
 import 'package:recycle_go/Shared%20Pages/QR%20Scan%20&%20Upload%20Page/qr_scan_screen.dart';
 import 'package:recycle_go/Admin%20Only%20Pages/verify_reward.dart';
+import 'package:recycle_go/Shared%20Pages/View%20Reward%20Page/view_reward.dart';
 import 'package:recycle_go/models/global_user.dart';
 import 'package:recycle_go/User%20Only%20Pages/report_issues.dart';
 import '../../Admin Only Pages/map_screen_admin.dart';
 import '../../User Only Pages/map_screen_user.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +45,7 @@ class HomePage extends StatelessWidget {
     return CarouselSlider(
       options: CarouselOptions(
         autoPlay: true,
-        autoPlayInterval: Duration(seconds: 3),
+        autoPlayInterval: const Duration(seconds: 3),
         aspectRatio: 2.0,
         enlargeCenterPage: true,
       ),
@@ -58,10 +59,10 @@ class HomePage extends StatelessWidget {
 
   Widget _buildWelcomeText() {
     return Padding(
-      padding: EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(16.0),
       child: Text(
         'Welcome, ${GlobalUser.userName ?? 'User'}!',
-        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         textAlign: TextAlign.center,
       ),
     );
