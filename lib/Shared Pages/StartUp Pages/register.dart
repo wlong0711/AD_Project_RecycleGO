@@ -73,75 +73,84 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
         title: const Text('Register'),
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          // Company Logo at the top center
-          Image.network(
-            'https://firebasestorage.googleapis.com/v0/b/recyclego-64b10.appspot.com/o/Company%20Logo%2FLogoWithSlogan.png?alt=media&token=5b939cb4-b9d8-42b5-adcb-8de58ee095e0',
-            width: 100, // Set the width according to your design
-            height: 100, // Set the height according to your design
+        centerTitle: true,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.greenAccent, Colors.green],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
           ),
-
-          const SizedBox(height: 20),
-
-          // Email Input Box (swapped with Username)
-          _buildInputBox("Email", _emailController, isPassword: false),
-
-          // Username Input Box (swapped with Email)
-          _buildInputBox("Username", _usernameController, isPassword: false),
-
-          // Password Input Box
-          _buildPasswordInputBox(),
-
-          // Confirm Password Input Box
-          _buildConfirmPasswordInputBox(),
-
-          const SizedBox(height: 10),
-
-          // Register Button (formerly Login Button)
-          _buildButton("Register", Colors.green), // Change the color if needed
-
-          const SizedBox(height: 20),
-
-          // Horizontal Bar and "or" text
-          const Row(
+        ),
+        elevation: 10,
+        shadowColor: Colors.greenAccent.withOpacity(0.5),
+      ),
+      body: SingleChildScrollView( // Added SingleChildScrollView for better UX on smaller devices
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Expanded(
-                child: Divider(
-                  thickness: 2,
-                ),
+              // Company Logo
+              Image.network(
+                'https://firebasestorage.googleapis.com/v0/b/recyclego-64b10.appspot.com/o/Company%20Logo%2FLogo.png?alt=media&token=aac89fba-a30d-4a9a-8c39-d6cd85e1f4d5',
+                width: 100,
+                height: 100,
               ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8),
-                child: Text('or'),
-              ),
-              Expanded(
-                child: Divider(
-                  thickness: 2,
-                ),
-              ),
+              const SizedBox(height: 20),
+
+              // Input Boxes and Buttons
+              _buildInputBox("Email", _emailController, isPassword: false),
+              _buildInputBox("Username", _usernameController, isPassword: false),
+              _buildPasswordInputBox(),
+              _buildConfirmPasswordInputBox(),
+              const SizedBox(height: 10),
+              _buildButton("Register", Colors.green),
+              const SizedBox(height: 20),
+              _buildOrSeparator(),
+              const SizedBox(height: 10),
+              _buildOtherLoginMethods(),
+              const SizedBox(height: 20),
+              _buildLoginText(context),
             ],
           ),
-
-          const SizedBox(height: 10),
-
-          // Other Login Methods
-          _buildOtherLoginMethods(),
-
-          const SizedBox(height: 20),
-
-          // "Already a member? Login." Text
-          _buildLoginText(context),
-        ],
+        ),
       ),
     );
   }
 
+  Widget _buildOrSeparator() {
+    return Row(
+      children: [
+        Expanded(
+          child: Divider(
+            color: Colors.green, // Adjust the color to match the theme
+            thickness: 2,
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Text(
+            'or',
+            style: TextStyle(color: Colors.green), // Adjust the text color to match the theme
+          ),
+        ),
+        Expanded(
+          child: Divider(
+            color: Colors.green, // Adjust the color to match the theme
+            thickness: 2,
+          ),
+        ),
+      ],
+    );
+  }
+  
   Widget _buildInputBox(
     String label,
     TextEditingController controller, {

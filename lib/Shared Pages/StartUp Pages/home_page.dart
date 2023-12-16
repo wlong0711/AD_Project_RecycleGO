@@ -1,5 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:recycle_go/Admin%20Only%20Pages/view_report_issues.dart';
@@ -18,8 +16,18 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home Page'),
-        backgroundColor: Colors.green, // Eco-friendly green color
+        title: Text('Home Page'),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.greenAccent, Colors.green],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+        ),
+        elevation: 10,
+        shadowColor: Colors.greenAccent.withOpacity(0.5),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -27,15 +35,15 @@ class HomePage extends StatelessWidget {
             _buildTopCarousel(),
             _buildWelcomeText(),
             _buildGridMenu(context),
-            // _buildNewsFeed(), // Uncomment if you want to include a news feed
+            // _buildNewsFeed(),
           ],
         ),
       ),
-      backgroundColor: Colors.lightGreen[50], // Light green background
+      backgroundColor: Colors.lightBlue[50],
     );
   }
 
- Widget _buildTopCarousel() {
+  Widget _buildTopCarousel() {
     final List<String> imageUrls = [
       'https://firebasestorage.googleapis.com/v0/b/recyclego-64b10.appspot.com/o/Banner%2FRecycle-Right-Banner.jpg?alt=media&token=0f09deef-3e48-4833-9614-b299289bf226',
       'https://firebasestorage.googleapis.com/v0/b/recyclego-64b10.appspot.com/o/Banner%2Frecycling-poster-final.webp?alt=media&token=f1e1d089-ee91-4883-bf38-0ff17bfcc4a3',
@@ -71,24 +79,26 @@ class HomePage extends StatelessWidget {
   Widget _buildGridMenu(BuildContext context) {
   List<Widget> gridItems = [
     // Common User Actions
-    _buildMenuButton(context, Icons.map, 'Map', MapScreenUser(title: 'User View Map')),
-    _buildMenuButton(context, Icons.qr_code_scanner, 'Scan QR', QRScanScreen(title: 'Scan QR')),
-    _buildMenuButton(context, Icons.report_problem, 'Report Issue', ReportIssueScreen(title: 'Report an Issue')),
+    _buildMenuButton(context, Icons.map, 'Map', const MapScreenUser(title: 'User View Map')),
+    _buildMenuButton(context, Icons.qr_code_scanner, 'Scan QR', const QRScanScreen(title: 'Scan QR')),
+    _buildMenuButton(context, Icons.report_problem, 'Report Issue', const ReportIssueScreen(title: 'Report an Issue')),
+    _buildMenuButton(context, Icons.discount, 'View Reward', const ViewRewardPage()),
+
   ];
 
   // Admin-Only Actions
   if (GlobalUser.userLevel == 1) {
     gridItems.addAll([
-      _buildMenuButton(context, Icons.admin_panel_settings, 'Map for Admin', MapScreenAdmin(title: 'Admin View Map')),
-      _buildMenuButton(context, Icons.verified_user, 'Verify for Rewards', VerifyRewardPage()),
-      _buildMenuButton(context, Icons.view_list, 'View Reports', AdminReportsPage()),
+      _buildMenuButton(context, Icons.admin_panel_settings, 'Map for Admin', const MapScreenAdmin(title: 'Admin View Map')),
+      _buildMenuButton(context, Icons.verified_user, 'Verify for Rewards', const VerifyRewardPage()),
+      _buildMenuButton(context, Icons.view_list, 'View Reports', const AdminReportsPage()),
     ]);
   }
 
   return GridView.count(
     crossAxisCount: 2,
     shrinkWrap: true,
-    physics: NeverScrollableScrollPhysics(),
+    physics: const NeverScrollableScrollPhysics(),
     children: gridItems,
   );
 }
@@ -98,13 +108,13 @@ class HomePage extends StatelessWidget {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       elevation: 5,
-      margin: EdgeInsets.all(8),
+      margin: const EdgeInsets.all(8),
       child: InkWell(
         onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => page)),
         borderRadius: BorderRadius.circular(15),
         child: Container(
           decoration: BoxDecoration(
-            gradient: LinearGradient(
+            gradient: const LinearGradient(
               colors: [Colors.greenAccent, Colors.green],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -116,7 +126,7 @@ class HomePage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(icon, size: 50.0, color: Colors.white),
-              Text(label, style: TextStyle(fontSize: 16.0, color: Colors.white))
+              Text(label, style: const TextStyle(fontSize: 16.0, color: Colors.white))
             ],
           ),
         ),
