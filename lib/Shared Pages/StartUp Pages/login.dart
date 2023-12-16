@@ -4,10 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:recycle_go/Shared%20Pages/StartUp%20Pages/home_page.dart';
 import 'package:recycle_go/models/global_user.dart';
 import 'forgot.dart';
-import 'register.dart'; // Import the RegisterPage
+import 'register.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'remember_me.dart'; // Import the RememberMeWidget
-
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -20,12 +18,12 @@ class _LoginPageState extends State<LoginPage> {
   bool _isPasswordVisible = false;
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  bool _rememberMe = false; // Add this variable to store the state
+  bool _rememberMe = false;
+  bool _isLoading = false;  // Flag for loading indicator
 
   @override
   void initState() {
     super.initState();
-    // Load saved authentication state
     _loadAuthenticationState();
   }
 
@@ -41,44 +39,37 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _login() async {
-    // Clear saved authentication state when Remember Me is unchecked
-  if (!_rememberMe) {
-    _clearAuthenticationState();
-  }
+    if (!_rememberMe) {
+      _clearAuthenticationState();
+    }
     if (_usernameController.text.isEmpty || _passwordController.text.isEmpty) {
-      // Show a snackbar for empty fields
       _showErrorSnackBar('Please enter both email and password.');
       return;
     }
-    
+
+    setState(() => _isLoading = true);  // Start loading
+
     try {
-      // Sign in with email and password
       UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: _usernameController.text,
         password: _passwordController.text,
       );
 
-      // If the signIn is successful, navigate to HomePage
       if (userCredential.user != null) {
-
-        // Fetch the username from Firestore using the email
         String userEmail = _usernameController.text.trim();
         var usersCollection = FirebaseFirestore.instance.collection('users');
         var querySnapshot = await usersCollection.where('email', isEqualTo: userEmail).get();
 
-         if (querySnapshot.docs.isNotEmpty) {
-          // Assuming 'username' is the field name in your Firestore collection
+        if (querySnapshot.docs.isNotEmpty) {
           var userDocument = querySnapshot.docs.first;
           GlobalUser.userName = userDocument['username'];
           GlobalUser.userLevel = userDocument['level'];
           GlobalUser.userPoints = userDocument['points'];
 
-        // Save authentication state if "Remember Me" is checked
-        if (_rememberMe) {
-          _saveAuthenticationState();
-        }
+          if (_rememberMe) {
+            _saveAuthenticationState();
+          }
 
-          // Navigate to HomePage
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => const HomePage()),
@@ -88,9 +79,7 @@ class _LoginPageState extends State<LoginPage> {
         }
       }
     } on FirebaseAuthException catch (e) {
-      // Log the error code for debugging
       print('FirebaseAuthException with code: ${e.code}');
-      // Match the error code and display an appropriate error message
       String errorMessage;
       switch (e.code) {
         case 'invalid-email':
@@ -108,16 +97,17 @@ class _LoginPageState extends State<LoginPage> {
       }
       _showErrorSnackBar(errorMessage);
     } catch (e) {
-      // General error handling
       _showErrorSnackBar('Login failed. Please try again.');
-      print(e); // For debugging purposes
+      print(e);
+    } finally {
+      setState(() => _isLoading = false);  // Stop loading
     }
   }
 
   void _clearAuthenticationState() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  prefs.remove('username');
-  prefs.remove('password');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove('username');
+    prefs.remove('password');
   }
 
   void _saveAuthenticationState() async {
@@ -138,146 +128,62 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text('Login'),
-      ),
-      body: Column(
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      centerTitle: true,
+      title: const Text('Login'),
+    ),
+    body: Stack(
+      children: [
+        Center(child: _buildLoginForm()), // Wrap with Center here
+        if (_isLoading) _buildLoadingOverlay(),
+      ],
+    ),
+  );
+}
+
+  Widget _buildLoginForm() {
+  return SingleChildScrollView(
+    padding: EdgeInsets.only(
+      bottom: MediaQuery.of(context).viewInsets.bottom,
+    ),
+    child: Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,  // Use min to fit content size
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Company Logo at the top center
           Image.network(
             'https://firebasestorage.googleapis.com/v0/b/recyclego-64b10.appspot.com/o/Company%20Logo%2FLogoWithSlogan.png?alt=media&token=5b939cb4-b9d8-42b5-adcb-8de58ee095e0',
-            width: 100, // Set the width according to your design
-            height: 100, // Set the height according to your design
+            width: 100,
+            height: 100,
           ),
-
           const SizedBox(height: 20),
-
-          // Username Input Box
-          SizedBox(
-            width: 330,
-            child: TextField(
-              controller: _usernameController,
-              obscureText: _isPasswordVisible,
-              onChanged: (value) {
-                // Handle the input change and update the state as needed
-                setState(() {});
-              },
-              decoration: InputDecoration(
-                labelText: _usernameController.text.isEmpty ? 'Email' : '',
-                border: const OutlineInputBorder(),
-              ),
-            ),
-          ),
-
-          // Password Input Box
-          SizedBox(
-            width: 330,
-            child: TextField(
-              controller: _passwordController,
-              obscureText: !_isPasswordVisible,
-              onChanged: (value) {
-                // Handle the input change and update the state as needed
-                setState(() {});
-              },
-              decoration: InputDecoration(
-                labelText: _passwordController.text.isEmpty ? 'Password' : '',
-                border: const OutlineInputBorder(),
-                suffixIcon: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _isPasswordVisible = !_isPasswordVisible;
-                    });
-                  },
-                  child: Icon(
-                    _isPasswordVisible
-                        ? Icons.visibility
-                        : Icons.visibility_off,
-                  ),
-                ),
-              ),
-            ),
-          ),
-
+          _buildInputBox("Email", _usernameController, isPassword: false),
+          _buildPasswordInputBox(),
           const SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              RememberMeWidget(
-                usernameController: _usernameController,
-                passwordController: _passwordController,
-                onRememberMeChanged: (value) {
-                  setState(() {
-                    _rememberMe = value;
-                  });
-                },
-              ),
+              _buildRememberMe(),
               _buildForgotPasswordLink(),
             ],
           ),
-
           const SizedBox(height: 10),
-
-          // Login Button
-          Container(
-            width: 200,
-            height: 50,
-            decoration: BoxDecoration(
-              color: Colors.blue,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: TextButton(
-              onPressed: _login,
-              child: Center(
-                child: Text(
-                  'Login',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-          ),
-
+          _buildButton("Login", Colors.blue, _login),
           const SizedBox(height: 20),
-
-          // Horizontal Bar and "or" text
-          Row(
-            children: [
-              Expanded(
-                child: Divider(
-                  thickness: 2,
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8),
-                child: Text('or'),
-              ),
-              Expanded(
-                child: Divider(
-                  thickness: 2,
-                ),
-              ),
-            ],
-          ),
-
+          _buildOrSeparator(),
           const SizedBox(height: 10),
-          // Other Login Methods
           _buildOtherLoginMethods(),
-
           const SizedBox(height: 20),
-
-          // "Not a member, create a new account" Text
           _buildCreateAccountText(),
         ],
       ),
-    );
+    ),
+  );
   }
 
   Widget _buildInputBox(
@@ -427,10 +333,39 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
+
+  Widget _buildOrSeparator() {
+    return Row(
+      children: [
+        Expanded(
+          child: Divider(thickness: 2),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: const Text('or'),
+        ),
+        Expanded(
+          child: Divider(thickness: 2),
+        ),
+      ],
+    );
+  }
 }
+
+  Widget _buildLoadingOverlay() {
+    return Positioned.fill( // Use Positioned.fill to cover the entire screen
+      child: Container(
+        color: Colors.black.withOpacity(0.5), // Semi-transparent overlay
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
+      ),
+    );
+  }
 
 void main() {
   runApp(const MaterialApp(
     home: LoginPage(),
   ));
 }
+
