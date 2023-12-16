@@ -223,10 +223,25 @@ void _showErrorDialog(String message) {
   );
 }
 
-Widget _buildImageUploadSection() {
+Widget _buildSubmitButton() {
+    return ElevatedButton(
+      onPressed: _submitReport,
+      style: ElevatedButton.styleFrom(
+        primary: Colors.green, // Button background color
+        onPrimary: Colors.white, // Button text color
+      ),
+      child: const Text("Submit Report"),
+    );
+  }
+
+  Widget _buildImageUploadSection() {
     return _image == null
         ? ElevatedButton(
             onPressed: _pickImage,
+            style: ElevatedButton.styleFrom(
+              primary: Colors.green, // Button background color
+              onPrimary: Colors.white, // Button text color
+            ),
             child: const Text("Upload Image"),
           )
         : Column(
@@ -237,13 +252,18 @@ Widget _buildImageUploadSection() {
                 children: [
                   ElevatedButton(
                     onPressed: _pickImage,
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.blue, // Button background color
+                      onPrimary: Colors.white, // Button text color
+                    ),
                     child: const Text("Re-upload Image"),
                   ),
                   const SizedBox(width: 8),
                   ElevatedButton(
                     onPressed: _deleteImage,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red, // Background color
+                      primary: Colors.red, // Button background color
+                      onPrimary: Colors.white, // Button text color
                     ),
                     child: const Text("Delete Image"),
                   ),

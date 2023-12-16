@@ -10,6 +10,15 @@ class ReportDetailsPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(reportData['title'] ?? 'Report Details'),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.greenAccent, Colors.green],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
