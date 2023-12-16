@@ -350,18 +350,35 @@ Widget build(BuildContext context) {
       ],
     );
   }
-}
 
   Widget _buildLoadingOverlay() {
-    return Positioned.fill( // Use Positioned.fill to cover the entire screen
-      child: Container(
-        color: Colors.black.withOpacity(0.5), // Semi-transparent overlay
-        child: Center(
-          child: CircularProgressIndicator(),
+    return Stack(
+      children: [
+        Positioned(
+          top: MediaQuery.of(context).size.height * 0.3, // Adjust the position from top
+          left: 0,
+          right: 0,
+          child: Center(
+            child: Container(
+              width: 80, // Set the width of the overlay
+              height: 80, // Set the height of the overlay
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.5), // Semi-transparent overlay
+                borderRadius: BorderRadius.circular(10), // Rounded corners
+              ),
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
+          ),
         ),
-      ),
+      ],
     );
   }
+
+}
+
+
 
 void main() {
   runApp(const MaterialApp(
