@@ -24,6 +24,15 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Report Issue"),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.greenAccent, Colors.green],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

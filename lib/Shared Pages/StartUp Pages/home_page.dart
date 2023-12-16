@@ -18,8 +18,18 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home Page'),
-        backgroundColor: Colors.green, // Eco-friendly green color
+        title: Text('Home Page'),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.greenAccent, Colors.green],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+        ),
+        elevation: 10,
+        shadowColor: Colors.greenAccent.withOpacity(0.5),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -27,15 +37,15 @@ class HomePage extends StatelessWidget {
             _buildTopCarousel(),
             _buildWelcomeText(),
             _buildGridMenu(context),
-            // _buildNewsFeed(), // Uncomment if you want to include a news feed
+            // _buildNewsFeed(),
           ],
         ),
       ),
-      backgroundColor: Colors.lightGreen[50], // Light green background
+      backgroundColor: Colors.lightBlue[50],
     );
   }
 
- Widget _buildTopCarousel() {
+  Widget _buildTopCarousel() {
     final List<String> imageUrls = [
       'https://firebasestorage.googleapis.com/v0/b/recyclego-64b10.appspot.com/o/Banner%2FRecycle-Right-Banner.jpg?alt=media&token=0f09deef-3e48-4833-9614-b299289bf226',
       'https://firebasestorage.googleapis.com/v0/b/recyclego-64b10.appspot.com/o/Banner%2Frecycling-poster-final.webp?alt=media&token=f1e1d089-ee91-4883-bf38-0ff17bfcc4a3',
@@ -74,6 +84,7 @@ class HomePage extends StatelessWidget {
     _buildMenuButton(context, Icons.map, 'Map', MapScreenUser(title: 'User View Map')),
     _buildMenuButton(context, Icons.qr_code_scanner, 'Scan QR', QRScanScreen(title: 'Scan QR')),
     _buildMenuButton(context, Icons.report_problem, 'Report Issue', ReportIssueScreen(title: 'Report an Issue')),
+    _buildMenuButton(context, Icons.report_off_rounded, 'View Reward', ViewRewardPage()),
   ];
 
   // Admin-Only Actions
