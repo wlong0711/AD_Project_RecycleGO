@@ -20,8 +20,19 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        title: const Text('Forget Password'),
         centerTitle: true,
-        title: const Text('Forgot Password'),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.greenAccent, Colors.green],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+        ),
+        elevation: 10,
+        shadowColor: Colors.greenAccent.withOpacity(0.5),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -29,7 +40,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         children: [
           // Company Logo at the top center
           Image.network(
-            'https://example.com/your-company-logo-url.png',
+            'https://firebasestorage.googleapis.com/v0/b/recyclego-64b10.appspot.com/o/Company%20Logo%2FLogo.png?alt=media&token=aac89fba-a30d-4a9a-8c39-d6cd85e1f4d5',
             width: 100, // Set the width according to your design
             height: 100, // Set the height according to your design
           ),
@@ -61,7 +72,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
           // Save Changes Button (formerly Login Button)
           _buildButton(
-              "Save Changes", Colors.blue), // Change the color if needed
+              "Save Changes", Colors.green), // Change the color if needed
         ],
       ),
     );
