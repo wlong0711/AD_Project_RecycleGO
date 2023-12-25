@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
-  const ForgotPasswordPage({Key? key}) : super(key: key);
+  const ForgotPasswordPage({super.key});
 
   @override
   State<ForgotPasswordPage> createState() => _ForgotPasswordPageState();
@@ -73,7 +73,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         title: const Text('Reset Password'),
         centerTitle: true,
         flexibleSpace: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [Colors.greenAccent, Colors.green],
               begin: Alignment.topCenter,
@@ -139,8 +139,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       child: TextButton(
         onPressed: _resetPassword,
         style: TextButton.styleFrom(
-          primary: Colors.white, // This is the text color
-          shape: RoundedRectangleBorder(
+          foregroundColor: Colors.white, shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
         ),

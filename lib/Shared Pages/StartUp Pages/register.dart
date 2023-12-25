@@ -76,7 +76,7 @@ class _RegisterPageState extends State<RegisterPage> {
         title: const Text('Register'),
         centerTitle: true,
         flexibleSpace: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [Colors.greenAccent, Colors.green],
               begin: Alignment.topCenter,
@@ -126,7 +126,7 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Widget _buildOrSeparator() {
-    return Row(
+    return const Row(
       children: [
         Expanded(
           child: Divider(
@@ -135,7 +135,7 @@ class _RegisterPageState extends State<RegisterPage> {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
+          padding: EdgeInsets.symmetric(horizontal: 8),
           child: Text(
             'or',
             style: TextStyle(color: Colors.green), // Adjust the text color to match the theme

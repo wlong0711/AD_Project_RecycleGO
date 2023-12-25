@@ -268,7 +268,7 @@ void _showFilterDialog() async {
           ),
         ),
         flexibleSpace: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [Colors.greenAccent, Colors.green],
               begin: Alignment.topCenter,
@@ -331,7 +331,7 @@ void _showFilterDialog() async {
   Widget _buildGradientFAB({required VoidCallback onPressed, required String tooltip, required IconData icon}) {
     return Container(
       decoration: BoxDecoration(
-        gradient: LinearGradient(
+        gradient: const LinearGradient(
           colors: [Colors.greenAccent, Colors.green],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -342,17 +342,17 @@ void _showFilterDialog() async {
             color: Colors.greenAccent.withOpacity(0.5),
             spreadRadius: 2,
             blurRadius: 10,
-            offset: Offset(0, 3),
+            offset: const Offset(0, 3),
           ),
         ],
       ),
       child: FloatingActionButton(
         onPressed: onPressed,
         tooltip: tooltip,
-        heroTag: null, // Use null or unique tag for each FAB
-        child: Icon(icon, color: Colors.white),
+        heroTag: null,
         backgroundColor: Colors.transparent,
-        elevation: 0,
+        elevation: 0, // Use null or unique tag for each FAB
+        child: Icon(icon, color: Colors.white),
       ),
     );
   }

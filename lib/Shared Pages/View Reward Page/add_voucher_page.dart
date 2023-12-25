@@ -71,7 +71,7 @@ class _AddVoucherPageState extends State<AddVoucherPage> {
       appBar: AppBar(
         title: const Text('Add Voucher'),
         flexibleSpace: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [Colors.greenAccent, Colors.green],
               begin: Alignment.topCenter,

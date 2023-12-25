@@ -20,7 +20,7 @@ class _AdminReportsPageState extends State<AdminReportsPage> {
       appBar: AppBar(
         title: const Text("View Issues"),
         flexibleSpace: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [Colors.greenAccent, Colors.green],
               begin: Alignment.topCenter,

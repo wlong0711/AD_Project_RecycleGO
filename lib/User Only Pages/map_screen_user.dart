@@ -268,7 +268,7 @@ void _updateFilterCriteria(List<String> newCriteria) {
           ),
         ),
         flexibleSpace: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [Colors.greenAccent, Colors.green],
               begin: Alignment.topCenter,
@@ -306,7 +306,7 @@ void _updateFilterCriteria(List<String> newCriteria) {
             padding: const EdgeInsets.only(top: 120.0, left: 25.0), // Adjust these values as needed
             child: Container(
               decoration: BoxDecoration(
-                gradient: LinearGradient(
+                gradient: const LinearGradient(
                   colors: [Colors.greenAccent, Colors.green],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -317,7 +317,7 @@ void _updateFilterCriteria(List<String> newCriteria) {
                     color: Colors.greenAccent.withOpacity(0.5),
                     spreadRadius: 2,
                     blurRadius: 10,
-                    offset: Offset(0, 3),
+                    offset: const Offset(0, 3),
                   ),
                 ],
               ),
@@ -325,9 +325,9 @@ void _updateFilterCriteria(List<String> newCriteria) {
                 onPressed: _showFilterDialog,
                 tooltip: 'Filter Drop Points',
                 heroTag: 'filterBtn',
-                child: const Icon(Icons.filter_list),
                 backgroundColor: Colors.transparent, // Makes FAB transparent to reveal gradient container
-                elevation: 0, // Removes shadow
+                elevation: 0,
+                child: const Icon(Icons.filter_list), // Removes shadow
               ),
             ),
           ),
