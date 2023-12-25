@@ -158,7 +158,7 @@ void _rejectUpload(Upload upload) async {
         appBar: AppBar(
         title: const Text("Verify Rewards"),
         flexibleSpace: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [Colors.greenAccent, Colors.green],
               begin: Alignment.topCenter,
@@ -197,7 +197,7 @@ void _rejectUpload(Upload upload) async {
         appBar: AppBar(
         title: Text("@${selectedLocation!}"),
         flexibleSpace: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [Colors.greenAccent, Colors.green],
               begin: Alignment.topCenter,
@@ -222,7 +222,7 @@ void _rejectUpload(Upload upload) async {
         appBar: AppBar(
         title: const Text("Select Location"),
         flexibleSpace: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [Colors.greenAccent, Colors.green],
               begin: Alignment.topCenter,

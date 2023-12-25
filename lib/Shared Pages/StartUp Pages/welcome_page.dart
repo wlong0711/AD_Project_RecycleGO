@@ -11,7 +11,7 @@ class WelcomePage extends StatelessWidget {
       appBar: AppBar(
         title: const Text("RecycleGo"),
         flexibleSpace: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [Colors.greenAccent, Colors.green],
               begin: Alignment.topCenter,
