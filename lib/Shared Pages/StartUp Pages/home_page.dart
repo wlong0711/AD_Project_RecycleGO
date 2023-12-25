@@ -3,6 +3,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:recycle_go/Admin%20Only%20Pages/view_report_issues.dart';
 import 'package:recycle_go/Shared%20Pages/QR%20Scan%20&%20Upload%20Page/qr_scan_screen.dart';
 import 'package:recycle_go/Admin%20Only%20Pages/verify_reward.dart';
+import 'package:recycle_go/Shared%20Pages/StartUp%20Pages/UserProfilePage.dart';
 import 'package:recycle_go/Shared%20Pages/View%20Reward%20Page/view_reward.dart';
 import 'package:recycle_go/models/global_user.dart';
 import 'package:recycle_go/User%20Only%20Pages/report_issues.dart';
@@ -17,6 +18,8 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Home Page'),
+        automaticallyImplyLeading: false,
+        centerTitle: true,
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -28,6 +31,15 @@ class HomePage extends StatelessWidget {
         ),
         elevation: 10,
         shadowColor: Colors.greenAccent.withOpacity(0.5),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.account_circle),
+            onPressed: () {
+              // Navigate to UserProfilePage when icon is tapped
+              Navigator.of(context).push(MaterialPageRoute(builder: (_) => UserProfilePage()));
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(

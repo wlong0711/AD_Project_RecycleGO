@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:recycle_go/Admin%20Only%20Pages/report_details.dart';
+import 'package:intl/intl.dart';
+
 
 class AdminReportsPage extends StatefulWidget {
   const AdminReportsPage({super.key});
@@ -28,7 +30,7 @@ class _AdminReportsPageState extends State<AdminReportsPage> {
         ),
       ),
       body: StreamBuilder(
-        stream: _firestore.collection('reports issues').snapshots(),
+        stream: _firestore.collection('reports issues').orderBy('timestamp', descending: true).snapshots(),
         builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasError) {
             return const Text('Something went wrong');
@@ -43,9 +45,13 @@ class _AdminReportsPageState extends State<AdminReportsPage> {
             itemBuilder: (context, index) {
               DocumentSnapshot document = snapshot.data!.docs[index];
               Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
-
+              // Format the date from the timestamp
+              String formattedDate = data['timestamp'] != null 
+              ? DateFormat('yyyy-MM-dd – kk:mm').format((data['timestamp'] as Timestamp).toDate())
+              : 'No date provided';
               return ListTile(
                 title: Text(data['title'] ?? 'No Title'),
+                subtitle: Text(formattedDate),  // Show the formatted date here as a subtitle
                 onTap: () {
                   Navigator.push(
                     context,
