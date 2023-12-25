@@ -78,11 +78,14 @@ void _loadDropPoints() {
             position: point,
             infoWindow: InfoWindow(
               title: pointData['title'],
-              snippet: pointData['address'],
+              snippet: 'Tap here for details',
               onTap: () {
                 _showDropPointDetails(pointData);
-              }
+              },
             ),
+            onTap: () {
+              // This onTap is for the marker itself, not the InfoWindow
+            },
           ));
         }
       }
