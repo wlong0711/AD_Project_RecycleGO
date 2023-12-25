@@ -17,11 +17,11 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home Page'),
+        title: const Text('Home Page'),
         automaticallyImplyLeading: false,
         centerTitle: true,
         flexibleSpace: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [Colors.greenAccent, Colors.green],
               begin: Alignment.topCenter,
@@ -33,10 +33,10 @@ class HomePage extends StatelessWidget {
         shadowColor: Colors.greenAccent.withOpacity(0.5),
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.account_circle),
+            icon: const Icon(Icons.account_circle),
             onPressed: () {
               // Navigate to UserProfilePage when icon is tapped
-              Navigator.of(context).push(MaterialPageRoute(builder: (_) => UserProfilePage()));
+              Navigator.of(context).push(MaterialPageRoute(builder: (_) => const UserProfilePage()));
             },
           ),
         ],

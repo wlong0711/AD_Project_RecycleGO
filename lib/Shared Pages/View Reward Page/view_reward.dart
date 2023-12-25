@@ -68,7 +68,7 @@ class _ViewRewardPageState extends State<ViewRewardPage> {
       appBar: AppBar(
         title: const Text('View Rewards'),
         flexibleSpace: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [Colors.greenAccent, Colors.green],
               begin: Alignment.topCenter,

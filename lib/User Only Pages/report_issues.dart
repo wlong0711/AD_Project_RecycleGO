@@ -25,7 +25,7 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
       appBar: AppBar(
         title: const Text("Report Issue"),
         flexibleSpace: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [Colors.greenAccent, Colors.green],
               begin: Alignment.topCenter,
@@ -227,8 +227,7 @@ Widget _buildSubmitButton() {
     return ElevatedButton(
       onPressed: _submitReport,
       style: ElevatedButton.styleFrom(
-        primary: Colors.green, // Button background color
-        onPrimary: Colors.white, // Button text color
+        foregroundColor: Colors.white, backgroundColor: Colors.green, // Button text color
       ),
       child: const Text("Submit Report"),
     );
@@ -239,8 +238,7 @@ Widget _buildSubmitButton() {
         ? ElevatedButton(
             onPressed: _pickImage,
             style: ElevatedButton.styleFrom(
-              primary: Colors.green, // Button background color
-              onPrimary: Colors.white, // Button text color
+              foregroundColor: Colors.white, backgroundColor: Colors.green, // Button text color
             ),
             child: const Text("Upload Image"),
           )
@@ -253,8 +251,7 @@ Widget _buildSubmitButton() {
                   ElevatedButton(
                     onPressed: _pickImage,
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.blue, // Button background color
-                      onPrimary: Colors.white, // Button text color
+                      foregroundColor: Colors.white, backgroundColor: Colors.blue, // Button text color
                     ),
                     child: const Text("Re-upload Image"),
                   ),
@@ -262,8 +259,7 @@ Widget _buildSubmitButton() {
                   ElevatedButton(
                     onPressed: _deleteImage,
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.red, // Button background color
-                      onPrimary: Colors.white, // Button text color
+                      foregroundColor: Colors.white, backgroundColor: Colors.red, // Button text color
                     ),
                     child: const Text("Delete Image"),
                   ),

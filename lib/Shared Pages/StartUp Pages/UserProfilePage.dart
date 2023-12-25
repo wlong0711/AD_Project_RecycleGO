@@ -5,6 +5,8 @@ import 'package:recycle_go/Shared%20Pages/StartUp%20Pages/login.dart';
 
 
 class UserProfilePage extends StatefulWidget {
+  const UserProfilePage({super.key});
+
   @override
   _UserProfilePageState createState() => _UserProfilePageState();
 }
@@ -32,14 +34,14 @@ class _UserProfilePageState extends State<UserProfilePage> {
   Future<void> _logout() async {
     await FirebaseAuth.instance.signOut();
     // Navigate back to the login page or another appropriate page
-    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => LoginPage())); // Assuming LoginPage is the route you want to go back to
+    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const LoginPage())); // Assuming LoginPage is the route you want to go back to
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("User Profile"),
+        title: const Text("User Profile"),
         // actions: [
         //   // Text Button for logout
         //   TextButton.icon(
@@ -52,7 +54,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
         //   ),
         // ],
         flexibleSpace: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [Colors.greenAccent, Colors.green],
               begin: Alignment.topCenter,
@@ -62,7 +64,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
         ),
       ),
       body: userData == null
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : Column(
               children: [
                 SizedBox(height: MediaQuery.of(context).size.height * 0.02), // Adjust the space
@@ -70,7 +72,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
-                      CircleAvatar(
+                      const CircleAvatar(
                         radius: 60,
                         backgroundColor: Colors.blueGrey,
                         child: Icon(
@@ -79,10 +81,10 @@ class _UserProfilePageState extends State<UserProfilePage> {
                           color: Colors.white,
                         ),
                       ),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       Text(
                         userData!['username'],
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
@@ -95,19 +97,18 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     // Use ListView for other details for better handling of overflow and larger amount of data
                     children: <Widget>[
                       ListTile(
-                        leading: Icon(Icons.email),
+                        leading: const Icon(Icons.email),
                         title: Text("Email: ${user!.email ?? 'Not available'}"),
                       ),
                       // ... Add more user details if needed ...
                       Padding(
-                        padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 130),
+                        padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 130),
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            primary: Colors.red, // Red background color
-                            onPrimary: Colors.white, // White text color
+                            foregroundColor: Colors.white, backgroundColor: Colors.red, // White text color
                           ),
                           onPressed: _logout,
-                          child: Padding(
+                          child: const Padding(
                             padding: EdgeInsets.all(12.0),
                             child: Text(
                               'Logout',

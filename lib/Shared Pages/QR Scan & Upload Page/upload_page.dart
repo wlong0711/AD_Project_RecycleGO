@@ -125,7 +125,7 @@ class _UploadPageState extends State<UploadPage> {
       appBar: AppBar(
         title: Text('Upload Video for ${widget.locationName}'),
         flexibleSpace: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [Colors.greenAccent, Colors.green],
               begin: Alignment.topCenter,
