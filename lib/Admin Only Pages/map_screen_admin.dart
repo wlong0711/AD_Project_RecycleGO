@@ -79,11 +79,14 @@ void _loadDropPoints() {
             position: point,
             infoWindow: InfoWindow(
               title: pointData['title'],
-              snippet: pointData['address'],
+              snippet: 'Tap here for details',
               onTap: () {
                 _showDropPointDetails(pointData);
-              }
+              },
             ),
+            onTap: () {
+              // This onTap is for the marker itself, not the InfoWindow
+            },
           ));
         }
       }
@@ -318,7 +321,7 @@ void _showFilterDialog() async {
                 _buildGradientFAB(
                   onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const DropPointMap())),
                   tooltip: 'Manage Drop Points',
-                  icon: Icons.add_location_alt_rounded,
+                  icon: Icons.settings,
                 ),
               ],
             ),
@@ -349,7 +352,7 @@ void _showFilterDialog() async {
       child: FloatingActionButton(
         onPressed: onPressed,
         tooltip: tooltip,
-        heroTag: null, // Use null or unique tag for each FAB
+        heroTag: null,
         child: Icon(icon, color: Colors.white),
         backgroundColor: Colors.transparent,
         elevation: 0,
