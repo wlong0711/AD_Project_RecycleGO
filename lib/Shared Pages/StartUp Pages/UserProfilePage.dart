@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:recycle_go/Shared%20Pages/StartUp%20Pages/login.dart';
+import 'package:recycle_go/Shared%20Pages/StartUp%20Pages/welcome_page.dart';
 
 
 class UserProfilePage extends StatefulWidget {
@@ -34,7 +34,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
   Future<void> _logout() async {
     await FirebaseAuth.instance.signOut();
     // Navigate back to the login page or another appropriate page
-    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const LoginPage())); // Assuming LoginPage is the route you want to go back to
+    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const WelcomePage())); // Assuming LoginPage is the route you want to go back to
   }
 
   @override
