@@ -79,11 +79,14 @@ void _loadDropPoints() {
             position: point,
             infoWindow: InfoWindow(
               title: pointData['title'],
-              snippet: pointData['address'],
+              snippet: 'Tap here for details',
               onTap: () {
                 _showDropPointDetails(pointData);
-              }
+              },
             ),
+            onTap: () {
+              // This onTap is for the marker itself, not the InfoWindow
+            },
           ));
         }
       }
@@ -268,7 +271,7 @@ void _showFilterDialog() async {
           ),
         ),
         flexibleSpace: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [Colors.greenAccent, Colors.green],
               begin: Alignment.topCenter,
@@ -318,7 +321,7 @@ void _showFilterDialog() async {
                 _buildGradientFAB(
                   onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const DropPointMap())),
                   tooltip: 'Manage Drop Points',
-                  icon: Icons.add_location_alt_rounded,
+                  icon: Icons.settings,
                 ),
               ],
             ),
@@ -331,7 +334,7 @@ void _showFilterDialog() async {
   Widget _buildGradientFAB({required VoidCallback onPressed, required String tooltip, required IconData icon}) {
     return Container(
       decoration: BoxDecoration(
-        gradient: LinearGradient(
+        gradient: const LinearGradient(
           colors: [Colors.greenAccent, Colors.green],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -342,7 +345,7 @@ void _showFilterDialog() async {
             color: Colors.greenAccent.withOpacity(0.5),
             spreadRadius: 2,
             blurRadius: 10,
-            offset: Offset(0, 3),
+            offset: const Offset(0, 3),
           ),
         ],
       ),
@@ -352,7 +355,7 @@ void _showFilterDialog() async {
         heroTag: null, // Use null or unique tag for each FAB
         child: Icon(icon, color: Colors.white),
         backgroundColor: Colors.transparent,
-        elevation: 0,
+        elevation: 0, // Use null or unique tag for each FAB
       ),
     );
   }

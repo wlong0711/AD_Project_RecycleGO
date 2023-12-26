@@ -24,7 +24,7 @@ class ReportDetailsPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(reportData['title'] ?? 'Report Details'),
         flexibleSpace: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [Colors.greenAccent, Colors.green],
               begin: Alignment.topCenter,

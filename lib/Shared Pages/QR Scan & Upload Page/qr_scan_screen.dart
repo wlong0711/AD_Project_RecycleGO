@@ -41,7 +41,7 @@ class _QRScanScreenState extends State<QRScanScreen> {
       appBar: AppBar(
         title: Text(widget.title),
         flexibleSpace: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [Colors.greenAccent, Colors.green],
               begin: Alignment.topCenter,
