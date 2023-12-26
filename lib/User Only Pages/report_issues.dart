@@ -33,6 +33,7 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
             ),
           ),
         ),
+        
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -154,6 +155,7 @@ Future<void> _submitReport() async {
         'phoneNumber': _phoneNumber,  // Ensure this matches your Firestore field name
         'imageUrl': imageUrl,
         'timestamp': FieldValue.serverTimestamp(),
+        'status': 'to solve', // default status when a report is created
       });
 
       // Show a success message or navigate away
