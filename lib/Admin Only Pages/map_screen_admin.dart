@@ -120,44 +120,43 @@ void _updateFilterCriteria(List<String> newCriteria) {
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text(pointData['title'], style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+        title: Text(
+          pointData['title'] ?? 'Not available',
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+        ),
         content: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: ListBody(
             children: <Widget>[
-              const Text(
-                'Address:',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.blue),
+              ListTile(
+                leading: const Icon(Icons.location_on, color: Colors.green),
+                title: const Text('Address', style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold)),
+                subtitle: Text(
+                  pointData['address'] ?? 'Not available',
+                  style: const TextStyle(fontSize: 18),
+                ),
               ),
-              Text(pointData['address'] ?? 'Not available', style: const TextStyle(fontSize: 14)),
-              const SizedBox(height: 10),
-              const Divider(),
-              const Text(
-                'Operating Hours:',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.blue),
+              ListTile(
+                leading: const Icon(Icons.event, color: Colors.green),
+                title: const Text('Pickup Days', style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold)),
+                subtitle: Text(
+                  (pointData['pickupDays'] as List<dynamic>).join(', ') ?? 'Not available',
+                  style: const TextStyle(fontSize: 18),
+                ),
               ),
-              Text(pointData['operationHours'] ?? 'Not available', style: const TextStyle(fontSize: 14)),
-              const SizedBox(height: 10),
-              const Divider(),
-              const Text(
-                'Recyclable Items:',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.blue),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: (pointData['recycleItems'] as List<dynamic>).map((item) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4.0),
-                    child: Text(item.toString(), style: const TextStyle(fontSize: 14)),
-                  );
-                }).toList(),
+              ListTile(
+                leading: const Icon(Icons.recycling, color: Colors.green),
+                title: const Text('Recyclable Items', style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold)),
+                subtitle: Text(
+                  (pointData['recycleItems'] as List<dynamic>).join(', ') ?? 'Not available',
+                  style: const TextStyle(fontSize: 18),
+                ),
               ),
             ],
           ),
         ),
         actions: <Widget>[
           TextButton(
-            child: const Text('Close', style: TextStyle(color: Colors.blue)),
+            child: const Text('Close', style: TextStyle(color: Colors.blue, fontSize: 18)),
             onPressed: () {
               Navigator.of(context).pop();
             },
@@ -195,8 +194,6 @@ void _updateFilterCriteria(List<String> newCriteria) {
       ),
     ));
   } else {
-    // Handle the case where no matching drop points are found
-    // For example, display a dialog or a toast message
     print("No matching drop points found");
   }
 }
@@ -205,7 +202,6 @@ void _updateFilterCriteria(List<String> newCriteria) {
 final List<String> _selectedFilters = [];
 
 void _showFilterDialog() async {
-  // Assuming you have a list of all recyclable items
   List<String> recyclableItems = ['Paper', 'Glass', 'Cans', 'Plastic'];
 
   await showDialog(
@@ -239,7 +235,7 @@ void _showFilterDialog() async {
                 child: const Text('Apply'),
                 onPressed: () {
                   Navigator.of(context).pop();
-                  _updateFilterCriteria(_selectedFilters); // Update the filter criteria based on the selection
+                  _updateFilterCriteria(_selectedFilters);
                 },
               ),
             ],
@@ -253,43 +249,54 @@ void _showFilterDialog() async {
   @override
   Widget build(BuildContext context) {
       return Scaffold(
-      appBar: AppBar(
-        title: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(30),
+        appBar: AppBar(
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.greenAccent, Colors.green],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
           ),
-          child: TextField(
-            controller: _searchController,
-            onSubmitted: (value) => _searchAndNavigate(),
-            decoration: const InputDecoration(
-              icon: Icon(Icons.search, color: Colors.black),
-              hintText: 'Enter location name',
-              border: InputBorder.none,
+          elevation: 10,
+          shadowColor: Colors.greenAccent.withOpacity(0.5),
+          title: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(30),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _searchController,
+                    onChanged: (value) {
+                      setState(() {}); // update the visibility of the clear button
+                    },
+                    onSubmitted: (value) => _searchAndNavigate(),
+                    decoration: const InputDecoration(
+                      icon: Icon(Icons.search, color: Colors.black),
+                      hintText: 'Enter location name',
+                      border: InputBorder.none,
+                    ),
+                  ),
+                ),
+                Visibility(
+                  visible: _searchController.text.isNotEmpty,
+                  child: IconButton(
+                    icon: const Icon(Icons.clear, color: Colors.black),
+                    onPressed: () {
+                      _searchController.clear();
+                      setState(() {}); // update the visibility of the clear button
+                    },
+                  ),
+                ),
+              ],
             ),
           ),
         ),
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.greenAccent, Colors.green],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
-          ),
-        ),
-        elevation: 10,
-        shadowColor: Colors.greenAccent.withOpacity(0.5),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.clear),
-            onPressed: () {
-              _searchController.clear();
-            },
-          ),
-        ],
-      ),
 
       body: GoogleMap(
         onMapCreated: _onMapCreated,
