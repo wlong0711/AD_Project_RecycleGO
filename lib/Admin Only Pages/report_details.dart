@@ -5,8 +5,7 @@ class ReportDetailsPage extends StatelessWidget {
   final Map<String, dynamic> reportData;
   final String documentId;
 
-  const ReportDetailsPage({Key? key, required this.reportData, required this.documentId})
-      : super(key: key);
+  const ReportDetailsPage({super.key, required this.reportData, required this.documentId});
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +32,7 @@ class ReportDetailsPage extends StatelessWidget {
           } else if (snapshot.hasError) {
             return Center(child: Text("Error: ${snapshot.error}"));
           }
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         },
       ),
     );
@@ -64,12 +63,11 @@ class ReportDetailsPage extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () => _markAsSolved(context),
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.green, // Button background color
-                  onSurface: Colors.greenAccent, // Surface color
+                  backgroundColor: Colors.green, disabledForegroundColor: Colors.greenAccent.withOpacity(0.38), disabledBackgroundColor: Colors.greenAccent.withOpacity(0.12), // Surface color
                 ),
-                child: Padding(
+                child: const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 32.0, vertical: 12.0),
-                  child: const Text("Mark as Solved"),
+                  child: Text("Mark as Solved"),
                 ),
               ),
             ),

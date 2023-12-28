@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -18,8 +17,8 @@ class _DropPointMapState extends State<DropPointMap> {
   LatLng? tempPoint;
   LatLng _currentPosition = const LatLng(0.0, 0.0);
   String _dropPointTitle = '';
-  List<String> _pickupDays = [];
-  List<String> _recycleItems = [];
+  final List<String> _pickupDays = [];
+  final List<String> _recycleItems = [];
 
   @override
   void initState() {
@@ -103,22 +102,22 @@ void _showDropPointDetails(Map<String, dynamic> pointData, String docId, String 
         child: Wrap(
           children: <Widget>[
             ListTile(
-              title: Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
+              title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
               onTap: () {},
             ),
-            Divider(),
+            const Divider(),
             ListTile(
-                leading: Icon(Icons.info),
-                title: Text('View Details'),
+                leading: const Icon(Icons.info),
+                title: const Text('View Details'),
                 onTap: () => _navigateToDetailView(context, pointData)),
             ListTile(
-              leading: Icon(Icons.edit),
-              title: Text('Edit'),
+              leading: const Icon(Icons.edit),
+              title: const Text('Edit'),
               onTap: () => _navigateToEditView(context, docId),
             ),
             ListTile(
-              leading: Icon(Icons.delete, color: Colors.red),
-              title: Text('Delete', style: TextStyle(color: Colors.red)),
+              leading: const Icon(Icons.delete, color: Colors.red),
+              title: const Text('Delete', style: TextStyle(color: Colors.red)),
               onTap: () => _deleteDropPointConfirmation(docId),
             ),
           ],
@@ -171,17 +170,17 @@ Future<bool> _confirmDeleteDialog() async {
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text('Confirm Delete'),
-        content: Text('Are you sure you want to delete this drop point? This action cannot be undone.'),
+        title: const Text('Confirm Delete'),
+        content: const Text('Are you sure you want to delete this drop point? This action cannot be undone.'),
         actions: <Widget>[
           TextButton(
-            child: Text('Cancel'),
+            child: const Text('Cancel'),
             onPressed: () {
               Navigator.of(context).pop(false);
             },
           ),
           TextButton(
-            child: Text('Delete', style: TextStyle(color: Colors.red)),
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
             onPressed: () {
               Navigator.of(context).pop(true);
             },
@@ -544,7 +543,7 @@ void _updateFilterCriteria(List<String> newCriteria) {
 class DetailedViewScreen extends StatelessWidget {
   final Map<String, dynamic> pointData;
 
-  const DetailedViewScreen({Key? key, required this.pointData}) : super(key: key);
+  const DetailedViewScreen({super.key, required this.pointData});
 
   @override
   Widget build(BuildContext context) {
@@ -552,7 +551,7 @@ class DetailedViewScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(pointData['title'] ?? 'Detail View'),
         flexibleSpace: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [Colors.greenAccent, Colors.green],
               begin: Alignment.topCenter,
@@ -568,29 +567,29 @@ class DetailedViewScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               // Title Section
-              Text(
+              const Text(
                 'Title',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               ),
-              Text(pointData['title'] ?? 'Not available', style: TextStyle(fontSize: 16)),
+              Text(pointData['title'] ?? 'Not available', style: const TextStyle(fontSize: 16)),
 
               Divider(color: Colors.grey[300], height: 20, thickness: 1),
 
               // Pickup Days Section
-              Text(
+              const Text(
                 'Pickup Days',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               ),
-              Text(pointData['pickupDays']?.join(', ') ?? 'Not available', style: TextStyle(fontSize: 16)),
+              Text(pointData['pickupDays']?.join(', ') ?? 'Not available', style: const TextStyle(fontSize: 16)),
 
               Divider(color: Colors.grey[300], height: 20, thickness: 1),
 
               // Recyclable Items Section
-              Text(
+              const Text(
                 'Recyclable Items',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               ),
-              Text(pointData['recycleItems']?.join(', ') ?? 'Not available', style: TextStyle(fontSize: 16)),
+              Text(pointData['recycleItems']?.join(', ') ?? 'Not available', style: const TextStyle(fontSize: 16)),
 
               // Add more sections as necessary
             ],
@@ -604,7 +603,7 @@ class DetailedViewScreen extends StatelessWidget {
 class EditDropPointScreen extends StatefulWidget {
   final String dropPointId;
 
-  const EditDropPointScreen({Key? key, required this.dropPointId}) : super(key: key);
+  const EditDropPointScreen({super.key, required this.dropPointId});
 
   @override
   _EditDropPointScreenState createState() => _EditDropPointScreenState();
@@ -651,11 +650,15 @@ class _EditDropPointScreenState extends State<EditDropPointScreen> {
 
         // Initialize daysOfWeekMap based on fetched data
         List<dynamic> pickupDays = pointData['pickupDays'] ?? [];
-        pickupDays.forEach((day) => _daysOfWeekMap[day] = true);
+        for (var day in pickupDays) {
+          _daysOfWeekMap[day] = true;
+        }
 
         // Initialize recyclableItemsMap based on fetched data
         List<dynamic> recyclableItems = pointData['recycleItems'] ?? [];
-        recyclableItems.forEach((item) => _recyclableItemsMap[item] = true);
+        for (var item in recyclableItems) {
+          _recyclableItemsMap[item] = true;
+        }
       }
       setState(() {
         _isLoading = false;
@@ -706,9 +709,9 @@ class _EditDropPointScreenState extends State<EditDropPointScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Drop Point'),
+        title: const Text('Edit Drop Point'),
         flexibleSpace: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [Colors.greenAccent, Colors.green],
               begin: Alignment.topCenter,
@@ -718,17 +721,17 @@ class _EditDropPointScreenState extends State<EditDropPointScreen> {
         ),
       ),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : Padding(
               padding: const EdgeInsets.all(16.0),
               child: ListView(
                 children: [
                   TextField(
                     controller: _titleController,
-                    decoration: InputDecoration(labelText: 'Title'),
+                    decoration: const InputDecoration(labelText: 'Title'),
                   ),
-                  SizedBox(height: 20),
-                  Text("Select Pickup Days:", style: TextStyle(fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 20),
+                  const Text("Select Pickup Days:", style: TextStyle(fontWeight: FontWeight.bold)),
                   Wrap(
                     spacing: 8.0, // Gap between chips
                     runSpacing: 4.0, // Gap between lines
@@ -747,8 +750,8 @@ class _EditDropPointScreenState extends State<EditDropPointScreen> {
                       );
                     }).toList(),
                   ),
-                  SizedBox(height: 20),
-                  Text("Select Recyclable Items:", style: TextStyle(fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 20),
+                  const Text("Select Recyclable Items:", style: TextStyle(fontWeight: FontWeight.bold)),
                   ..._recyclableItemsMap.keys.map(
                     (item) => CheckboxListTile(
                       title: Text(item),
@@ -762,14 +765,13 @@ class _EditDropPointScreenState extends State<EditDropPointScreen> {
                       activeColor: Colors.green,
                     ),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: _saveDropPoint,
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.green,
-                      onPrimary: Colors.white,
+                      foregroundColor: Colors.white, backgroundColor: Colors.green,
                     ),
-                    child: Padding(
+                    child: const Padding(
                       padding: EdgeInsets.all(12.0),
                       child: Text(
                         'Save Changes',

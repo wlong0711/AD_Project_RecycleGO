@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:recycle_go/Admin%20Only%20Pages/report_details.dart';
 
 class AdminReportsPage extends StatefulWidget {
-  const AdminReportsPage({Key? key}) : super(key: key);
+  const AdminReportsPage({super.key});
 
   @override
   _AdminReportsPageState createState() => _AdminReportsPageState();
@@ -106,7 +106,7 @@ class _AdminReportsPageState extends State<AdminReportsPage> with SingleTickerPr
         ),
         bottom: TabBar(
           controller: _tabController,
-          tabs: [
+          tabs: const [
             Tab(text: "To Solve"),
             Tab(text: "Solved"),
           ],
