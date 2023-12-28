@@ -16,6 +16,7 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
   List<Voucher> vouchers = [];
   List<String> claimedVouchers = [];
   bool _isLoading = false;
+  bool _isDeleting = false;
   bool _isWritingToDatabase = false;
   Timer? _timer;
   int _userPoints = 0;
@@ -24,13 +25,26 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
   @override
   void initState() {
     super.initState();
+    _isLoading = true;
     _tabController = TabController(length: 2, vsync: this);
-    _fetchUserPoints();
-    fetchVouchers();
-    fetchClaimedVouchers();
+    initializePage();
+  }
+
+  void initializePage() async {
+    print("In initializePage");
+    print(_isLoading);
+    await _fetchUserPoints();
+    await fetchVouchers();
+    await fetchClaimedVouchers();
     _timer = Timer.periodic(Duration(minutes: 1), (Timer t) {
-      setState(() {});
-    });
+        setState(() {});
+      });
+
+    if (mounted) { // Check whether the state object is in tree
+      setState(() {
+        _isLoading = false; // Data has been initialized, stop the loading indicator
+      });
+    }
   }
 
   @override
@@ -40,13 +54,14 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
     super.dispose();
   }
 
-  void _fetchUserPoints() {
-    FirebaseFirestore.instance
-      .collection('users')
-      .where('username', isEqualTo: GlobalUser.userName)
-      .get()
-      .then((QuerySnapshot snapshot) {
-        if (snapshot.docs.isNotEmpty) {
+  Future<void> _fetchUserPoints() async {
+    try {
+      var snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .where('username', isEqualTo: GlobalUser.userName)
+        .get();
+      
+      if (snapshot.docs.isNotEmpty) {
           DocumentSnapshot userDoc = snapshot.docs.first;
           if (userDoc.exists && userDoc.data() != null && (userDoc.data() as Map<String, dynamic>).containsKey('points')) {
             setState(() {
@@ -54,13 +69,14 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
             });
           }
         }
-      })
-      .catchError((error) {
-        print('Error fetching user points: $error');
-      });
+      
+    } catch (error) {
+      print('Error fetching user points: $error');
+      // Handle error
+    }
   }
 
-  void fetchVouchers() async {
+  Future<void> fetchVouchers() async {
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('vouchers').get();
     List<Voucher> fetchedVouchers = querySnapshot.docs.map((doc) => Voucher.fromFirestore(doc)).toList();
     setState(() {
@@ -69,7 +85,7 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
     });
   }
 
-  void fetchClaimedVouchers() async {
+  Future<void> fetchClaimedVouchers() async {
     DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('users')
         .where('username', isEqualTo: GlobalUser.userName).get().then((snapshot) => snapshot.docs.first);
     if (userDoc.exists) {
@@ -161,7 +177,7 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
 
   void deleteVoucher(String voucherId, int index) async {
     setState(() {
-      _isLoading = true; // Turn on loading overlay
+      _isDeleting = true; // Turn on loading overlay
     });
 
     try {
@@ -198,7 +214,7 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
       ));
     } finally {
       setState(() {
-        _isLoading = false; // Turn off loading overlay
+        _isDeleting = false; // Turn off loading overlay
       });
     }
   }
@@ -404,85 +420,126 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Scaffold(
-          appBar: AppBar(
-            title: const Text('View Rewards'),
-            flexibleSpace: Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.greenAccent, Colors.green],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-              ),
-            ),
-            elevation: 10,
-            shadowColor: Colors.greenAccent.withOpacity(0.5),
-            actions: [
-              if (GlobalUser.userLevel == 1)
-                IconButton(
-                  icon: const Icon(Icons.add),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AddVoucherPage(
-                          onVoucherAdded: () {
+    Widget content; // This will hold the current state widget
 
-                          },
-                        ),
-                      ),
-                    ).then((_) => refreshData());
-                  },
-                ),
-            ],
-          ),
-          body: Column(
-            children: <Widget>[
-              _buildUserPointsCard(), // User Points Card at the top
-              // TabBar directly below the user points card
-              Material(
-                child: Container(
-                  width: 400,
-                  decoration: BoxDecoration(
-                    color: Colors.green,  // Set the background color of the container
-                    borderRadius: BorderRadius.circular(50),
+    // Decide which content to display based on loading state
+    if (_isLoading) {
+      // Loading state
+      content = Scaffold(
+        key: ValueKey("Loading"),
+        body: Container(
+          color: Colors.green, // Ensure this is your desired color
+          alignment: Alignment.center,
+          child: _buildLoadingOverlay(),
+        ),
+      );
+    } else {
+      // Loaded state
+      content = Scaffold(
+        key: ValueKey("Loaded"),
+        appBar: AppBar(
+          title: const Text('View Rewards'),
+          flexibleSpace: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Colors.greenAccent, Colors.green],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
                   ),
-                    child: TabBar(
-                      controller: _tabController,
-                      labelColor: Colors.yellow, // Color for the text of the selected tab
-                      unselectedLabelColor: Colors.white, // Color for the text of the unselected tabs
-                      indicatorColor: Colors.yellow,
-                      tabs: [
-                        Tab(text: 'Available'),
-                        Tab(text: 'Expired'),
-                      ],
+                ),
+              ),
+              elevation: 10,
+              shadowColor: Colors.greenAccent.withOpacity(0.5),
+              actions: [
+                if (GlobalUser.userLevel == 1)
+                  IconButton(
+                    icon: const Icon(Icons.add),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AddVoucherPage(
+                            onVoucherAdded: () {
+
+                            },
+                          ),
+                        ),
+                      ).then((_) => refreshData());
+                    },
+                  ),
+              ],
+        ),
+        body: Column(
+          children: <Widget>[
+            _buildUserPointsCard(),
+            // TabBar directly below the user points card
+                Material(
+                  child: Container(
+                    width: 400,
+                    decoration: BoxDecoration(
+                      color: Colors.green,  // Set the background color of the container
+                      borderRadius: BorderRadius.circular(50),
                     ),
+                      child: TabBar(
+                        controller: _tabController,
+                        labelColor: Colors.yellow, // Color for the text of the selected tab
+                        unselectedLabelColor: Colors.white, // Color for the text of the unselected tabs
+                        indicatorColor: Colors.yellow,
+                        tabs: [
+                          Tab(text: 'Available'),
+                          Tab(text: 'Expired'),
+                        ],
+                      ),
+                  ),
                 ),
-              ),
-              Expanded(
-                // TabBarView inside the Expanded to fill the rest of the screen space
-                child: TabBarView(
-                  controller: _tabController,
-                  children: [
-                    _buildAvailableVouchers(),
-                    _buildExpiredVouchers(),
-                  ],
+                Expanded(
+                  // TabBarView inside the Expanded to fill the rest of the screen space
+                  child: TabBarView(
+                    controller: _tabController,
+                    children: [
+                      _buildAvailableVouchers(),
+                      _buildExpiredVouchers(),
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
+          ],
         ),
-        if (_isWritingToDatabase || _isLoading) // Check if any loading is true.
-        Container(
-          color: Colors.black.withOpacity(0.5),
-          child: Center(
-            child: _buildLoadingOverlay(),
+      );
+    }
+
+    if (_isDeleting) {
+      content = Stack(
+        children: [
+          content, // The current content (loading or main content)
+          Container(
+            color: Colors.black.withOpacity(0.5),
+            child: Center(
+              child: _buildLoadingOverlay(),
+            ),
           ),
-        ),
-      ],
+        ],
+      );
+    }
+
+    // Overlay the writing to database indicator if needed
+    if (_isWritingToDatabase) {
+      content = Stack(
+        children: [
+          content, // The current content (loading or main content)
+          Container(
+            color: Colors.black.withOpacity(0.5),
+            child: Center(
+              child: _buildLoadingOverlay(),
+            ),
+          ),
+        ],
+      );
+    }
+
+    // Wrap the content in an AnimatedSwitcher for smooth transition
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 500),
+      child: content,
     );
   }
 }
