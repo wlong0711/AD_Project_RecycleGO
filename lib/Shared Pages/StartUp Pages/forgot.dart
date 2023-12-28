@@ -87,7 +87,13 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       body: Stack(
         children: [
           Center(child: _buildForgetForm()),
-          if (_isLoading) _buildLoadingOverlay(),
+          if (_isLoading)
+            Container(
+              color: Colors.black.withOpacity(0.5),
+              child: Center(
+                child: _buildLoadingOverlay(),
+              ),
+            ),
         ],
       ),
     );
