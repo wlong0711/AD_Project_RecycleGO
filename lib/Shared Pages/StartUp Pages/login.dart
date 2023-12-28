@@ -149,7 +149,13 @@ Widget build(BuildContext context) {
       body: Stack(
         children: [
           Center(child: _buildLoginForm()),
-          if (_isLoading) _buildLoadingOverlay(),
+          if (_isLoading)
+            Container(
+              color: Colors.black.withOpacity(0.5),
+              child: Center(
+                child: _buildLoadingOverlay(),
+              ),
+            ),
         ],
       ),
     );
