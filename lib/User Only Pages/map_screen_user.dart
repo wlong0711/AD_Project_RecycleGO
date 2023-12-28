@@ -139,7 +139,7 @@ void _updateFilterCriteria(List<String> newCriteria) {
                   leading: const Icon(Icons.event, color: Colors.green),
                   title: const Text('Pickup Days', style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold)),
                   subtitle: Text(
-                    (pointData['pickupDays'] as List<dynamic>).join(', ') ?? 'Not available',
+                    (pointData['pickupDays'] as List<dynamic>).join(', '),
                     style: const TextStyle(fontSize: 18),
                   ),
                 ),
@@ -147,7 +147,7 @@ void _updateFilterCriteria(List<String> newCriteria) {
                   leading: const Icon(Icons.recycling, color: Colors.green),
                   title: const Text('Recyclable Items', style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold)),
                   subtitle: Text(
-                    (pointData['recycleItems'] as List<dynamic>).join(', ') ?? 'Not available',
+                    (pointData['recycleItems'] as List<dynamic>).join(', '),
                     style: const TextStyle(fontSize: 18),
                   ),
                 ),
