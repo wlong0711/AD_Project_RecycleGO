@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart';
-// import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class DropPointMap extends StatefulWidget {
   const DropPointMap({super.key});
@@ -19,10 +18,8 @@ class _DropPointMapState extends State<DropPointMap> {
   LatLng? tempPoint;
   LatLng _currentPosition = const LatLng(0.0, 0.0);
   String _dropPointTitle = '';
-  String _operationHours = '';
-  final List<String> _recycleItems = [];
-
-  final DatabaseReference = FirebaseDatabase.instance.ref();
+  List<String> _pickupDays = [];
+  List<String> _recycleItems = [];
 
   @override
   void initState() {
@@ -31,7 +28,7 @@ class _DropPointMapState extends State<DropPointMap> {
     _determinePosition();
   }
 
-   void _onMapTap(LatLng point) {
+  void _onMapTap(LatLng point) {
     setState(() {
       tempPoint = point;
       tempMarker = Marker(
@@ -44,8 +41,9 @@ class _DropPointMapState extends State<DropPointMap> {
 
   void _onAddDropPointPressed() async {
     if (tempPoint != null) {
-      await _showDetailsDialog(tempPoint!);
+      await _showDetailsDialog(tempPoint!); // This should set _pickupDays and _recycleItems
       if (_dropPointTitle.isNotEmpty) {
+        // Ensure the address is fetched before saving the drop point
         String address = await _getAddressFromLatLng(tempPoint!);
         Marker newMarker = Marker(
           markerId: MarkerId(tempPoint.toString()),
@@ -56,7 +54,6 @@ class _DropPointMapState extends State<DropPointMap> {
           markers.add(newMarker);
           tempMarker = null;
         });
-        _saveDropPoint(tempPoint!, _dropPointTitle, address);
       }
     }
   }
@@ -98,223 +95,122 @@ class _DropPointMapState extends State<DropPointMap> {
     });
   }
 
-void _showDropPointDetails(Map<String, dynamic> pointData, String docId) {
-  showDialog(
+void _showDropPointDetails(Map<String, dynamic> pointData, String docId, String title) {
+  showModalBottomSheet(
     context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text(pointData['title'], style: const TextStyle(fontWeight: FontWeight.bold)),
-        content: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              const Text(
-                'Operating Hours:',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: Text(pointData['operationHours'] ?? 'Not available'),
-              ),
-              const Text(
-                'Recyclable Items:',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: (pointData['recycleItems'] as List<dynamic>).map<Widget>((item) {
-                  return Padding(
-                    padding: const EdgeInsets.only(top: 2.0, bottom: 2.0),
-                    child: Row(
-                      children: <Widget>[
-                        const Icon(Icons.check, color: Colors.green),
-                        const SizedBox(width: 8),
-                        Text(item.toString()),
-                      ],
-                    ),
-                  );
-                }).toList(),
-              ),
-            ],
-          ),
+    builder: (BuildContext bc) {
+      return Container(
+        child: Wrap(
+          children: <Widget>[
+            ListTile(
+              title: Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
+              onTap: () {},
+            ),
+            Divider(),
+            ListTile(
+                leading: Icon(Icons.info),
+                title: Text('View Details'),
+                onTap: () => _navigateToDetailView(context, pointData)),
+            ListTile(
+              leading: Icon(Icons.edit),
+              title: Text('Edit'),
+              onTap: () => _navigateToEditView(context, docId),
+            ),
+            ListTile(
+              leading: Icon(Icons.delete, color: Colors.red),
+              title: Text('Delete', style: TextStyle(color: Colors.red)),
+              onTap: () => _deleteDropPointConfirmation(docId),
+            ),
+          ],
         ),
-         actions: <Widget>[
-          TextButton(
-            child: const Text('Close', style: TextStyle(color: Colors.blue)),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-          TextButton(
-            child: const Text('Modify Drop Point Details'),
-            onPressed: () {
-              Navigator.of(context).pop(); // Close the details dialog
-              _modifyDropPointDetails(pointData, docId); // Implement this method
-            },
-          ),
-          TextButton(
-          child: const Text('Delete Drop Point'),
-          onPressed: () {
-          Navigator.of(context).pop(); // Close the details dialog
-          _deleteDropPoint(docId); // Call the delete function
-    },
-  ),
-        ],
       );
     },
   );
 }
 
-Future<Map<String, dynamic>?> _showEditDropPointDialog(Map<String, dynamic> pointData) async {
-  TextEditingController titleController = TextEditingController(text: pointData['title']);
-  TextEditingController operationHoursController = TextEditingController(text: pointData['operationHours']);
-  List<String> recycleItems = List<String>.from(pointData['recycleItems']);
+void _deleteDropPointConfirmation(String docId) async {
+  bool confirmDelete = await _confirmDeleteDialog();
+  if (confirmDelete) {
+    await FirebaseFirestore.instance.collection('drop_points').doc(docId).delete();
+    Navigator.of(context).pop(); // Close the bottom sheet
 
-  return showDialog<Map<String, dynamic>>(
-    context: context,
-    barrierDismissible: false, // User must tap button to close dialog
-    builder: (BuildContext context) {
-      return StatefulBuilder(
-        builder: (BuildContext context, StateSetter setStateDialog) {
-          return AlertDialog(
-            title: const Text('Edit Drop Point Details'),
-            content: SingleChildScrollView(
-              child: ListBody(
-                children: <Widget>[
-                  TextField(
-                    controller: titleController,
-                    decoration: const InputDecoration(hintText: "Enter title"),
-                  ),
-                  TextField(
-                    controller: operationHoursController,
-                    decoration: const InputDecoration(hintText: "Operation hours"),
-                  ),
-                  // ... Recyclable items checkboxes ...
-                ],
-              ),
-            ),
-            actions: <Widget>[
-              TextButton(
-                child: const Text('Cancel'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-              TextButton(
-                child: const Text('Confirm'),
-                onPressed: () {
-                  Navigator.of(context).pop({
-                    'title': titleController.text,
-                    'operationHours': operationHoursController.text,
-                    'recycleItems': recycleItems,
-                  });
-                },
-              ),
-            ],
-          );
+    // Refresh the markers on the map
+    _refreshMarkers();
+  }
+}
+
+void _refreshMarkers() async {
+  var updatedMarkers = <Marker>{};
+  // Fetch the updated list of drop points from Firestore or your local list
+  var snapshot = await FirebaseFirestore.instance.collection('drop_points').get();
+  for (var doc in snapshot.docs) {
+    var pointData = doc.data();
+    var point = LatLng(pointData['latitude'], pointData['longitude']);
+    updatedMarkers.add(
+      Marker(
+        markerId: MarkerId(doc.id),
+        position: point,
+        infoWindow: InfoWindow(
+          title: pointData['title'],
+          snippet: pointData['address'],
+        ),
+        onTap: () {
+          _showDropPointDetails(pointData, doc.id, pointData['title']);
         },
-      );
-    },
-  );
+      ),
+    );
+  }
+
+  setState(() {
+    markers = updatedMarkers;
+  });
 }
 
-
-void _modifyDropPointDetails(Map<String, dynamic> pointData, String docId) async {
-  TextEditingController titleController = TextEditingController(text: pointData['title']);
-  TextEditingController operationHoursController = TextEditingController(text: pointData['operationHours']);
-  List<String> recycleItems = List<String>.from(pointData['recycleItems']);
-
-  await showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return StatefulBuilder(
-        builder: (context, setStateDialog) {
-          return AlertDialog(
-            title: const Text('Modify Drop Point Details'),
-            content: SingleChildScrollView(
-              child: ListBody(
-                children: <Widget>[
-                  TextField(
-                    controller: titleController,
-                    decoration: const InputDecoration(hintText: "Enter title"),
-                  ),
-                  TextField(
-                    controller: operationHoursController,
-                    decoration: const InputDecoration(hintText: "Operation hours"),
-                  ),
-                  ...['Paper', 'Glass', 'Cans', 'Plastic'].map((item) {
-                    return CheckboxListTile(
-                      title: Text(item),
-                      value: recycleItems.contains(item),
-                      onChanged: (bool? value) {
-                        if (value != null) {
-                          setStateDialog(() {
-                            if (value) {
-                              recycleItems.add(item);
-                            } else {
-                              recycleItems.remove(item);
-                            }
-                          });
-                        }
-                      },
-                    );
-                  }),
-                ],
-              ),
-            ),
-            actions: <Widget>[
-              TextButton(
-                child: const Text('Cancel'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-              }),
-              TextButton(
-                child: const Text('Update'),
-                onPressed: () {
-                  FirebaseFirestore.instance.collection('drop_points').doc(docId).update({
-                    'title': titleController.text,
-                    'operationHours': operationHoursController.text,
-                    'recycleItems': recycleItems,
-                  });
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
-    },
-  );
-}
-
-
-void _deleteDropPoint(String docId) {
-  showDialog(
+Future<bool> _confirmDeleteDialog() async {
+  return await showDialog(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: const Text('Delete Drop Point'),
-        content: const Text('Are you sure you want to delete this drop point?'),
+        title: Text('Confirm Delete'),
+        content: Text('Are you sure you want to delete this drop point? This action cannot be undone.'),
         actions: <Widget>[
           TextButton(
-            child: const Text('Cancel'),
+            child: Text('Cancel'),
             onPressed: () {
-              Navigator.of(context).pop();
+              Navigator.of(context).pop(false);
             },
           ),
           TextButton(
-            child: const Text('Delete'),
+            child: Text('Delete', style: TextStyle(color: Colors.red)),
             onPressed: () {
-              FirebaseFirestore.instance.collection('drop_points').doc(docId).delete();
-              Navigator.of(context).pop();
+              Navigator.of(context).pop(true);
             },
           ),
         ],
       );
     },
+  ) ?? false;
+}
+
+void _navigateToDetailView(BuildContext context, Map<String, dynamic> pointData) {
+  Navigator.pop(context); 
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => DetailedViewScreen(pointData: pointData),
+    ),
   );
 }
 
+void _navigateToEditView(BuildContext context, String docId) {
+  Navigator.pop(context); 
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => EditDropPointScreen(dropPointId: docId),
+    ),
+  );
+}
 
 
 void _loadDropPoints() {
@@ -323,35 +219,30 @@ void _loadDropPoints() {
       markers.clear();
       for (var doc in snapshot.docs) {
         Map<String, dynamic> pointData = doc.data();
-        // Check if the drop point matches the filter criteria
-        if (_matchesFilter(pointData['recycleItems'])) {
-          LatLng point = LatLng(pointData['latitude'], pointData['longitude']);
-          markers.add(Marker(
+        LatLng point = LatLng(pointData['latitude'], pointData['longitude']);
+        markers.add(
+          Marker(
             markerId: MarkerId(doc.id),
             position: point,
             infoWindow: InfoWindow(
-              title: pointData['title'],
-              snippet: pointData['address'],
-              onTap: () {
-                _showDropPointDetails(pointData, doc.id);
-              }
+              title: pointData['title'], 
+              snippet: pointData['address']
             ),
-          ));
-        }
+            onTap: () {
+              _showDropPointDetails(pointData, doc.id, pointData['title'] ?? 'No Title');
+            },
+          ),
+        );
       }
     });
   });
 }
 
-
-
-
   Future<String?> _showLocationNameDialog() async {
   String? locationName;
-  // Use the current BuildContext to show the dialog
   locationName = await showDialog<String>(
     context: context,
-    builder: (BuildContext dialogContext) { // Notice the new context name 'dialogContext'
+    builder: (BuildContext dialogContext) {
       TextEditingController textFieldController = TextEditingController();
       return AlertDialog(
         title: const Text('Enter Location Name'),
@@ -363,7 +254,7 @@ void _loadDropPoints() {
           TextButton(
             child: const Text('Cancel'),
             onPressed: () {
-              Navigator.of(dialogContext).pop(); // Use the dialog's own context to pop
+              Navigator.of(dialogContext).pop();
             },
           ),
           TextButton(
@@ -393,91 +284,105 @@ void _loadDropPoints() {
       setState(() {
         markers.add(newMarker);
       });
-      _saveDropPoint(point, _dropPointTitle, address);
+      _saveDropPoint(point, _dropPointTitle, address, _pickupDays, _recycleItems);
     }
   }
 
   Future<void> _showDetailsDialog(LatLng point) async {
   TextEditingController titleController = TextEditingController();
-  TextEditingController operationHoursController = TextEditingController();
+  List<String> daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+  List<bool> selectedDays = List.generate(7, (_) => false);
+  List<String> recyclableItems = ['Paper', 'Glass', 'Cans', 'Plastic'];
+  Map<String, bool> recycleItemsMap = {
+    for (var item in recyclableItems) item: false,
+  };
 
-  return showDialog(
+  // Fetch address from the given LatLng point
+  String address = await _getAddressFromLatLng(point);
+
+  await showDialog(
     context: context,
     barrierDismissible: false, // User must tap button to close dialog
     builder: (BuildContext context) {
-      return StatefulBuilder(
-        builder: (BuildContext context, StateSetter setStateDialog) {
-          return AlertDialog(
-            title: const Text('Enter Drop Point Details'),
-            content: SingleChildScrollView(
+      return AlertDialog(
+        title: const Text('Enter Drop Point Details'),
+        content: StatefulBuilder(
+          builder: (BuildContext context, StateSetter setStateDialog) {
+            return SingleChildScrollView(
               child: ListBody(
                 children: <Widget>[
                   TextField(
                     controller: titleController,
                     decoration: const InputDecoration(hintText: "Enter title"),
-                    onChanged: (value) {
-                      _dropPointTitle = value;
-                    },
                   ),
-                  TextField(
-                    controller: operationHoursController,
-                    decoration: const InputDecoration(hintText: "Operation hours"),
-                    onChanged: (value) {
-                      _operationHours = value;
-                    },
-                  ),
-                  ...['Paper', 'Glass', 'Cans', 'Plastic'].map((item) {
-                    return ListTile(
-                      title: Text(item),
-                      trailing: IconButton(
-                        icon: _recycleItems.contains(item) 
-                          ? const Icon(Icons.check_circle, color: Colors.blue) 
-                          : const Icon(Icons.circle_outlined, color: Colors.grey),
-                        onPressed: () {
+                  const SizedBox(height: 20),
+                  const Text("Select Pickup Days:"),
+                  Wrap(
+                    children: List<Widget>.generate(
+                      daysOfWeek.length,
+                      (index) => ChoiceChip(
+                        label: Text(daysOfWeek[index]),
+                        selected: selectedDays[index],
+                        selectedColor: Colors.green, // Color when selected
+                        backgroundColor: Colors.grey, // Color when not selected
+                        onSelected: (bool selected) {
                           setStateDialog(() {
-                            if (_recycleItems.contains(item)) {
-                              _recycleItems.remove(item);
-                            } else {
-                              _recycleItems.add(item);
-                            }
+                            selectedDays[index] = selected;
                           });
                         },
                       ),
-                    );
-                  }),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  const Text("Select Recyclable Items:"),
+                  Column(
+                    children: recyclableItems.map((item) => CheckboxListTile(
+                      title: Text(item),
+                      value: recycleItemsMap[item],
+                      onChanged: (bool? value) {
+                        setStateDialog(() {
+                          recycleItemsMap[item] = value!;
+                        });
+                      },
+                      checkColor: Colors.white,
+                      activeColor: Colors.green,
+                    )).toList(),
+                  ),
                 ],
               ),
-            ),
-            actions: <Widget>[
-              TextButton(
-                child: const Text('Cancel'),
-                onPressed: () {
-                  // Clear the form if the user cancels
-                  _dropPointTitle = '';
-                  _operationHours = '';
-                  _recycleItems.clear();
-                  Navigator.of(context).pop();
-                },
-              ),
-              TextButton(
-                child: const Text('Confirm'),
-                onPressed: () {
-                  // Update the state with the values from the TextControllers
-                  setState(() {
-                    _dropPointTitle = titleController.text;
-                    _operationHours = operationHoursController.text;
-                  });
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        },
+            );
+          },
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Cancel'),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          TextButton(
+            child: const Text('Confirm'),
+            onPressed: () {
+              _dropPointTitle = titleController.text;
+              List<String> selectedPickupDays = daysOfWeek
+                  .asMap()
+                  .entries
+                  .where((entry) => selectedDays[entry.key])
+                  .map((entry) => entry.value)
+                  .toList();
+
+              List<String> selectedRecycleItems = recycleItemsMap.entries
+                  .where((entry) => entry.value)
+                  .map((entry) => entry.key)
+                  .toList();
+
+              Navigator.of(context).pop(); // Close the dialog first
+              _saveDropPoint(tempPoint!, _dropPointTitle, address, selectedPickupDays, selectedRecycleItems);
+            },
+          ),
+        ],
       );
     },
   );
 }
-
 
   Future<String> _getAddressFromLatLng(LatLng point) async {
     try {
@@ -492,14 +397,18 @@ void _loadDropPoints() {
     return 'No address available';
   }
 
-   void _saveDropPoint(LatLng point, String title, String address) {
+  void _saveDropPoint(LatLng point, String title, String address, List<String> pickupDays, List<String> recycleItems) {
     FirebaseFirestore.instance.collection('drop_points').add({
       'latitude': point.latitude,
       'longitude': point.longitude,
       'title': title,
-      'operationHours': _operationHours,
-      'recycleItems': _recycleItems,
       'address': address,
+      'pickupDays': pickupDays,
+      'recycleItems': recycleItems,
+    }).then((result) {
+      print("Drop point added");
+    }).catchError((error) {
+      print("Failed to add drop point: $error");
     });
   }
   
@@ -546,7 +455,7 @@ void _showFilterDialog() async {
                 child: const Text('Apply'),
                 onPressed: () {
                   Navigator.of(context).pop();
-                  _updateFilterCriteria(_selectedFilters); // Update the filter criteria based on the selection
+                  _updateFilterCriteria(_selectedFilters);
                 },
               ),
             ],
@@ -560,21 +469,20 @@ List<String> _filterCriteria = [];
 
 bool _matchesFilter(List<dynamic> dropPointItems) {
   if (_filterCriteria.isEmpty) {
-    return true; // If no filter criteria, everything matches
+    return true;
   }
   for (var item in _filterCriteria) {
     if (!dropPointItems.contains(item)) {
-      return false; // If any item in the filter is not present, it's not a match
+      return false;
     }
   }
-  return true; // All filter items are present
+  return true; 
 }
 
-// Define a method to update the filter criteria based on user selection
 void _updateFilterCriteria(List<String> newCriteria) {
   setState(() {
     _filterCriteria = newCriteria;
-    _loadDropPoints(); // Reload points with the new filter
+    _loadDropPoints();
   });
 }
  @override
@@ -631,6 +539,249 @@ void _updateFilterCriteria(List<String> newCriteria) {
       ),
     );
   }
+}
+
+class DetailedViewScreen extends StatelessWidget {
+  final Map<String, dynamic> pointData;
+
+  const DetailedViewScreen({Key? key, required this.pointData}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(pointData['title'] ?? 'Detail View'),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.greenAccent, Colors.green],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+        ),
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              // Title Section
+              Text(
+                'Title',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              ),
+              Text(pointData['title'] ?? 'Not available', style: TextStyle(fontSize: 16)),
+
+              Divider(color: Colors.grey[300], height: 20, thickness: 1),
+
+              // Pickup Days Section
+              Text(
+                'Pickup Days',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              ),
+              Text(pointData['pickupDays']?.join(', ') ?? 'Not available', style: TextStyle(fontSize: 16)),
+
+              Divider(color: Colors.grey[300], height: 20, thickness: 1),
+
+              // Recyclable Items Section
+              Text(
+                'Recyclable Items',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              ),
+              Text(pointData['recycleItems']?.join(', ') ?? 'Not available', style: TextStyle(fontSize: 16)),
+
+              // Add more sections as necessary
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class EditDropPointScreen extends StatefulWidget {
+  final String dropPointId;
+
+  const EditDropPointScreen({Key? key, required this.dropPointId}) : super(key: key);
+
+  @override
+  _EditDropPointScreenState createState() => _EditDropPointScreenState();
+}
+
+class _EditDropPointScreenState extends State<EditDropPointScreen> {
+  late TextEditingController _titleController;
+  Map<String, bool> _daysOfWeekMap = {};
+  Map<String, bool> _recyclableItemsMap = {};
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _titleController = TextEditingController();
+    _daysOfWeekMap = {
+      "Monday": false,
+      "Tuesday": false,
+      "Wednesday": false,
+      "Thursday": false,
+      "Friday": false,
+      "Saturday": false,
+      "Sunday": false,
+    };
+    _recyclableItemsMap = {
+      "Paper": false,
+      "Glass": false,
+      "Cans": false,
+      "Plastic": false,
+    };
+    _fetchInitialData();
+  }
+
+  Future<void> _fetchInitialData() async {
+    try {
+      DocumentSnapshot dropPointSnapshot = await FirebaseFirestore.instance
+          .collection('drop_points')
+          .doc(widget.dropPointId)
+          .get();
+
+      if (dropPointSnapshot.exists) {
+        Map<String, dynamic> pointData = dropPointSnapshot.data() as Map<String, dynamic>;
+        _titleController.text = pointData['title'] ?? '';
+
+        // Initialize daysOfWeekMap based on fetched data
+        List<dynamic> pickupDays = pointData['pickupDays'] ?? [];
+        pickupDays.forEach((day) => _daysOfWeekMap[day] = true);
+
+        // Initialize recyclableItemsMap based on fetched data
+        List<dynamic> recyclableItems = pointData['recycleItems'] ?? [];
+        recyclableItems.forEach((item) => _recyclableItemsMap[item] = true);
+      }
+      setState(() {
+        _isLoading = false;
+      });
+    } catch (e) {
+      print("Error fetching initial data: $e");
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    super.dispose();
+  }
+
+  void _saveDropPoint() async {
+    // Gather the selected pickup days and recyclable items
+    List<String> selectedPickupDays = _daysOfWeekMap.entries
+        .where((entry) => entry.value)
+        .map((entry) => entry.key)
+        .toList();
+    List<String> selectedRecyclableItems = _recyclableItemsMap.entries
+        .where((entry) => entry.value)
+        .map((entry) => entry.key)
+        .toList();
+
+    try {
+      await FirebaseFirestore.instance
+          .collection('drop_points')
+          .doc(widget.dropPointId)
+          .update({
+            'title': _titleController.text,
+            'pickupDays': selectedPickupDays,
+            'recycleItems': selectedRecyclableItems,
+          });
+
+      Navigator.of(context).pop();
+    } catch (e) {
+      print("Error updating document: $e");
+    }
+  }
+
+  @override
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Edit Drop Point'),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.greenAccent, Colors.green],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+        ),
+      ),
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator())
+          : Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ListView(
+                children: [
+                  TextField(
+                    controller: _titleController,
+                    decoration: InputDecoration(labelText: 'Title'),
+                  ),
+                  SizedBox(height: 20),
+                  Text("Select Pickup Days:", style: TextStyle(fontWeight: FontWeight.bold)),
+                  Wrap(
+                    spacing: 8.0, // Gap between chips
+                    runSpacing: 4.0, // Gap between lines
+                    children: _daysOfWeekMap.keys.map((day) {
+                      return ChoiceChip(
+                        label: Text(day),
+                        selected: _daysOfWeekMap[day]!,
+                        onSelected: (bool selected) {
+                          setState(() {
+                            _daysOfWeekMap[day] = selected;
+                          });
+                        },
+                        selectedColor: Colors.green,
+                        backgroundColor: Colors.grey.shade300,
+                        labelStyle: TextStyle(color: _daysOfWeekMap[day]! ? Colors.white : Colors.black),
+                      );
+                    }).toList(),
+                  ),
+                  SizedBox(height: 20),
+                  Text("Select Recyclable Items:", style: TextStyle(fontWeight: FontWeight.bold)),
+                  ..._recyclableItemsMap.keys.map(
+                    (item) => CheckboxListTile(
+                      title: Text(item),
+                      value: _recyclableItemsMap[item],
+                      onChanged: (bool? newValue) {
+                        setState(() {
+                          _recyclableItemsMap[item] = newValue ?? false;
+                        });
+                      },
+                      checkColor: Colors.white,
+                      activeColor: Colors.green,
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: _saveDropPoint,
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.green,
+                      onPrimary: Colors.white,
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.all(12.0),
+                      child: Text(
+                        'Save Changes',
+                        style: TextStyle(fontSize: 18),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+    );
+  }  
 }
 
 Widget _buildGradientFAB({required VoidCallback onPressed, required String tooltip, required IconData icon}) {
