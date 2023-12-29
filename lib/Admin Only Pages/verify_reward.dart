@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 import 'package:recycle_go/Admin%20Only%20Pages/verification_page.dart';
 import 'package:video_player/video_player.dart';
 import 'package:recycle_go/models/upload.dart';
@@ -17,6 +18,7 @@ class _VerifyRewardPageState extends State<VerifyRewardPage> {
   List<String> locations = [];
   String? selectedLocation;
   Upload? selectedUpload;
+  bool _isSortedByLatest = true;
 
   @override
   void initState() {
@@ -27,6 +29,14 @@ class _VerifyRewardPageState extends State<VerifyRewardPage> {
   Future<void> fetchUploads() async {
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('uploads').get();
     List<Upload> fetchedUploads = querySnapshot.docs.map((doc) => Upload.fromFirestore(doc)).toList();
+
+    // Sort the uploads initially as per the default sort order
+    fetchedUploads.sort((a, b) {
+      var aTime = a.uploadedTime?.toDate() ?? DateTime.now();
+      var bTime = b.uploadedTime?.toDate() ?? DateTime.now();
+      return _isSortedByLatest ? bTime.compareTo(aTime) : aTime.compareTo(bTime); // Sort by latest or oldest initially
+    });
+
     setState(() {
       uploads = fetchedUploads;
       // Create a set to eliminate duplicates and then convert it to a list
@@ -37,6 +47,18 @@ class _VerifyRewardPageState extends State<VerifyRewardPage> {
       if (!locations.contains(selectedLocation)) {
         selectedLocation = null; // Reset if no longer valid
       }
+    });
+  }
+
+  void _toggleSortOrder() {
+    setState(() {
+      _isSortedByLatest = !_isSortedByLatest; // Toggle sorting order
+      uploads.sort((a, b) {
+        // Compare timestamps, nulls last
+        var aTime = a.uploadedTime?.toDate() ?? DateTime.now();
+        var bTime = b.uploadedTime?.toDate() ?? DateTime.now();
+        return _isSortedByLatest ? bTime.compareTo(aTime) : aTime.compareTo(bTime); // Sort by latest or oldest
+      });
     });
   }
 
@@ -122,6 +144,10 @@ class _VerifyRewardPageState extends State<VerifyRewardPage> {
           child: ListView.separated(
             itemCount: locationUploads.length,
             itemBuilder: (context, index) {
+
+              Timestamp? timestamp = locationUploads[index].uploadedTime;
+              DateTime dateTime = timestamp?.toDate() ?? DateTime.now();
+              String formattedTime = DateFormat('dd/MM/yyyy HH:mm').format(dateTime); // Using DateFormat from intl package
               // Wrap each list item in a container with a bottom border
               return Container(
                 decoration: BoxDecoration(
@@ -131,7 +157,19 @@ class _VerifyRewardPageState extends State<VerifyRewardPage> {
                   ),
                 ),
                 child: ListTile(
-                  title: Text('${locationUploads[index].userName}\'s upload'),
+                  title: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('${locationUploads[index].userName}\'s upload'),
+                      Text(
+                        formattedTime, // Display formatted timestamp
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ],
+                  ),
                   onTap: () {
                     Navigator.push(
                       context,
@@ -169,6 +207,32 @@ class _VerifyRewardPageState extends State<VerifyRewardPage> {
             ),
           ),
         ),
+        actions: <Widget>[
+          InkWell(
+            onTap: _toggleSortOrder,
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 12),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Sort by ${_isSortedByLatest ? "Oldest" : "Latest"}',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold, // Make text bold
+                      fontSize: 16, // Optionally adjust font size as needed
+                    ),
+                  ),
+                  Icon(
+                    _isSortedByLatest ? Icons.arrow_upward : Icons.arrow_downward,
+                    color: Colors.black,
+                    size: 24,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
       body: Column(
         children: [
