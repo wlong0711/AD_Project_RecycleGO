@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import 'package:recycle_go/Shared%20Pages/Transition%20Page/transition_page.dart';
 import 'package:recycle_go/Shared%20Pages/View%20Reward%20Page/add_voucher_page.dart';
 import 'package:recycle_go/models/global_user.dart';
 import 'package:recycle_go/models/voucher.dart';
@@ -16,36 +17,65 @@ class ViewRewardPage extends StatefulWidget {
 class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProviderStateMixin {
   List<Voucher> vouchers = [];
   List<String> claimedVouchers = [];
-  bool _isLoading = false;
   bool _isDeleting = false;
   bool _isWritingToDatabase = false;
   Timer? _timer;
   int _userPoints = 0;
   late TabController _tabController;
 
+  OverlayEntry? _overlayEntry;
+  final int loadingTimeForOverlay = 3;
+
   @override
   void initState() {
     super.initState();
-    _isLoading = true;
     _tabController = TabController(length: 2, vsync: this);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _showOverlay();
+      }
+    });
     initializePage();
+  }
+
+  void _showOverlay() {
+    _overlayEntry = OverlayEntry(
+      builder: (context) => TransitionOverlay(
+            iconData: Icons.verified_user, // The icon you want to show
+            duration: Duration(seconds: loadingTimeForOverlay), // Duration for the transition
+            pageName: "Fetching Vouchers",
+          ),
+    );
+
+    // Find the overlay context
+    final overlay = Overlay.of(context);
+    // ignore: unnecessary_null_comparison
+    if (overlay != null) {
+      // Insert the overlay
+      overlay.insert(_overlayEntry!);
+
+      // Simulate a loading duration and then remove the overlay
+      Future.delayed(Duration(seconds: loadingTimeForOverlay), () {
+        if (mounted) {
+          _removeOverlay();
+        }
+      });
+    }
+  }
+
+  void _removeOverlay() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
   }
 
   void initializePage() async {
     print("In initializePage");
-    print(_isLoading);
     await _fetchUserPoints();
     await fetchVouchers();
     await fetchClaimedVouchers();
     _timer = Timer.periodic(Duration(minutes: 1), (Timer t) {
         setState(() {});
       });
-
-    if (mounted) { // Check whether the state object is in tree
-      setState(() {
-        _isLoading = false; // Data has been initialized, stop the loading indicator
-      });
-    }
   }
 
   @override
@@ -376,6 +406,10 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
   }
 
   void updateVoucherDetails(Voucher voucher, String newName, int newPoints, DateTime newExpiredDate) async {
+    setState(() {
+      _isWritingToDatabase = true; // Turn on loading overlay
+    });
+
     try {
       // Fetch the document ID using the voucher ID
       var voucherSnapshot = await FirebaseFirestore.instance.collection('vouchers')
@@ -397,7 +431,12 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
     } catch (e) {
       print("Error updating voucher: $e");
       // Handle error
+    } finally {
+      setState(() {
+        _isWritingToDatabase = false; // Turn off loading overlay
+      });
     }
+
   }
 
   Widget _buildLoadingOverlay() {
@@ -587,20 +626,6 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
   @override
   Widget build(BuildContext context) {
     Widget content; // This will hold the current state widget
-
-    // Decide which content to display based on loading state
-    if (_isLoading) {
-      // Loading state
-      content = Scaffold(
-        key: ValueKey("Loading"),
-        body: Container(
-          color: Colors.green, // Ensure this is your desired color
-          alignment: Alignment.center,
-          child: _buildLoadingOverlay(),
-        ),
-      );
-    } else {
-      // Loaded state
       content = Scaffold(
         key: ValueKey("Loaded"),
         appBar: AppBar(
@@ -671,7 +696,6 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
           ],
         ),
       );
-    }
 
     if (_isDeleting) {
       content = Stack(
