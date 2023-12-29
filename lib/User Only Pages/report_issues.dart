@@ -15,10 +15,19 @@ class ReportIssueScreen extends StatefulWidget {
 
 class _ReportIssueScreenState extends State<ReportIssueScreen> {
   final _formKey = GlobalKey<FormState>();
-  String? _title;
-  String? _description;
+  final titleController = TextEditingController();
+  final descriptionController = TextEditingController();
   // String? _phoneNumber;
   File? _image;
+
+  @override
+  void dispose() {
+    // Dispose the controllers when the widget is removed from the widget tree
+    titleController.dispose();
+    descriptionController.dispose();
+    // If you have any other controllers or listeners, dispose of them here as well
+    super.dispose(); // Don't forget to call super.dispose() at the end
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,8 +52,8 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
           child: ListView(
             children: <Widget>[
               TextFormField(
+                controller: titleController,
                 decoration: const InputDecoration(labelText: 'Title'),
-                onSaved: (value) => _title = value,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter a title';
@@ -54,8 +63,8 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
               ),
               const SizedBox(height: 16),
               TextFormField(
+                controller: descriptionController,
                 decoration: const InputDecoration(labelText: 'Description'),
-                onSaved: (value) => _description = value,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter a description';
@@ -65,23 +74,6 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
                 keyboardType: TextInputType.multiline,
                 maxLines: null,
               ),
-              // TextFormField(
-              //   decoration: const InputDecoration(labelText: 'Phone number'),
-              //   onSaved: (value) => _phoneNumber = value,
-              //   validator: (value) {
-              //     if (value == null || value.isEmpty) {
-              //       return 'Please enter a phone number'; 
-              //     }
-              //     // Regex for validating phone number
-              //     String pattern = r'(^(?:[+0]9)?[0-9]{10,12}$)';
-              //     RegExp regExp = RegExp(pattern);
-              //     if (!regExp.hasMatch(value)) {
-              //       return 'Please enter a valid phone number';
-              //     }
-              //     return null;
-              //   },
-              //   keyboardType: TextInputType.phone,
-              // ),
               const SizedBox(height: 16),
               _buildImageUploadSection(),
               const SizedBox(height: 16),
@@ -135,51 +127,61 @@ void _pickImage() async {
 
 Future<void> _submitReport() async {
   if (_formKey.currentState!.validate()) {
-    _formKey.currentState!.save();
+
+    String _title = titleController.text;
+    String _description = descriptionController.text;
+
+    // Checking for user authentication
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      _showErrorDialog("No authenticated user found. Please login first.");
+      return;
+    }
 
     try {
-      User? user = FirebaseAuth.instance.currentUser;
-        if (user != null) {
-          DocumentSnapshot userData = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid)
-            .get();
+      // Fetch user data from Firestore
+      DocumentSnapshot userData = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .get();
 
-          String imageUrl = '';
-          if (_image != null) {
-            // Upload image to Firebase Storage
-            String fileName = Path.basename(_image!.path);  // Corrected this line
-            Reference firebaseStorageRef = FirebaseStorage.instance.ref().child('uploads/$fileName');
-            UploadTask uploadTask = firebaseStorageRef.putFile(_image!);
-            TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => {});
-            imageUrl = await taskSnapshot.ref.getDownloadURL();
-          }
+      String imageUrl = '';
+      if (_image != null) {
+        String fileName = Path.basename(_image!.path);
+        Reference firebaseStorageRef = FirebaseStorage.instance.ref('uploads/$fileName');
 
-          // Save report details to Firestore
-          CollectionReference reports = FirebaseFirestore.instance.collection('reports issues');
-          await reports.add({
-            'userId': user.uid,
-            'username': userData['username'],
-            'email': userData['email'],
-            'title': _title,
-            'description': _description,
-            // 'phoneNumber': _phoneNumber,  // Ensure this matches your Firestore field name
-            'imageUrl': imageUrl,
-            'timestamp': FieldValue.serverTimestamp(),
-            'status': 'to solve', // default status when a report is created
-          });
-
-          // Show a success message or navigate away
-          await _showSuccessDialog();      // Navigator.of(context).pop();
+        try {
+          UploadTask uploadTask = firebaseStorageRef.putFile(_image!);
+          TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => {});
+          imageUrl = await taskSnapshot.ref.getDownloadURL();
+        } catch (e) {
+          _showErrorDialog("Failed to upload image: $e");
+          return;
         }
-    }catch (e) {
-        // Log the error
-        _showErrorDialog(e.toString());
-        // Show an error message
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Failed to submit report. Please try again later.')));
+      }
+
+      // Save report details to Firestore under "reports issues" collection
+      await FirebaseFirestore.instance.collection('reports issues').add({
+        'userId': user.uid,
+        'username': userData['username'], // Assuming these fields exist in your documents
+        'email': userData['email'],
+        'title': _title,
+        'description': _description,
+        // 'phoneNumber': _phoneNumber,  // Uncomment if needed
+        'imageUrl': imageUrl,
+        'timestamp': FieldValue.serverTimestamp(),
+        'status': 'to solve',
+      });
+
+      // Show a success message upon successful submission
+      await _showSuccessDialog();
+    } catch (e) {
+      _showErrorDialog("Failed to submit report: $e");
     }
   }
 }
+
+
 
 Future<void> _showSuccessDialog() async {
   return showDialog<void>(
@@ -264,7 +266,7 @@ Widget _buildSubmitButton() {
                   ElevatedButton(
                     onPressed: _pickImage,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white, backgroundColor: Colors.blue, // Button text color
+                      foregroundColor: Colors.white, backgroundColor: Colors.blue,
                     ),
                     child: const Text("Re-upload Image"),
                   ),
@@ -272,7 +274,7 @@ Widget _buildSubmitButton() {
                   ElevatedButton(
                     onPressed: _deleteImage,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white, backgroundColor: Colors.red, // Button text color
+                      foregroundColor: Colors.white, backgroundColor: Colors.red,
                     ),
                     child: const Text("Delete Image"),
                   ),

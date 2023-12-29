@@ -312,11 +312,13 @@
       "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/google_maps_flutter_android-2.6.0",
       "packageUri": "lib/",
       "languageVersion": "3.0"
+      "languageVersion": "3.0"
     },
     {
       "name": "google_maps_flutter_ios",
       "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/google_maps_flutter_ios-2.3.3",
       "packageUri": "lib/",
+      "languageVersion": "3.0"
       "languageVersion": "3.0"
     },
     {
@@ -354,11 +356,13 @@
       "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/image_picker-1.0.5",
       "packageUri": "lib/",
       "languageVersion": "3.0"
+      "languageVersion": "3.0"
     },
     {
       "name": "image_picker_android",
       "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/image_picker_android-0.8.9+1",
       "packageUri": "lib/",
+      "languageVersion": "3.0"
       "languageVersion": "3.0"
     },
     {
@@ -371,6 +375,7 @@
       "name": "image_picker_ios",
       "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/image_picker_ios-0.8.9",
       "packageUri": "lib/",
+      "languageVersion": "3.0"
       "languageVersion": "3.0"
     },
     {
@@ -485,6 +490,7 @@
       "name": "plugin_platform_interface",
       "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/plugin_platform_interface-2.1.7",
       "packageUri": "lib/",
+      "languageVersion": "3.0"
       "languageVersion": "3.0"
     },
     {
