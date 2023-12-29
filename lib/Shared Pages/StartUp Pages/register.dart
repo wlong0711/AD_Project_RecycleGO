@@ -217,7 +217,7 @@ class _RegisterPageState extends State<RegisterPage> {
           setState(() {});
         },
         decoration: InputDecoration(
-          labelText: _passwordController.text.isEmpty ? 'Password' : '',
+          labelText: _passwordController.text.isEmpty ? 'Password (6 digits or above)' : '',
           border: const OutlineInputBorder(),
           suffixIcon: GestureDetector(
             onTap: () {

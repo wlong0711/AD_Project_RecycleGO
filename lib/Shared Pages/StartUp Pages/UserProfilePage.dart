@@ -157,7 +157,6 @@ Future<void> _deleteAccount() async {
   );
 }
 
-// Function to send a confirmation email after account deletion
 Future<void> _sendDeletionConfirmationEmail() async {
   try {
     // Customize the email content and subject as needed
