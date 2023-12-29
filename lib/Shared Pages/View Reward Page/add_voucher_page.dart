@@ -70,6 +70,17 @@ class _AddVoucherPageState extends State<AddVoucherPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add Voucher'),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.greenAccent, Colors.green],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+        ),
+        elevation: 10,
+        shadowColor: Colors.greenAccent.withOpacity(0.5),
         actions: [
           IconButton(
             icon: const Icon(Icons.save),

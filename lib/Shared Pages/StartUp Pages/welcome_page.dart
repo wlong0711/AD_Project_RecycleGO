@@ -10,8 +10,9 @@ class WelcomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("RecycleGo"),
+        automaticallyImplyLeading: false,
         flexibleSpace: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [Colors.greenAccent, Colors.green],
               begin: Alignment.topCenter,
@@ -120,8 +121,6 @@ class WelcomePage extends StatelessWidget {
     );
   }
 }
-
-// This is testing pushing
 
 void main() {
   runApp(const MaterialApp(

@@ -1,156 +1,184 @@
-// ForgotPasswordPage
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'login.dart'; // Import the LoginPage
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
 
   @override
-  _ForgotPasswordPageState createState() => _ForgotPasswordPageState();
+  State<ForgotPasswordPage> createState() => _ForgotPasswordPageState();
 }
 
 class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
-  bool _isNewPasswordVisible = false;
-  //bool _isConfirmPasswordVisible = false; 
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _newPasswordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final GlobalKey<ScaffoldMessengerState> _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
+  final TextEditingController _emailController = TextEditingController();
+  bool _isLoading = false;
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text('Forgot Password'),
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          // Company Logo at the top center
-          Image.network(
-            'https://example.com/your-company-logo-url.png',
-            width: 100, // Set the width according to your design
-            height: 100, // Set the height according to your design
+  void _resetPassword() async {
+    if (_emailController.text.isEmpty) {
+      _showErrorSnackBar("Please enter your email address");
+      return;
+    }
+    if (!mounted) return;
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: _emailController.text.trim());
+      _showSuccessDialog();
+    } catch (e) {
+      if (mounted) _showErrorSnackBar("An error occurred, please try again.");
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  void _showSuccessDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Password Reset'),
+        content: Text(
+            'A password reset link has been sent to ${_emailController.text}. Please check your email.'),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('OK'),
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the AlertDialog
+              Navigator.of(context).pop(); // Go back to the previous screen
+            },
           ),
-
-          const SizedBox(height: 20),
-
-          // "Reset Account Password" text below the logo
-          const Text(
-            'Reset Account Password',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-
-          const SizedBox(height: 20),
-
-          // Username Input Box
-          _buildInputBox("Username", _usernameController, isPassword: false),
-
-          // New Password Input Box
-          _buildPasswordInputBox(_newPasswordController, 'New Password'),
-
-          // Confirm Password Input Box
-          _buildPasswordInputBox(
-              _confirmPasswordController, 'Confirm Password'),
-
-          const SizedBox(height: 10),
-
-          // Save Changes Button (formerly Login Button)
-          _buildButton(
-              "Save Changes", Colors.blue), // Change the color if needed
         ],
       ),
     );
   }
 
-  Widget _buildInputBox(
-    String label,
-    TextEditingController controller, {
-    bool isPassword = false,
-  }) {
-    return SizedBox(
-      width: 300,
-      child: TextField(
-        controller: controller,
-        obscureText: isPassword && !_isNewPasswordVisible,
-        onChanged: (value) {
-          // Handle the input change and update the state as needed
-          setState(() {});
-        },
-        decoration: InputDecoration(
-          labelText: controller.text.isEmpty ? label : '',
-          border: const OutlineInputBorder(),
-        ),
+  void _showErrorSnackBar(String message) {
+    _scaffoldKey.currentState?.showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
       ),
     );
   }
 
-  Widget _buildPasswordInputBox(
-    TextEditingController controller,
-    String labelText,
-  ) {
-    return SizedBox(
-      width: 300,
-      child: TextField(
-        controller: controller,
-        obscureText: !_isNewPasswordVisible,
-        onChanged: (value) {
-          // Handle the input change and update the state as needed
-          setState(() {});
-        },
-        decoration: InputDecoration(
-          labelText: controller.text.isEmpty ? labelText : '',
-          border: const OutlineInputBorder(),
-          suffixIcon: GestureDetector(
-            onTap: () {
-              setState(() {
-                _isNewPasswordVisible = !_isNewPasswordVisible;
-              });
-            },
-            child: Icon(
-              _isNewPasswordVisible ? Icons.visibility : Icons.visibility_off,
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      key: _scaffoldKey,
+      appBar: AppBar(
+        title: const Text('Reset Password'),
+        centerTitle: true,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.greenAccent, Colors.green],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
             ),
           ),
         ),
+        elevation: 10,
+        shadowColor: Colors.greenAccent.withOpacity(0.5),
+      ),
+      body: Stack(
+        children: [
+          Center(child: _buildForgetForm()),
+          if (_isLoading) _buildLoadingOverlay(),
+        ],
       ),
     );
   }
 
-  Widget _buildButton(String label, Color color) {
+  Widget _buildForgetForm() {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.network(
+              'https://firebasestorage.googleapis.com/v0/b/recyclego-64b10.appspot.com/o/Company%20Logo%2FLogo.png?alt=media&token=aac89fba-a30d-4a9a-8c39-d6cd85e1f4d5',
+              width: 100, // Set the width according to your design
+              height: 100, // Set the height according to your design
+            ),
+            
+            const SizedBox(height: 20),
+            const Text(
+              'Enter your email and we will send you a password reset link.',
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              controller: _emailController,
+              decoration: const InputDecoration(
+                labelText: 'Email',
+                border: OutlineInputBorder(),
+              ),
+              keyboardType: TextInputType.emailAddress,
+            ),
+            const SizedBox(height: 20),
+            _buildResetPasswordButton(),
+          ],
+        ),
+        ),
+    );
+  }
+
+  Widget _buildResetPasswordButton() {
     return Container(
       width: 200,
       height: 50,
       decoration: BoxDecoration(
-        color: color,
+        color: Colors.green,
         borderRadius: BorderRadius.circular(10),
       ),
-      child: Center(
-        child: GestureDetector(
-          onTap: () {
-            // Implement the logic to save changes/reset password
-            // After successful password reset, navigate to the newest LoginPage
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const LoginPage(),
-              ),
-            );
-          },
-          child: Text(
-            label,
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
+      child: TextButton(
+        onPressed: _resetPassword,
+        style: TextButton.styleFrom(
+          foregroundColor: Colors.white, shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
           ),
         ),
+        child:
+          const Text(
+                'Send Password Reset Email',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+          ),
       ),
     );
   }
+
+  Widget _buildLoadingOverlay() {
+    return Stack(
+      children: [
+        Positioned(
+          top: MediaQuery.of(context).size.height * 0.3, // Adjust the position from top
+          left: 0,
+          right: 0,
+          child: Center(
+            child: Container(
+              width: 80, // Set the width of the overlay
+              height: 80, // Set the height of the overlay
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.5), // Semi-transparent overlay
+                borderRadius: BorderRadius.circular(10), // Rounded corners
+              ),
+              child: const Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
 }
 
 void main() {

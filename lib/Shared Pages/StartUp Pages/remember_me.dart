@@ -7,7 +7,7 @@ class RememberMeWidget extends StatefulWidget {
   final TextEditingController passwordController;
   final Function(bool) onRememberMeChanged;
 
-  RememberMeWidget({
+  const RememberMeWidget({super.key, 
     required this.usernameController,
     required this.passwordController,
     required this.onRememberMeChanged,
