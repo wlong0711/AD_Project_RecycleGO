@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 class AddVoucherPage extends StatefulWidget {
   final Function onVoucherAdded;
@@ -67,6 +68,17 @@ class _AddVoucherPageState extends State<AddVoucherPage> {
 
   void _addVoucher() async {
     if (_formKey.currentState!.validate()) {
+
+      if (_selectedDate == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Please pick an expiry date and time.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return; // Return early if no date has been selected
+      }
+
       setState(() {
         _isSubmitting = true; // Start the loading indicator
       });
@@ -175,9 +187,32 @@ class _AddVoucherPageState extends State<AddVoucherPage> {
               key: _formKey,
               child: ListView(
                 children: [
-                  ListTile(
-                    title: Text('Voucher ID: $_nextVoucherId'),
+                  SizedBox(height: 10,),
+                  Container(
+                    padding: EdgeInsets.all(8), // Add some padding inside the container
+                    decoration: BoxDecoration(
+                      color: Colors.green, // Background color of the box
+                      borderRadius: BorderRadius.circular(8), // Rounded corners
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min, // Use the minimum space that is needed by the child widgets
+                      children: <Widget>[
+                        Icon(
+                          Icons.discount, // The icon
+                          color: Colors.white, // Icon color
+                        ),
+                        SizedBox(width: 8), // A sized box for spacing
+                        Text(
+                          'Voucher ID: $_nextVoucherId', // The text
+                          style: TextStyle(
+                            color: Colors.white, // Text color
+                            fontWeight: FontWeight.bold, // Make the text bold
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
+                  SizedBox(height: 10,),
                   TextFormField(
                     controller: _voucherNameController,
                     decoration: const InputDecoration(labelText: 'Voucher Name'),
@@ -205,7 +240,7 @@ class _AddVoucherPageState extends State<AddVoucherPage> {
                   ListTile(
                     title: Text(_selectedDate == null
                         ? 'Pick Expiry Date and Time'
-                        : 'Expiry Date: ${_selectedDate!.toLocal()}'),
+                        : 'Expiry Date: ${DateFormat('yyyy-MM-dd – kk:mm').format(_selectedDate!.toLocal())}'),
                     trailing: const Icon(Icons.calendar_today),
                     onTap: _pickDate,
                   ),
