@@ -57,6 +57,27 @@ class ReportDetailsPage extends StatelessWidget {
             style: const TextStyle(fontSize: 16),
           ),
           // Other details...
+          if (reportData['imageUrl'] != null && reportData['imageUrl'].isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20.0),
+            child: Image.network(
+              reportData['imageUrl'],
+              fit: BoxFit.cover, // Change this as needed
+              // Add some error handling
+              loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                if (loadingProgress == null) return child;
+                return Center(
+                  child: CircularProgressIndicator(
+                    value: loadingProgress.expectedTotalBytes != null ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes! : null,
+                  ),
+                );
+              },
+              errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
+                return const Text('Failed to load image');
+              },
+            ),
+          ),
+          
           const SizedBox(height: 20), // Provide some spacing before the button
           if (reportData['status'] != 'solved')
             Center( // Wrap the ElevatedButton with Center

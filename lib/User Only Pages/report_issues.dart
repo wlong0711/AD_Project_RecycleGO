@@ -74,23 +74,6 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
                 keyboardType: TextInputType.multiline,
                 maxLines: null,
               ),
-              // TextFormField(
-              //   decoration: const InputDecoration(labelText: 'Phone number'),
-              //   onSaved: (value) => _phoneNumber = value,
-              //   validator: (value) {
-              //     if (value == null || value.isEmpty) {
-              //       return 'Please enter a phone number'; 
-              //     }
-              //     // Regex for validating phone number
-              //     String pattern = r'(^(?:[+0]9)?[0-9]{10,12}$)';
-              //     RegExp regExp = RegExp(pattern);
-              //     if (!regExp.hasMatch(value)) {
-              //       return 'Please enter a valid phone number';
-              //     }
-              //     return null;
-              //   },
-              //   keyboardType: TextInputType.phone,
-              // ),
               const SizedBox(height: 16),
               _buildImageUploadSection(),
               const SizedBox(height: 16),
@@ -283,7 +266,7 @@ Widget _buildSubmitButton() {
                   ElevatedButton(
                     onPressed: _pickImage,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white, backgroundColor: Colors.blue, // Button text color
+                      foregroundColor: Colors.white, backgroundColor: Colors.blue,
                     ),
                     child: const Text("Re-upload Image"),
                   ),
@@ -291,7 +274,7 @@ Widget _buildSubmitButton() {
                   ElevatedButton(
                     onPressed: _deleteImage,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white, backgroundColor: Colors.red, // Button text color
+                      foregroundColor: Colors.white, backgroundColor: Colors.red,
                     ),
                     child: const Text("Delete Image"),
                   ),
