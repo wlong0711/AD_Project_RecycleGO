@@ -174,7 +174,7 @@ Widget build(BuildContext context) {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Image.network(
-            'https://firebasestorage.googleapis.com/v0/b/recyclego-64b10.appspot.com/o/Company%20Logo%2FLogo.png?alt=media&token=aac89fba-a30d-4a9a-8c39-d6cd85e1f4d5',
+            'https://firebasestorage.googleapis.com/v0/b/recyclego-64b10.appspot.com/o/Company%20Logo%2FLogo.png?alt=media&token=d70a3db8-c0c0-4849-9aee-7ec04c4bbbd8',
             width: 100,
             height: 100,
           ),
