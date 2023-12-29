@@ -63,9 +63,9 @@
     },
     {
       "name": "cross_file",
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/cross_file-0.3.3+7",
+      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/cross_file-0.3.3+8",
       "packageUri": "lib/",
-      "languageVersion": "3.0"
+      "languageVersion": "3.2"
     },
     {
       "name": "crypto",
@@ -339,9 +339,9 @@
     },
     {
       "name": "http",
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/http-1.1.0",
+      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/http-1.1.2",
       "packageUri": "lib/",
-      "languageVersion": "3.0"
+      "languageVersion": "3.2"
     },
     {
       "name": "http_parser",
@@ -537,9 +537,9 @@
     },
     {
       "name": "shared_preferences_web",
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/shared_preferences_web-2.2.1",
+      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/shared_preferences_web-2.2.2",
       "packageUri": "lib/",
-      "languageVersion": "2.19"
+      "languageVersion": "3.2"
     },
     {
       "name": "shared_preferences_windows",
@@ -633,9 +633,9 @@
     },
     {
       "name": "video_player_avfoundation",
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/video_player_avfoundation-2.5.2",
+      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/video_player_avfoundation-2.5.3",
       "packageUri": "lib/",
-      "languageVersion": "3.1"
+      "languageVersion": "3.2"
     },
     {
       "name": "video_player_platform_interface",
@@ -674,7 +674,7 @@
       "languageVersion": "3.1"
     }
   ],
-  "generated": "2023-12-29T05:36:16.118346Z",
+  "generated": "2023-12-29T13:08:03.700998Z",
   "generator": "pub",
   "generatorVersion": "3.2.0"
 }
