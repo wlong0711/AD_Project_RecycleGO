@@ -41,7 +41,7 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
   void _showOverlay() {
     _overlayEntry = OverlayEntry(
       builder: (context) => TransitionOverlay(
-            iconData: Icons.verified_user, // The icon you want to show
+            iconData: Icons.discount, // The icon you want to show
             duration: Duration(seconds: loadingTimeForOverlay), // Duration for the transition
             pageName: "Fetching Vouchers",
           ),

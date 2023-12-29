@@ -143,10 +143,10 @@ class _RegisterPageState extends State<RegisterPage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 // Company Logo
-                Image.network(
-                  'https://firebasestorage.googleapis.com/v0/b/recyclego-64b10.appspot.com/o/Company%20Logo%2FLogo.png?alt=media&token=aac89fba-a30d-4a9a-8c39-d6cd85e1f4d5',
+                Container(
                   width: 100,
                   height: 100,
+                  child: companyLogo.image, // Use the provided CompanyLogo's image
                 ),
                 const SizedBox(height: 20),
 
