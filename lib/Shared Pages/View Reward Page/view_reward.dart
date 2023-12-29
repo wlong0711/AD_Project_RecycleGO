@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 import 'package:recycle_go/Shared%20Pages/View%20Reward%20Page/add_voucher_page.dart';
 import 'package:recycle_go/models/global_user.dart';
 import 'package:recycle_go/models/voucher.dart';
@@ -219,9 +220,9 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
     }
   }
 
-  String formatTimeLeft(DateTime expiryDate) {
+  String formatTimeLeft(DateTime expiredDate) {
     final now = DateTime.now();
-    final difference = expiryDate.difference(now);
+    final difference = expiredDate.difference(now);
 
     if (difference.isNegative) {
       return "Expired";
@@ -231,6 +232,171 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
       String minutes = (difference.inMinutes % 60).toString().padLeft(2, '0');
 
       return "$days d $hours h $minutes min Left";
+    }
+  }
+
+  void editVoucher(Voucher voucher, int index) {
+    TextEditingController _nameController = TextEditingController(text: voucher.voucherName);
+    TextEditingController _pointsNeededController = TextEditingController(text: voucher.pointsNeeded.toString());
+    DateTime _selectedDateTime = voucher.expiredDate.toLocal(); // Initialize with current expiry date
+    
+    // Function to select date and time
+    Future<void> _selectDateTime(BuildContext context) async {
+      final DateTime? pickedDate = await showDatePicker(
+        context: context,
+        initialDate: _selectedDateTime,
+        firstDate: DateTime(2020),
+        lastDate: DateTime(2100),
+      );
+      if (pickedDate != null) {
+        final TimeOfDay? pickedTime = await showTimePicker(
+          context: context,
+          initialTime: TimeOfDay.fromDateTime(_selectedDateTime),
+        );
+        if (pickedTime != null) {
+          setState(() {
+            _selectedDateTime = DateTime(
+              pickedDate.year,
+              pickedDate.month,
+              pickedDate.day,
+              pickedTime.hour,
+              pickedTime.minute,
+            );
+          });
+        }
+      }
+    }
+
+    // Show dialog for editing
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return ConstrainedBox(
+          constraints: BoxConstraints(
+            minWidth: 250.0, // Minimum width
+            maxWidth: MediaQuery.of(context).size.width * 0.9, // Maximum width
+          ),
+          child: AlertDialog(
+            title: const Text('Edit Voucher'),
+            content: StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
+                return SingleChildScrollView(
+                  child: ListBody(
+                    children: [
+                      Text(
+                        'Voucher ID - ${voucher.voucherID}', // Display Voucher ID
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      SizedBox(height: 10),
+                      TextField(
+                        controller: _nameController,
+                        decoration: InputDecoration(
+                          labelText: 'Voucher Name',
+                          labelStyle: TextStyle(
+                            fontWeight: FontWeight.bold, // Make the label text bold
+                            // You can also specify other text styles here if needed
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 10,),
+                      TextField(
+                        controller: _pointsNeededController,
+                        decoration: InputDecoration(
+                          labelText: 'Points Needed',
+                          labelStyle: TextStyle(
+                            fontWeight: FontWeight.bold, // Make the label text bold
+                            // You can also specify other text styles here if needed
+                          ),
+                        ),
+                        keyboardType: TextInputType.number,
+                      ),
+                      SizedBox(height: 10,),
+                      ListTile(
+                        title: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(
+                                    "Expired Date:",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold, // Make it bold or style it as needed
+                                    ),
+                                  ),
+                                  Text(
+                                    "${DateFormat.yMd().add_Hm().format(_selectedDateTime)}", // Your date formatting
+                                    style: TextStyle(
+                                      color: Colors.black, // Optional: style it as needed
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Icon(Icons.calendar_today), // Your trailing icon
+                          ],
+                        ),
+                        onTap: () async {
+                          await _selectDateTime(context);
+                          setState(() {}); // Refresh the ListTile with the new date and time
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: const Text( 'Delete',
+                                style: TextStyle(
+                                  color: Colors.red,
+                                ),
+                              ),
+                onPressed: () => {
+                  deleteVoucher(voucher.voucherID, index),
+                  Navigator.of(context).pop(), // Close the dialog
+                },
+              ),
+              SizedBox(width: 70,),
+              TextButton(
+                child: const Text('Cancel'),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+              TextButton(
+                child: const Text('Save'),
+                onPressed: () => updateVoucherDetails(voucher, _nameController.text, int.parse(_pointsNeededController.text), _selectedDateTime),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void updateVoucherDetails(Voucher voucher, String newName, int newPoints, DateTime newExpiredDate) async {
+    try {
+      // Fetch the document ID using the voucher ID
+      var voucherSnapshot = await FirebaseFirestore.instance.collection('vouchers')
+          .where('voucherID', isEqualTo: voucher.voucherID)
+          .get();
+      var voucherDoc = voucherSnapshot.docs.first;
+
+      // Update the voucher details in Firestore
+      FirebaseFirestore.instance.collection('vouchers').doc(voucherDoc.id).update({
+        'voucherName': newName,
+        'pointsNeeded': newPoints,
+        'expiredDate': newExpiredDate, // Make sure to convert DateTime to a Timestamp if needed
+      }).then((_) {
+        print("Voucher updated successfully.");
+        refreshData(); // Refresh the data to show updates
+      });
+
+      Navigator.of(context).pop(); // Close the dialog after updating
+    } catch (e) {
+      print("Error updating voucher: $e");
+      // Handle error
     }
   }
 
@@ -395,10 +561,10 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
                 ],
               ),
             ),
-            if (GlobalUser.userLevel == 1) // Show delete button only for non-expired and non-claimed vouchers
+            if (GlobalUser.userLevel == 1) // Show delete button
               IconButton(
-                icon: const Icon(Icons.delete),
-                onPressed: () => deleteVoucher(voucher.voucherID, index),
+                icon: const Icon(Icons.edit),
+                onPressed: () => editVoucher(voucher, index),
               ),
             ElevatedButton(
               onPressed: isExpired || isClaimed ? null : () => claimVoucher(voucher.voucherID,voucher.pointsNeeded),
