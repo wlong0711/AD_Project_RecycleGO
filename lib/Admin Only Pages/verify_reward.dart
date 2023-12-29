@@ -361,5 +361,3 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
     super.dispose();
   }
 }
-
-

@@ -17,8 +17,10 @@ class _DropPointMapState extends State<DropPointMap> {
   LatLng? tempPoint;
   LatLng _currentPosition = const LatLng(0.0, 0.0);
   String _dropPointTitle = '';
-  final List<String> _pickupDays = [];
-  final List<String> _recycleItems = [];
+
+  List<String> _pickupDays = [];
+  List<String> _recycleItems = [];
+
 
   @override
   void initState() {
@@ -170,11 +172,13 @@ Future<bool> _confirmDeleteDialog() async {
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
+
         title: const Text('Confirm Delete'),
         content: const Text('Are you sure you want to delete this drop point? This action cannot be undone.'),
+
         actions: <Widget>[
           TextButton(
-            child: const Text('Cancel'),
+            child: Text('Cancel'),
             onPressed: () {
               Navigator.of(context).pop(false);
             },
@@ -542,7 +546,7 @@ void _updateFilterCriteria(List<String> newCriteria) {
 
 class DetailedViewScreen extends StatelessWidget {
   final Map<String, dynamic> pointData;
-
+  
   const DetailedViewScreen({super.key, required this.pointData});
 
   @override
@@ -602,7 +606,6 @@ class DetailedViewScreen extends StatelessWidget {
 
 class EditDropPointScreen extends StatefulWidget {
   final String dropPointId;
-
   const EditDropPointScreen({super.key, required this.dropPointId});
 
   @override
@@ -659,6 +662,7 @@ class _EditDropPointScreenState extends State<EditDropPointScreen> {
         for (var item in recyclableItems) {
           _recyclableItemsMap[item] = true;
         }
+
       }
       setState(() {
         _isLoading = false;

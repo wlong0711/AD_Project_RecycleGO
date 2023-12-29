@@ -52,6 +52,15 @@ class _LoginPageState extends State<LoginPage> {
     setState(() => _isLoading = true);  // Start loading
 
     try {
+
+      // Check if the user exists in Firestore
+    var usersCollection = FirebaseFirestore.instance.collection('users');
+    var querySnapshot = await usersCollection.where('email', isEqualTo: _usernameController.text).get();
+
+    if (querySnapshot.docs.isEmpty) {
+      _showErrorSnackBar('The provided email is not registered.');
+      return;
+    }
       UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: _usernameController.text,
         password: _passwordController.text,
@@ -76,9 +85,10 @@ class _LoginPageState extends State<LoginPage> {
             context,
             MaterialPageRoute(builder: (context) => const HomePage()),
           );
-        } else {
-          _showErrorSnackBar('User data not found in database.');
-        }
+        } 
+      }else {
+        // The user was not found (email not registered)
+        _showErrorSnackBar('The provided email is not registered.');
       }
     } on FirebaseAuthException catch (e) {
       print('FirebaseAuthException with code: ${e.code}');
@@ -88,7 +98,7 @@ class _LoginPageState extends State<LoginPage> {
           errorMessage = 'The email address is not valid.';
           break;
         case 'user-not-found':
-          errorMessage = 'There is no user corresponding to the email address.';
+          errorMessage = 'The provided email is not registered.';
           break;
         case 'invalid-credential':
           errorMessage = 'The password is invalid for the given email address.';
@@ -195,10 +205,12 @@ Widget build(BuildContext context) {
           const SizedBox(height: 10),
           _buildButton("Login", Colors.green, _login),
           const SizedBox(height: 20),
-          _buildOrSeparator(),
-          const SizedBox(height: 10),
-          _buildOtherLoginMethods(),
-          const SizedBox(height: 20),
+          
+          // _buildOrSeparator(),
+          // const SizedBox(height: 10),
+          // _buildOtherLoginMethods(),
+          // const SizedBox(height: 20),
+          
           _buildCreateAccountText(),
         ],
       ),
@@ -394,14 +406,10 @@ Widget build(BuildContext context) {
       ],
     );
   }
-
 }
-
-
 
 void main() {
   runApp(const MaterialApp(
     home: LoginPage(),
   ));
 }
-
