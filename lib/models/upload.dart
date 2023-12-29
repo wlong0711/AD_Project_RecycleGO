@@ -5,12 +5,14 @@ class Upload {
   String videoUrl;
   String? userName;
   String? docId;
+  Timestamp? uploadedTime;
 
   Upload({
     required this.locationName,
     required this.videoUrl,
     this.userName,
     this.docId,
+    this.uploadedTime,
   });
 
   factory Upload.fromFirestore(DocumentSnapshot doc) {
@@ -20,6 +22,7 @@ class Upload {
       videoUrl: data['videoUrl'] as String? ?? '',
       userName: data['username'] as String? ?? '',
       docId: doc.id,
+      uploadedTime: data['uploadedTime'] as Timestamp?,
     );
   }
 }
