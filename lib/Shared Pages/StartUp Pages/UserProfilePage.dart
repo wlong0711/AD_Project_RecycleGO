@@ -15,6 +15,8 @@ class UserProfilePage extends StatefulWidget {
 class _UserProfilePageState extends State<UserProfilePage> {
   User? user = FirebaseAuth.instance.currentUser;
   DocumentSnapshot? userData;
+  final TextEditingController _passwordController = TextEditingController();
+  bool _isPasswordValid = true; // Add this line
 
   @override
   void initState() {
@@ -76,12 +78,115 @@ Future<void> _loadUserData() async {
 }
 
 
-  // Logout function
-  Future<void> _logout() async {
-    await FirebaseAuth.instance.signOut();
+  // Edit function
+  Future<void> _Edit() async {
     // Navigate back to the login page or another appropriate page
     Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const EditUserProfilePage())); // Assuming LoginPage is the route you want to go back to
   }
+
+// Delete account function
+Future<void> _deleteAccount() async {
+  // Show a dialog to confirm the password
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Confirm Account Deletion'),
+        content: Column(
+          children: [
+            const Text('Please enter your password to confirm account deletion:'),
+            TextField(
+              controller: _passwordController,
+              obscureText: true,
+              decoration: const InputDecoration(labelText: 'Password'),
+            ),
+            if (_passwordController.text.isNotEmpty && !_isPasswordValid)
+              const Padding(
+                padding: EdgeInsets.only(top: 8),
+                child: Text(
+                  'Invalid password. Please enter the correct password.',
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+          ],
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the dialog
+            },
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              try {
+                // Validate the entered password
+                AuthCredential credential = EmailAuthProvider.credential(email: user!.email!, password: _passwordController.text);
+                await user!.reauthenticateWithCredential(credential);
+
+                // Password is valid, proceed with account deletion
+                await user!.delete();
+
+                // Send confirmation email
+                await _sendDeletionConfirmationEmail();
+
+                // Reset the password validity flag
+                setState(() {
+                  _isPasswordValid = true;
+                });
+
+                // Navigate to WelcomePage
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const WelcomePage()),
+                );
+              } catch (e) {
+                print('Error during account deletion: $e');
+                // Handle invalid password or other errors
+                // You can show an error message to the user
+                setState(() {
+                  _isPasswordValid = false;
+                });
+              }
+            },
+            child: const Text('Confirm'),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+// Function to send a confirmation email after account deletion
+Future<void> _sendDeletionConfirmationEmail() async {
+  try {
+    // Customize the email content and subject as needed
+    await user!.sendEmailVerification();
+    // Show a message to inform the user that a confirmation email has been sent
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Account Deletion Successful'),
+          content: const Text(
+            'Your account has been successfully deleted. A confirmation email has been sent.',
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  } catch (e) {
+    print('Error sending confirmation email: $e');
+    // Handle the error (show a snackbar, etc.)
+  }
+}
 
   @override
 Widget build(BuildContext context) {
@@ -100,7 +205,8 @@ Widget build(BuildContext context) {
       actions: [
         TextButton(
           onPressed: () {
-            // Navigate to EditUserProfilePage
+            FirebaseAuth.instance.signOut();
+            // Navigate to WelcomePage
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const WelcomePage()),
@@ -148,12 +254,29 @@ Widget build(BuildContext context) {
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white, backgroundColor: Colors.green,
                   ),
-                  onPressed: _logout,
+                  onPressed: _Edit,
                   child: const Padding(
                     padding: EdgeInsets.all(7.0),
                     child: Text(
                       'Edit',//Edit
                       style: TextStyle(fontSize: 20),
+                    ),
+                  ),
+                ),
+              ),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white, backgroundColor: Colors.red,
+                  ),
+                  onPressed: _deleteAccount,
+                  child: const Padding(
+                    padding: EdgeInsets.all(12.0),
+                    child: Text(
+                      'Delete Account',//Edit
+                      style: TextStyle(fontSize: 18),
                     ),
                   ),
                 ),
