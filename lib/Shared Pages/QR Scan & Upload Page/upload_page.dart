@@ -60,6 +60,7 @@ class _UploadPageState extends State<UploadPage> {
         'username' : GlobalUser.userName,
         'location': widget.locationName,
         'videoUrl': downloadUrl,
+        'uploadedTime': FieldValue.serverTimestamp(),
       });
 
       // Notify user of success

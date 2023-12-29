@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:recycle_go/Shared%20Pages/QR%20Scan%20&%20Upload%20Page/upload_page.dart';
+import 'package:recycle_go/Shared%20Pages/Transition%20Page/transition_page.dart';
 
 class QRScanScreen extends StatefulWidget {
   const QRScanScreen({super.key, required this.title});
@@ -19,6 +20,9 @@ class _QRScanScreenState extends State<QRScanScreen> {
   Barcode? result; // Nullable result
   bool uploadCompleted = false;
 
+  OverlayEntry? _overlayEntry;
+  final int loadingTimeForOverlay = 1;
+
   @override
   void reassemble() {
     super.reassemble();
@@ -33,6 +37,34 @@ class _QRScanScreenState extends State<QRScanScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _showOverlay();
+      }
+    });
+  }
+
+  void _showOverlay() {
+    _overlayEntry = OverlayEntry(
+      builder: (context) => TransitionOverlay(
+        iconData: Icons.qr_code_scanner, // The icon you want to show
+        duration: Duration(seconds: loadingTimeForOverlay), // Duration for the transition
+        pageName: "Preparing Camera",
+      ),
+    );
+
+    Overlay.of(context).insert(_overlayEntry!);
+
+    Future.delayed(Duration(seconds: loadingTimeForOverlay), () {
+      if (mounted) {
+        _removeOverlay();
+      }
+    });
+  }
+
+  void _removeOverlay() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
   }
 
   @override

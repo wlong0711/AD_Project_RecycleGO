@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
+import 'package:recycle_go/models/company_logo.dart';
 import 'login.dart'; // Import the LoginPage
 
 class RegisterPage extends StatefulWidget {
@@ -111,6 +113,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
+    CompanyLogo companyLogo = Provider.of<CompanyLogo>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Register'),
@@ -170,6 +173,32 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
+  Widget _buildOrSeparator() {
+    return const Row(
+      children: [
+        Expanded(
+          child: Divider(
+            color: Colors.green, // Adjust the color to match the theme
+            thickness: 2,
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 8),
+          child: Text(
+            'or',
+            style: TextStyle(color: Colors.green), // Adjust the text color to match the theme
+          ),
+        ),
+        Expanded(
+          child: Divider(
+            color: Colors.green, // Adjust the color to match the theme
+            thickness: 2,
+          ),
+        ),
+      ],
+    );
+  }
+  
   Widget _buildInputBox(
     String label,
     TextEditingController controller, {

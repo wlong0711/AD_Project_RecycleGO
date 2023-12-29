@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:recycle_go/models/company_logo.dart';
 import 'register.dart'; // Import the RegisterPage
 import 'login.dart'; // Import the LoginPage
 
@@ -7,6 +9,8 @@ class WelcomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    CompanyLogo companyLogo = Provider.of<CompanyLogo>(context, listen: false);
+    
     return Scaffold(
       appBar: AppBar(
         title: const Text("RecycleGo"),
@@ -28,10 +32,10 @@ class WelcomePage extends StatelessWidget {
           Center(
             child: Column(
               children: [
-                Image.network(
-                  'https://firebasestorage.googleapis.com/v0/b/recyclego-64b10.appspot.com/o/Company%20Logo%2FLogo.png?alt=media&token=aac89fba-a30d-4a9a-8c39-d6cd85e1f4d5',
+                Container(
                   width: 150,
                   height: 150,
+                  child: companyLogo.image, // Changed to use the provided CompanyLogo
                 ),
                 const SizedBox(height: 10),
                 const Text(

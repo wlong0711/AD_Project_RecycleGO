@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:recycle_go/models/company_logo.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
@@ -87,24 +89,31 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       body: Stack(
         children: [
           Center(child: _buildForgetForm()),
-          if (_isLoading) _buildLoadingOverlay(),
+          if (_isLoading)
+            Container(
+              color: Colors.black.withOpacity(0.5),
+              child: Center(
+                child: _buildLoadingOverlay(),
+              ),
+            ),
         ],
       ),
     );
   }
 
   Widget _buildForgetForm() {
+    CompanyLogo companyLogo = Provider.of<CompanyLogo>(context, listen: false);
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.network(
-              'https://firebasestorage.googleapis.com/v0/b/recyclego-64b10.appspot.com/o/Company%20Logo%2FLogo.png?alt=media&token=aac89fba-a30d-4a9a-8c39-d6cd85e1f4d5',
-              width: 100, // Set the width according to your design
-              height: 100, // Set the height according to your design
-            ),
+            Container(
+                width: 100,
+                height: 100,
+                child: companyLogo.image, // Use the provided CompanyLogo's image
+              ),
             
             const SizedBox(height: 20),
             const Text(
