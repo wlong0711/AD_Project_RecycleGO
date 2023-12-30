@@ -20,6 +20,10 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _confirmPasswordController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _phoneNumberController = TextEditingController();
+  bool _isLoading = false;
+
+  String _selectedCountryCode = '+60'; // Default country code, you can set it to any valid one
+  List<String> _countryCodes = ['+60', '+1', '+91', '+44', '+61', '+65']; // Add more country codes as needed
 
   bool _hasAttemptedSubmit = false; // Add this to track if the user has attempted to submit the form
   FocusNode _phoneFocusNode = FocusNode(); // Add this to track focus on the phone number field
@@ -41,19 +45,21 @@ class _RegisterPageState extends State<RegisterPage> {
     _phoneFocusNode.dispose();
     super.dispose();
   }
-  bool isValidMalaysianPhoneNumber(String phoneNumber) {
-    // Check if the phone number starts with '+60' and is followed by '11' and 8 digits
-    // or '12' to '19' and 7 digits
-    return RegExp(r'^\+60(11\d{8}|1[2-9]\d{7}|1[0]\d{7})$').hasMatch(phoneNumber);
+  bool isValidPhoneNumber(String phoneNumber) {
+    // Update this regex or method according to the country code or general international formats
+    // Here's a simple placeholder for general phone number validation
+    return RegExp(r'^\+\d{1,3}\d{7,14}$').hasMatch(phoneNumber);
   }
 
   Future<void> _register() async {
     setState(() {
       _hasAttemptedSubmit = true;
+      _isLoading = true; // Show the loading overlay
     });
 
-    if (!isValidMalaysianPhoneNumber(_phoneNumberController.text)) {
-      print('Invalid Malaysian phone number');
+    String fullPhoneNumber = _selectedCountryCode + _phoneNumberController.text;
+    if (!isValidPhoneNumber(fullPhoneNumber)) {
+      print('Invalid phone number');
       return;
     }
 
@@ -82,7 +88,7 @@ class _RegisterPageState extends State<RegisterPage> {
         'points': 0,
         'level': 0, // 0 for user, 1 for admin
         'address': _addressController.text,
-        'phoneNumber': _phoneNumberController.text,
+        'phoneNumber': fullPhoneNumber,
         'isVerified': false, // Mark the user as not verified initially
       });
 
@@ -113,7 +119,38 @@ class _RegisterPageState extends State<RegisterPage> {
     } catch (e) {
       print("Error during registration: $e");
       // Handle registration failure (show a snackbar, etc.)
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false; // Hide the loading overlay after registration is done or fails
+        });
+      }
     }
+  }
+
+  Widget _buildLoadingOverlay() {
+    return Stack(
+      children: [
+        Positioned(
+          top: MediaQuery.of(context).size.height * 0.3, // Adjust the position from top
+          left: 0,
+          right: 0,
+          child: Center(
+            child: Container(
+              width: 80, // Set the width of the overlay
+              height: 80, // Set the height of the overlay
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.5), // Semi-transparent overlay
+                borderRadius: BorderRadius.circular(10), // Rounded corners
+              ),
+              child: const Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   Widget _buildLoginText(BuildContext context) {
@@ -135,64 +172,121 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
+  Widget _buildPhoneNumberInputBox() {
+    return SizedBox(
+      width: 300, // Adjust this width to match the width of your other TextFields
+      child: Row(
+        children: <Widget>[
+          // Dropdown for selecting country code
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey),
+              borderRadius: BorderRadius.circular(5.0),
+            ),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                value: _selectedCountryCode,
+                iconSize: 24,
+                elevation: 16,
+                style: TextStyle(color: Colors.black, fontSize: 16),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _selectedCountryCode = newValue!;
+                  });
+                },
+                items: _countryCodes.map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+              ),
+            ),
+          ),
+
+          // Expanded TextField for entering the remaining phone number
+          Expanded(
+            child: TextField(
+              controller: _phoneNumberController,
+              decoration: InputDecoration(
+                labelText: 'Phone Number',
+                border: OutlineInputBorder(),
+                errorText: !isValidPhoneNumber(_selectedCountryCode + _phoneNumberController.text) && _hasAttemptedSubmit
+                    ? 'Enter a valid number.'
+                    : null,
+              ),
+              keyboardType: TextInputType.phone,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Register'),
-        centerTitle: true,
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.greenAccent, Colors.green],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
-          ),
-        ),
-        elevation: 10,
-        shadowColor: Colors.greenAccent.withOpacity(0.5),
-      ),
-      body: Center(
-        child: SingleChildScrollView(
-          // Added SingleChildScrollView for better UX on smaller devices
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // Company Logo
-                Image.network(
-                  'https://firebasestorage.googleapis.com/v0/b/recyclego-64b10.appspot.com/o/Company%20Logo%2FLogo.png?alt=media&token=aac89fba-a30d-4a9a-8c39-d6cd85e1f4d5',
-                  width: 100,
-                  height: 100,
+    return Stack(
+      children: [
+        Scaffold(
+          appBar: AppBar(
+            title: const Text('Register'),
+            centerTitle: true,
+            flexibleSpace: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.greenAccent, Colors.green],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
                 ),
-                const SizedBox(height: 20),
+              ),
+            ),
+            elevation: 10,
+            shadowColor: Colors.greenAccent.withOpacity(0.5),
+          ),
+          body: Center(
+            child: SingleChildScrollView(
+              // Added SingleChildScrollView for better UX on smaller devices
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // Company Logo
+                    Image.network(
+                      'https://firebasestorage.googleapis.com/v0/b/recyclego-64b10.appspot.com/o/Company%20Logo%2FLogo.png?alt=media&token=aac89fba-a30d-4a9a-8c39-d6cd85e1f4d5',
+                      width: 100,
+                      height: 100,
+                    ),
+                    const SizedBox(height: 20),
 
-                // Input Boxes and Buttons
-                _buildInputBox("Email", _emailController, isPassword: false),
-                _buildInputBox("Username", _usernameController, isPassword: false),
-                _buildInputBox("College Address", _addressController, isPassword: false),
-                _buildInputBox("Phone Number", _phoneNumberController, isPassword: false, showWarning: !isValidMalaysianPhoneNumber(_phoneNumberController.text)),
-                _buildPasswordInputBox(),
-                _buildConfirmPasswordInputBox(),
-                const SizedBox(height: 10),
-                _buildButton("Register", Colors.green),
-                const SizedBox(height: 20),
-                // _buildOrSeparator(),
-                // const SizedBox(height: 10),
-                // _buildOtherLoginMethods(),
-                // const SizedBox(height: 20),
-                _buildLoginText(context),
-              ],
+                    // Input Boxes and Buttons
+                    _buildInputBox("Email", _emailController, isPassword: false),
+                    _buildInputBox("Username", _usernameController, isPassword: false),
+                    _buildInputBox("College Address", _addressController, isPassword: false),
+                    _buildPhoneNumberInputBox(),
+                    _buildPasswordInputBox(),
+                    _buildConfirmPasswordInputBox(),
+                    const SizedBox(height: 10),
+                    _buildButton("Register", Colors.green),
+                    const SizedBox(height: 20),
+                    // _buildOrSeparator(),
+                    // const SizedBox(height: 10),
+                    // _buildOtherLoginMethods(),
+                    // const SizedBox(height: 20),
+                    _buildLoginText(context),
+                  ],
+                ),
+              ),
             ),
           ),
         ),
-      ),
+        if (_isLoading) _buildLoadingOverlay(),
+      ],
     );
   }
 
