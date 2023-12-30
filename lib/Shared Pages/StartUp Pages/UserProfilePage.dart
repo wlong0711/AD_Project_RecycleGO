@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:recycle_go/Shared%20Pages/StartUp%20Pages/welcome_page.dart';
-import 'package:recycle_go/models/global_user.dart';
 import 'edit_user_profile_page.dart'; // Ensure correct import path
 import 'login.dart'; // Ensure correct import path
-import 'welcome_page.dart'; // Ensure correct import path or your designated landing page post-logout
 
 class UserProfilePage extends StatefulWidget {
   const UserProfilePage({Key? key}) : super(key: key);
@@ -129,114 +126,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
     // If the user pressed "Yes", proceed with deleting the account
     if (confirm) {
       _deleteAccount();
-    }
-  }
-
-  Future<void> _deleteAccount() async {
-    try {
-      // Attempt to delete the user's Firestore document first
-      String? username = GlobalUser.userName;
-      QuerySnapshot userQuery = await FirebaseFirestore.instance
-          .collection('users')
-          .where('username', isEqualTo: username)
-          .get();
-
-      if (userQuery.docs.isNotEmpty) {
-        String docId = userQuery.docs.first.id;
-        await FirebaseFirestore.instance.collection('users').doc(docId).delete();
-      }
-
-      // Attempt to delete the user's Firebase authentication record
-      await user!.delete();
-
-      // Navigate the user back to the Welcome Page or another appropriate page
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const WelcomePage()),
-      );
-    } on FirebaseAuthException catch (e) {
-      // Handle reauthentication or other Firebase auth errors
-      if (e.code == 'requires-recent-login') {
-        print('User needs to reauthenticate. ${e.message}');
-        _promptReauthentication();
-        // Prompt the user to reauthenticate
-      } else {
-        // Other errors
-        print("Error deleting account: $e");
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Failed to delete account: $e"),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    } catch (e) {
-      print("Error deleting account: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Failed to delete account: $e"),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
-  }
-
-  Future<void> _promptReauthentication() async {
-    // You can modify this to fit your UI needs
-    String email = user!.email!;  // Assuming the user's email is not null
-    TextEditingController passwordController = TextEditingController();
-
-    bool confirm = await showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Reauthenticate'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Text('Please enter your password to confirm account deletion.'),
-            TextField(
-              controller: passwordController,
-              decoration: InputDecoration(labelText: 'Password'),
-              obscureText: true,
-            ),
-          ],
-        ),
-        actions: <Widget>[
-          TextButton(
-            child: Text('Cancel'),
-            onPressed: () => Navigator.of(context).pop(false),
-          ),
-          TextButton(
-            child: Text('Confirm'),
-            onPressed: () => Navigator.of(context).pop(true),
-          ),
-        ],
-      ),
-    ) ?? false;
-
-    if (confirm) {
-      // User confirmed to reauthenticate, now call reauthenticateUser
-      await reauthenticateUser(email, passwordController.text);
-    }
-  }
-
-  Future<void> reauthenticateUser(String email, String password) async {
-    try {
-      AuthCredential credential = EmailAuthProvider.credential(
-          email: email, password: password);
-      
-      await user!.reauthenticateWithCredential(credential);
-
-      // After reauthentication, attempt to delete the account again
-      await _deleteAccount();
-    } on FirebaseAuthException catch (e) {
-      print("Error during reauthentication: $e");
-      // Handle reauthentication errors here
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Reauthentication failed: $e"),
-          backgroundColor: Colors.red,
-        ),
-      );
     }
   }
 
