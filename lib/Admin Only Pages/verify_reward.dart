@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:recycle_go/Admin%20Only%20Pages/verification_page.dart';
+import 'package:recycle_go/Shared%20Pages/Transition%20Page/transition_page.dart';
 import 'package:video_player/video_player.dart';
 import 'package:recycle_go/models/upload.dart';
 
@@ -18,12 +19,50 @@ class _VerifyRewardPageState extends State<VerifyRewardPage> {
   List<String> locations = [];
   String? selectedLocation;
   Upload? selectedUpload;
-  bool _isSortedByLatest = true;
+  bool _isSortedByOldest = false;
+
+  OverlayEntry? _overlayEntry;
+  final int loadingTimeForOverlay = 3;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _showOverlay();
+      }
+    });
     fetchUploads();
+  }
+
+  void _showOverlay() {
+    _overlayEntry = OverlayEntry(
+      builder: (context) => TransitionOverlay(
+            iconData: Icons.verified_user, // The icon you want to show
+            duration: Duration(seconds: loadingTimeForOverlay), // Duration for the transition
+            pageName: "Fetching Upload List",
+          ),
+    );
+
+    // Find the overlay context
+    final overlay = Overlay.of(context);
+    // ignore: unnecessary_null_comparison
+    if (overlay != null) {
+      // Insert the overlay
+      overlay.insert(_overlayEntry!);
+
+      // Simulate a loading duration and then remove the overlay
+      Future.delayed(Duration(seconds: loadingTimeForOverlay), () {
+        if (mounted) {
+          _removeOverlay();
+        }
+      });
+    }
+  }
+
+  void _removeOverlay() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
   }
 
   Future<void> fetchUploads() async {
@@ -34,7 +73,7 @@ class _VerifyRewardPageState extends State<VerifyRewardPage> {
     fetchedUploads.sort((a, b) {
       var aTime = a.uploadedTime?.toDate() ?? DateTime.now();
       var bTime = b.uploadedTime?.toDate() ?? DateTime.now();
-      return _isSortedByLatest ? bTime.compareTo(aTime) : aTime.compareTo(bTime); // Sort by latest or oldest initially
+      return _isSortedByOldest ? bTime.compareTo(aTime) : aTime.compareTo(bTime); // Sort by latest or oldest initially
     });
 
     setState(() {
@@ -52,12 +91,12 @@ class _VerifyRewardPageState extends State<VerifyRewardPage> {
 
   void _toggleSortOrder() {
     setState(() {
-      _isSortedByLatest = !_isSortedByLatest; // Toggle sorting order
+      _isSortedByOldest = !_isSortedByOldest; // Toggle sorting order
       uploads.sort((a, b) {
         // Compare timestamps, nulls last
         var aTime = a.uploadedTime?.toDate() ?? DateTime.now();
         var bTime = b.uploadedTime?.toDate() ?? DateTime.now();
-        return _isSortedByLatest ? bTime.compareTo(aTime) : aTime.compareTo(bTime); // Sort by latest or oldest
+        return _isSortedByOldest ? bTime.compareTo(aTime) : aTime.compareTo(bTime); // Sort by latest or oldest
       });
     });
   }
@@ -216,7 +255,7 @@ class _VerifyRewardPageState extends State<VerifyRewardPage> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    'Sort by ${_isSortedByLatest ? "Oldest" : "Latest"}',
+                    'Sort by ${_isSortedByOldest ? "Oldest" : "Latest"}',
                     style: TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.bold, // Make text bold
@@ -224,7 +263,7 @@ class _VerifyRewardPageState extends State<VerifyRewardPage> {
                     ),
                   ),
                   Icon(
-                    _isSortedByLatest ? Icons.arrow_upward : Icons.arrow_downward,
+                    _isSortedByOldest ? Icons.arrow_upward : Icons.arrow_downward,
                     color: Colors.black,
                     size: 24,
                   ),
@@ -322,5 +361,3 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
     super.dispose();
   }
 }
-
-

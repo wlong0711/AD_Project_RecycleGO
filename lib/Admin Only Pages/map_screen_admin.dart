@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:recycle_go/Shared%20Pages/Transition%20Page/transition_page.dart';
 import 'manage_drop_point_map.dart';
 
 class MapScreenAdmin extends StatefulWidget {
@@ -19,11 +20,42 @@ class _MapScreenState extends State<MapScreenAdmin> {
   LatLng _initialPosition = const LatLng(0.0, 0.0);
   final Set<Marker> _markers = {};
 
+  OverlayEntry? _overlayEntry;
+  final int loadingTimeForOverlay = 5;
+
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _showOverlay();
+      }
+    });
     _determinePosition();
     _loadDropPoints();
+  }
+
+  void _showOverlay() {
+    _overlayEntry = OverlayEntry(
+      builder: (context) => TransitionOverlay(
+        iconData: Icons.admin_panel_settings, // The icon you want to show
+        duration: Duration(seconds: loadingTimeForOverlay), // Duration for the transition
+        pageName: "Loading Admin Map",
+      ),
+    );
+
+    Overlay.of(context).insert(_overlayEntry!);
+
+    Future.delayed(Duration(seconds: loadingTimeForOverlay), () {
+      if (mounted) {
+        _removeOverlay();
+      }
+    });
+  }
+
+  void _removeOverlay() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
   }
 
   Future<void> _determinePosition() async {
@@ -99,12 +131,8 @@ bool _matchesFilter(List<dynamic> dropPointItems) {
   if (_filterCriteria.isEmpty) {
     return true; // If no filter criteria, everything matches
   }
-  for (var item in _filterCriteria) {
-    if (!dropPointItems.contains(item)) {
-      return false; // If any item in the filter is not present, it's not a match
-    }
-  }
-  return true; // All filter items are present
+  // Ensure all filter criteria are contained within the drop point's items
+  return _filterCriteria.every((item) => dropPointItems.contains(item));
 }
 
 // Define a method to update the filter criteria based on user selection

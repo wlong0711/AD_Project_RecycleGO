@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as Path;
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:recycle_go/Shared%20Pages/Transition%20Page/transition_page.dart';
 
 class ReportIssueScreen extends StatefulWidget {
   const ReportIssueScreen({super.key, required String title});
@@ -20,6 +21,19 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
   // String? _phoneNumber;
   File? _image;
 
+  OverlayEntry? _overlayEntry;
+  final int loadingTimeForOverlay = 2;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _showOverlay();
+      }
+    });
+  }
+
   @override
   void dispose() {
     // Dispose the controllers when the widget is removed from the widget tree
@@ -27,6 +41,29 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
     descriptionController.dispose();
     // If you have any other controllers or listeners, dispose of them here as well
     super.dispose(); // Don't forget to call super.dispose() at the end
+  }
+
+  void _showOverlay() {
+    _overlayEntry = OverlayEntry(
+      builder: (context) => TransitionOverlay(
+        iconData: Icons.report_problem, // The icon you want to show
+        duration: Duration(seconds: loadingTimeForOverlay), // Duration for the transition
+        pageName: "Preparing Report Form",
+      ),
+    );
+
+    Overlay.of(context).insert(_overlayEntry!);
+
+    Future.delayed(Duration(seconds: loadingTimeForOverlay), () {
+      if (mounted) {
+        _removeOverlay();
+      }
+    });
+  }
+
+  void _removeOverlay() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
   }
 
   @override

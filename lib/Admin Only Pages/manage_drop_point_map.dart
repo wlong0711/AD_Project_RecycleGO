@@ -17,8 +17,10 @@ class _DropPointMapState extends State<DropPointMap> {
   LatLng? tempPoint;
   LatLng _currentPosition = const LatLng(0.0, 0.0);
   String _dropPointTitle = '';
-  final List<String> _pickupDays = [];
-  final List<String> _recycleItems = [];
+
+  List<String> _pickupDays = [];
+  List<String> _recycleItems = [];
+
 
   @override
   void initState() {
@@ -170,11 +172,13 @@ Future<bool> _confirmDeleteDialog() async {
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
+
         title: const Text('Confirm Delete'),
         content: const Text('Are you sure you want to delete this drop point? This action cannot be undone.'),
+
         actions: <Widget>[
           TextButton(
-            child: const Text('Cancel'),
+            child: Text('Cancel'),
             onPressed: () {
               Navigator.of(context).pop(false);
             },
@@ -212,30 +216,40 @@ void _navigateToEditView(BuildContext context, String docId) {
 }
 
 
-void _loadDropPoints() {
-  FirebaseFirestore.instance.collection('drop_points').snapshots().listen((snapshot) {
-    setState(() {
-      markers.clear();
-      for (var doc in snapshot.docs) {
-        Map<String, dynamic> pointData = doc.data();
+void _loadDropPoints() async {
+  var snapshot = await FirebaseFirestore.instance.collection('drop_points').get();
+
+  setState(() {
+    markers.clear();
+    for (var doc in snapshot.docs) {
+      Map<String, dynamic> pointData = doc.data() as Map<String, dynamic>;
+      List<String> recycleItems = List<String>.from(pointData['recycleItems']); // Cast to List<String>
+      if (_matchesFilter(recycleItems)) {
         LatLng point = LatLng(pointData['latitude'], pointData['longitude']);
-        markers.add(
-          Marker(
-            markerId: MarkerId(doc.id),
-            position: point,
-            infoWindow: InfoWindow(
-              title: pointData['title'], 
-              snippet: pointData['address']
-            ),
-            onTap: () {
-              _showDropPointDetails(pointData, doc.id, pointData['title'] ?? 'No Title');
-            },
-          ),
-        );
+        markers.add(_createMarker(doc.id, point, pointData));
       }
-    });
+    }
   });
 }
+
+
+Marker _createMarker(String id, LatLng point, Map<String, dynamic> pointData) {
+  return Marker(
+    markerId: MarkerId(id),
+    position: point,
+    infoWindow: InfoWindow(
+      title: pointData['title'],
+      snippet: 'Tap here for details',
+      onTap: () {
+        _showDropPointDetails(pointData, id, pointData['title']); // Pass all required arguments
+      },
+    ),
+    onTap: () {
+      // This onTap is for the marker itself, not the InfoWindow
+    },
+  );
+}
+
 
   Future<String?> _showLocationNameDialog() async {
   String? locationName;
@@ -466,24 +480,22 @@ void _showFilterDialog() async {
 }
 List<String> _filterCriteria = [];
 
-bool _matchesFilter(List<dynamic> dropPointItems) {
+bool _matchesFilter(List<String> dropPointItems) {
   if (_filterCriteria.isEmpty) {
-    return true;
+    return true; // If no filter criteria, everything matches
   }
-  for (var item in _filterCriteria) {
-    if (!dropPointItems.contains(item)) {
-      return false;
-    }
-  }
-  return true; 
+  // Check if every filter criteria item is present in the drop point's items
+  return _filterCriteria.every((item) => dropPointItems.contains(item));
 }
+
 
 void _updateFilterCriteria(List<String> newCriteria) {
   setState(() {
     _filterCriteria = newCriteria;
-    _loadDropPoints();
   });
+  _loadDropPoints(); // Reload points with the new filter
 }
+
  @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -542,7 +554,7 @@ void _updateFilterCriteria(List<String> newCriteria) {
 
 class DetailedViewScreen extends StatelessWidget {
   final Map<String, dynamic> pointData;
-
+  
   const DetailedViewScreen({super.key, required this.pointData});
 
   @override
@@ -602,7 +614,6 @@ class DetailedViewScreen extends StatelessWidget {
 
 class EditDropPointScreen extends StatefulWidget {
   final String dropPointId;
-
   const EditDropPointScreen({super.key, required this.dropPointId});
 
   @override
@@ -659,6 +670,7 @@ class _EditDropPointScreenState extends State<EditDropPointScreen> {
         for (var item in recyclableItems) {
           _recyclableItemsMap[item] = true;
         }
+
       }
       setState(() {
         _isLoading = false;
