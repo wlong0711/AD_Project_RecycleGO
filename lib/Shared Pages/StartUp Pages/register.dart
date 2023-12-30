@@ -44,7 +44,7 @@ class _RegisterPageState extends State<RegisterPage> {
   bool isValidMalaysianPhoneNumber(String phoneNumber) {
     // Check if the phone number starts with '+60' and is followed by '11' and 8 digits
     // or '12' to '19' and 7 digits
-    return RegExp(r'^\+60(11\d{8}|1[2-9]\d{7})$').hasMatch(phoneNumber);
+    return RegExp(r'^\+60(11\d{8}|1[2-9]\d{7}|1[0]\d{7})$').hasMatch(phoneNumber);
   }
 
   Future<void> _register() async {
