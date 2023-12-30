@@ -1,12 +1,15 @@
+import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:recycle_go/Shared%20Pages/StartUp%20Pages/welcome_page.dart';
 import 'package:recycle_go/models/global_user.dart';
-
+import 'edit_user_profile_page.dart'; // Ensure correct import path
+import 'login.dart'; // Ensure correct import path
+import 'welcome_page.dart'; // Ensure correct import path or your designated landing page post-logout
 
 class UserProfilePage extends StatefulWidget {
-  const UserProfilePage({super.key});
+  const UserProfilePage({Key? key}) : super(key: key);
 
   @override
   _UserProfilePageState createState() => _UserProfilePageState();
@@ -15,6 +18,8 @@ class UserProfilePage extends StatefulWidget {
 class _UserProfilePageState extends State<UserProfilePage> {
   User? user = FirebaseAuth.instance.currentUser;
   DocumentSnapshot? userData;
+  final TextEditingController _passwordController = TextEditingController();
+  bool _isPasswordValid = true; // To manage password validation state
 
   @override
   void initState() {
@@ -24,18 +29,81 @@ class _UserProfilePageState extends State<UserProfilePage> {
 
   Future<void> _loadUserData() async {
     if (user != null) {
-      DocumentSnapshot userInfo = await FirebaseFirestore.instance.collection('users').doc(user!.uid).get();
-      setState(() {
-        userData = userInfo;
-      });
+      try {
+        DocumentSnapshot userInfo =
+            await FirebaseFirestore.instance.collection('users').doc(user!.uid).get();
+        setState(() {
+          userData = userInfo;
+        });
+      } catch (e) {
+        print("Error loading user data: $e");
+        // Handle or log error
+      }
     }
   }
 
-  // Logout function
+  Widget _buildInfoSection(String title, String content, IconData icon) {
+    return ListTile(
+      leading: Icon(icon),
+      title: Text("$title: $content"),
+    );
+  }
+
+  Future<void> _deleteAccount() async {
+    if (user == null) {
+      setState(() => _isPasswordValid = false); // Indicate invalid password or user state
+      return;
+    }
+
+    bool confirmed = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm Account Deletion'),
+          content: TextField(
+            controller: _passwordController,
+            obscureText: true,
+            decoration: InputDecoration(
+              labelText: 'Password',
+              errorText: _isPasswordValid ? null : 'Invalid password.',
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Delete'),
+            ),
+          ],
+        );
+      },
+    ) ?? false;
+
+    if (confirmed) {
+      try {
+        AuthCredential credential = EmailAuthProvider.credential(
+          email: user!.email!,
+          password: _passwordController.text,
+        );
+        await user!.reauthenticateWithCredential(credential);
+        await FirebaseFirestore.instance.collection('users').doc(user!.uid).delete();
+        await user!.delete();
+        // Navigate to WelcomePage or your landing page post-account deletion
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const WelcomePage()));
+      } catch (e) {
+        print("Error deleting account: $e");
+        setState(() => _isPasswordValid = false);
+      }
+    }
+  }
+
   Future<void> _logout() async {
     await FirebaseAuth.instance.signOut();
-    // Navigate back to the login page or another appropriate page
-    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const WelcomePage())); // Assuming LoginPage is the route you want to go back to
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const LoginPage()));
   }
 
   Future<void> _confirmDeleteAccount() async {
@@ -177,17 +245,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("User Profile"),
-        // actions: [
-        //   // Text Button for logout
-        //   TextButton.icon(
-        //     icon: Icon(Icons.logout, color: Colors.white), // Change color to match appBar theme
-        //     label: Text(
-        //       'Logout',
-        //       style: TextStyle(color: Colors.white), // Change color to match appBar theme
-        //     ),
-        //     onPressed: _logout,
-        //   ),
-        // ],
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -197,67 +254,55 @@ class _UserProfilePageState extends State<UserProfilePage> {
             ),
           ),
         ),
+        elevation: 10,
+        shadowColor: Colors.greenAccent.withOpacity(0.5),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.edit),
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const EditUserProfilePage()));
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: _logout,
+          ),
+        ],
       ),
       body: userData == null
           ? const Center(child: CircularProgressIndicator())
-          : Column(
+          : ListView(
               children: [
-                SizedBox(height: MediaQuery.of(context).size.height * 0.02), // Adjust the space
+                const SizedBox(height: 20),
+                CircleAvatar(
+                  radius: 50,
+                  backgroundColor: Colors.grey.shade300,
+                  child: const Icon(Icons.person, size: 50),
+                ),
+                const SizedBox(height: 20),
                 Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      const CircleAvatar(
-                        radius: 60,
-                        backgroundColor: Colors.blueGrey,
-                        child: Icon(
-                          Icons.person,
-                          size: 60,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      Text(
-                        userData!['username'],
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
+                  child: Text(
+                    userData!.get('username') ?? 'Not Available',
+                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   ),
                 ),
-                Expanded(
-                  child: ListView(
-                    // Use ListView for other details for better handling of overflow and larger amount of data
-                    children: <Widget>[
-                      ListTile(
-                        leading: const Icon(Icons.email),
-                        title: Text("Email: ${user!.email ?? 'Not available'}"),
-                      ),
-                      // ... Add more user details if needed ...
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 130),
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            foregroundColor: Colors.white, backgroundColor: Colors.red, // White text color
-                          ),
-                          onPressed: _logout,
-                          child: const Padding(
-                            padding: EdgeInsets.all(12.0),
-                            child: Text(
-                              'Logout',
-                              style: TextStyle(fontSize: 20),
-                            ),
-                          ),
-                        ),
-                      ),
-                      ElevatedButton(
-                        onPressed: () => _confirmDeleteAccount(),
-                        child: Text('Delete Account'),
-                        style: ElevatedButton.styleFrom(primary: Colors.redAccent),
-                      ),
-                    ],
+                _buildInfoSection('Email', user!.email ?? 'Not Available', Icons.email),
+                _buildInfoSection('Address', userData!.get('address') ?? 'Not Available', Icons.home),
+                _buildInfoSection('Phone Number', userData!.get('phoneNumber') ?? 'Not Available', Icons.phone),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const EditUserProfilePage())),
+                    child: const Text('Edit Profile'),
+                    style: ElevatedButton.styleFrom(primary: Colors.green),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
+                  child: ElevatedButton(
+                    onPressed: _deleteAccount,
+                    child: const Text('Delete Account'),
+                    style: ElevatedButton.styleFrom(primary: Colors.red),
                   ),
                 ),
               ],
