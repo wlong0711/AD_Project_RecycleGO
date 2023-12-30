@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
+import 'package:recycle_go/models/company_logo.dart';
 import 'login.dart'; // Import the LoginPage
 
 class RegisterPage extends StatefulWidget {
@@ -18,7 +20,48 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
+  final TextEditingController _phoneNumberController = TextEditingController();
+
+  bool _hasAttemptedSubmit = false; // Add this to track if the user has attempted to submit the form
+  FocusNode _phoneFocusNode = FocusNode(); // Add this to track focus on the phone number field
+
+  @override
+  void initState() {
+    super.initState();
+    // Add a listener to the focus node to update the UI when the field loses focus
+    _phoneFocusNode.addListener(() {
+      if (!_phoneFocusNode.hasFocus) {
+        setState(() {});
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    // Dispose the focus node when the state object is disposed
+    _phoneFocusNode.dispose();
+    super.dispose();
+  }
+
+  bool isValidMalaysianPhoneNumber(String phoneNumber) {
+    // Check if the phone number starts with '+60' and is followed by '11' and 8 digits
+    // or '12' to '19' and 7 digits
+    return RegExp(r'^\+60(11\d{8}|1[2-9]\d{7})$').hasMatch(phoneNumber);
+  }
+
   Future<void> _register() async {
+    // Set this to true when the user attempts to register
+    setState(() {
+      _hasAttemptedSubmit = true;
+    });
+
+    if (!isValidMalaysianPhoneNumber(_phoneNumberController.text)) {
+      // Show an error message or handle invalid phone number
+      print('Invalid Malaysian phone number');
+      return;
+    }
+
     try {
       // Create a new user with email and password
       UserCredential userCredential =
@@ -26,6 +69,9 @@ class _RegisterPageState extends State<RegisterPage> {
         email: _emailController.text,
         password: _passwordController.text,
       );
+
+      // Send email verification
+      await userCredential.user!.sendEmailVerification();
 
       // Add additional user data to Firestore
       await FirebaseFirestore.instance
@@ -35,14 +81,35 @@ class _RegisterPageState extends State<RegisterPage> {
         'email': _emailController.text,
         'username': _usernameController.text,
         'points': 0,
-        'level' :0, //0 for user, 1 for admin
+        'level': 0, // 0 for user, 1 for admin
+        'address': _addressController.text,
+        'phoneNumber': _phoneNumberController.text,
+        'isVerified': false, // Mark the user as not verified initially
       });
 
-      // Registration successful, navigate to the next screen
-      // (you can replace this with your own logic)
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const LoginPage()),
+      // Registration successful, show dialog
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Registration Successful'),
+            content: const Text(
+                'You have successfully created a new account. Please check your email for verification.'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  // Navigate to the LoginPage after successful registration
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const LoginPage()),
+                  );
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
       );
     } catch (e) {
       print("Error during registration: $e");
@@ -71,6 +138,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
+    CompanyLogo companyLogo = Provider.of<CompanyLogo>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Register'),
@@ -87,38 +155,43 @@ class _RegisterPageState extends State<RegisterPage> {
         elevation: 10,
         shadowColor: Colors.greenAccent.withOpacity(0.5),
       ),
-      body: SingleChildScrollView( // Added SingleChildScrollView for better UX on smaller devices
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // Company Logo
-              Image.network(
-                'https://firebasestorage.googleapis.com/v0/b/recyclego-64b10.appspot.com/o/Company%20Logo%2FLogo.png?alt=media&token=aac89fba-a30d-4a9a-8c39-d6cd85e1f4d5',
-                width: 100,
-                height: 100,
-              ),
-              const SizedBox(height: 20),
+      body: Center(
+        child: SingleChildScrollView(
+          // Added SingleChildScrollView for better UX on smaller devices
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // Company Logo
+                Container(
+                  width: 100,
+                  height: 100,
+                  child: companyLogo.image, // Use the provided CompanyLogo's image
+                ),
+                const SizedBox(height: 20),
 
-              // Input Boxes and Buttons
-              _buildInputBox("Email", _emailController, isPassword: false),
-              _buildInputBox("Username", _usernameController, isPassword: false),
-              _buildPasswordInputBox(),
-              _buildConfirmPasswordInputBox(),
-              const SizedBox(height: 10),
-              _buildButton("Register", Colors.green),
-              const SizedBox(height: 20),
-              _buildOrSeparator(),
-              const SizedBox(height: 10),
-              _buildOtherLoginMethods(),
-              const SizedBox(height: 20),
-              _buildLoginText(context),
-            ],
+                // Input Boxes and Buttons
+                _buildInputBox("Email", _emailController, isPassword: false),
+                _buildInputBox("Username", _usernameController, isPassword: false),
+                _buildInputBox("College Address", _addressController, isPassword: false),
+                _buildInputBox("Phone Number", _phoneNumberController, isPassword: false, showWarning: !isValidMalaysianPhoneNumber(_phoneNumberController.text)),
+                _buildPasswordInputBox(),
+                _buildConfirmPasswordInputBox(),
+                const SizedBox(height: 10),
+                _buildButton("Register", Colors.green),
+                const SizedBox(height: 20),
+                // _buildOrSeparator(),
+                // const SizedBox(height: 10),
+                // _buildOtherLoginMethods(),
+                // const SizedBox(height: 20),
+                _buildLoginText(context),
+              ],
+            ),
           ),
         ),
       ),
@@ -155,23 +228,35 @@ class _RegisterPageState extends State<RegisterPage> {
     String label,
     TextEditingController controller, {
     bool isPassword = false,
+    bool showWarning = false,
   }) {
     return SizedBox(
       width: 300,
-      child: TextField(
-        controller: controller,
-        obscureText: isPassword && !_isPasswordVisible,
-        onChanged: (value) {
-          // Handle the input change and update the state as needed
-          setState(() {});
-        },
-        decoration: InputDecoration(
-          labelText: controller.text.isEmpty ? label : '',
-          border: const OutlineInputBorder(),
-        ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextField(
+            controller: controller,
+            obscureText: isPassword && !_isPasswordVisible,
+            onChanged: (value) {
+              // Only update the state for the phone number field if it's not empty
+              if (controller == _phoneNumberController && value.isNotEmpty) {
+                setState(() {});
+              }
+            },
+            decoration: InputDecoration(
+              labelText: controller.text.isEmpty ? label : '',
+              border: const OutlineInputBorder(),
+              // Only show the error text if the user has attempted to submit the form or the field is not empty
+              errorText: controller == _phoneNumberController && showWarning && (_hasAttemptedSubmit || controller.text.isNotEmpty) ? 'Please enter a valid phone number with +60.' : null,
+            ),
+          ),
+        ],
       ),
     );
   }
+
+
 
   Widget _buildPasswordInputBox() {
     return SizedBox(
@@ -184,7 +269,7 @@ class _RegisterPageState extends State<RegisterPage> {
           setState(() {});
         },
         decoration: InputDecoration(
-          labelText: _passwordController.text.isEmpty ? 'Password' : '',
+          labelText: _passwordController.text.isEmpty ? 'Password (6 digits or above)' : '',
           border: const OutlineInputBorder(),
           suffixIcon: GestureDetector(
             onTap: () {
@@ -252,19 +337,6 @@ class _RegisterPageState extends State<RegisterPage> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildOtherLoginMethods() {
-    return const Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(Icons.facebook, size: 40),
-        SizedBox(width: 20),
-        Icon(Icons.mail, size: 40),
-        SizedBox(width: 20),
-        Icon(Icons.phone, size: 40),
-      ],
     );
   }
 }

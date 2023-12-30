@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:recycle_go/Admin%20Only%20Pages/report_details.dart';
+import 'package:recycle_go/Shared%20Pages/Transition%20Page/transition_page.dart';
 
 class AdminReportsPage extends StatefulWidget {
   const AdminReportsPage({super.key});
@@ -14,16 +15,47 @@ class _AdminReportsPageState extends State<AdminReportsPage> with SingleTickerPr
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   TabController? _tabController;
 
+  OverlayEntry? _overlayEntry;
+  final int loadingTimeForOverlay = 3;
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(vsync: this, length: 2);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _showOverlay();
+      }
+    });
   }
 
   @override
   void dispose() {
     _tabController?.dispose();
     super.dispose();
+  }
+
+  void _showOverlay() {
+    _overlayEntry = OverlayEntry(
+      builder: (context) => TransitionOverlay(
+        iconData: Icons.view_list, // The icon you want to show
+        duration: Duration(seconds: loadingTimeForOverlay), // Duration for the transition
+        pageName: "Fetching Report List",
+      ),
+    );
+
+    Overlay.of(context).insert(_overlayEntry!);
+
+    Future.delayed(Duration(seconds: loadingTimeForOverlay), () {
+      if (mounted) {
+        _removeOverlay();
+      }
+    });
+  }
+
+  void _removeOverlay() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
   }
 
   Widget buildReportList(String status) {
