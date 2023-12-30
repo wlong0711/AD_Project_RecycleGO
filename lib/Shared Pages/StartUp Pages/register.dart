@@ -23,6 +23,27 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _phoneNumberController = TextEditingController();
 
+  bool _hasAttemptedSubmit = false; // Add this to track if the user has attempted to submit the form
+  FocusNode _phoneFocusNode = FocusNode(); // Add this to track focus on the phone number field
+
+  @override
+  void initState() {
+    super.initState();
+    // Add a listener to the focus node to update the UI when the field loses focus
+    _phoneFocusNode.addListener(() {
+      if (!_phoneFocusNode.hasFocus) {
+        setState(() {});
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    // Dispose the focus node when the state object is disposed
+    _phoneFocusNode.dispose();
+    super.dispose();
+  }
+
   bool isValidMalaysianPhoneNumber(String phoneNumber) {
     // Check if the phone number starts with '+60' and is followed by '11' and 8 digits
     // or '12' to '19' and 7 digits
@@ -30,7 +51,11 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Future<void> _register() async {
-    // Check if the phone number is valid
+    // Set this to true when the user attempts to register
+    setState(() {
+      _hasAttemptedSubmit = true;
+    });
+
     if (!isValidMalaysianPhoneNumber(_phoneNumberController.text)) {
       // Show an error message or handle invalid phone number
       print('Invalid Malaysian phone number');
@@ -214,26 +239,24 @@ class _RegisterPageState extends State<RegisterPage> {
             controller: controller,
             obscureText: isPassword && !_isPasswordVisible,
             onChanged: (value) {
-              // Handle the input change and update the state as needed
-              setState(() {});
+              // Only update the state for the phone number field if it's not empty
+              if (controller == _phoneNumberController && value.isNotEmpty) {
+                setState(() {});
+              }
             },
             decoration: InputDecoration(
               labelText: controller.text.isEmpty ? label : '',
               border: const OutlineInputBorder(),
+              // Only show the error text if the user has attempted to submit the form or the field is not empty
+              errorText: controller == _phoneNumberController && showWarning && (_hasAttemptedSubmit || controller.text.isNotEmpty) ? 'Please enter a valid phone number with +60.' : null,
             ),
           ),
-          if (showWarning)
-            Padding(
-              padding: const EdgeInsets.only(top: 4),
-              child: Text(
-                'Please enter a valid phone number with +60.',
-                style: TextStyle(color: Colors.red),
-              ),
-            ),
         ],
       ),
     );
   }
+
+
 
   Widget _buildPasswordInputBox() {
     return SizedBox(

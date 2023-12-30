@@ -216,30 +216,40 @@ void _navigateToEditView(BuildContext context, String docId) {
 }
 
 
-void _loadDropPoints() {
-  FirebaseFirestore.instance.collection('drop_points').snapshots().listen((snapshot) {
-    setState(() {
-      markers.clear();
-      for (var doc in snapshot.docs) {
-        Map<String, dynamic> pointData = doc.data();
+void _loadDropPoints() async {
+  var snapshot = await FirebaseFirestore.instance.collection('drop_points').get();
+
+  setState(() {
+    markers.clear();
+    for (var doc in snapshot.docs) {
+      Map<String, dynamic> pointData = doc.data() as Map<String, dynamic>;
+      List<String> recycleItems = List<String>.from(pointData['recycleItems']); // Cast to List<String>
+      if (_matchesFilter(recycleItems)) {
         LatLng point = LatLng(pointData['latitude'], pointData['longitude']);
-        markers.add(
-          Marker(
-            markerId: MarkerId(doc.id),
-            position: point,
-            infoWindow: InfoWindow(
-              title: pointData['title'], 
-              snippet: pointData['address']
-            ),
-            onTap: () {
-              _showDropPointDetails(pointData, doc.id, pointData['title'] ?? 'No Title');
-            },
-          ),
-        );
+        markers.add(_createMarker(doc.id, point, pointData));
       }
-    });
+    }
   });
 }
+
+
+Marker _createMarker(String id, LatLng point, Map<String, dynamic> pointData) {
+  return Marker(
+    markerId: MarkerId(id),
+    position: point,
+    infoWindow: InfoWindow(
+      title: pointData['title'],
+      snippet: 'Tap here for details',
+      onTap: () {
+        _showDropPointDetails(pointData, id, pointData['title']); // Pass all required arguments
+      },
+    ),
+    onTap: () {
+      // This onTap is for the marker itself, not the InfoWindow
+    },
+  );
+}
+
 
   Future<String?> _showLocationNameDialog() async {
   String? locationName;
@@ -470,24 +480,22 @@ void _showFilterDialog() async {
 }
 List<String> _filterCriteria = [];
 
-bool _matchesFilter(List<dynamic> dropPointItems) {
+bool _matchesFilter(List<String> dropPointItems) {
   if (_filterCriteria.isEmpty) {
-    return true;
+    return true; // If no filter criteria, everything matches
   }
-  for (var item in _filterCriteria) {
-    if (!dropPointItems.contains(item)) {
-      return false;
-    }
-  }
-  return true; 
+  // Check if every filter criteria item is present in the drop point's items
+  return _filterCriteria.every((item) => dropPointItems.contains(item));
 }
+
 
 void _updateFilterCriteria(List<String> newCriteria) {
   setState(() {
     _filterCriteria = newCriteria;
-    _loadDropPoints();
   });
+  _loadDropPoints(); // Reload points with the new filter
 }
+
  @override
   Widget build(BuildContext context) {
     return Scaffold(

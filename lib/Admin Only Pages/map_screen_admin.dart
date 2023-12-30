@@ -131,12 +131,8 @@ bool _matchesFilter(List<dynamic> dropPointItems) {
   if (_filterCriteria.isEmpty) {
     return true; // If no filter criteria, everything matches
   }
-  for (var item in _filterCriteria) {
-    if (!dropPointItems.contains(item)) {
-      return false; // If any item in the filter is not present, it's not a match
-    }
-  }
-  return true; // All filter items are present
+  // Ensure all filter criteria are contained within the drop point's items
+  return _filterCriteria.every((item) => dropPointItems.contains(item));
 }
 
 // Define a method to update the filter criteria based on user selection
