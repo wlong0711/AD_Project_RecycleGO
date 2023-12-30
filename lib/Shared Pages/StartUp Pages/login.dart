@@ -50,38 +50,46 @@ class _LoginPageState extends State<LoginPage> {
     setState(() => _isLoading = true); // Start loading
 
     try {
-      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: _usernameController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
-
-      if (userCredential.user != null && !userCredential.user!.emailVerified) {
-        // User's email is not verified
-        _showErrorSnackBar('Please verify your email before logging in.');
-        setState(() => _isLoading = false); // Stop loading
-        return; // Stop further execution if email is not verified
-      }
-
-      // User's email is verified, proceed with login
-      String userEmail = _usernameController.text.trim();
-      var usersCollection = FirebaseFirestore.instance.collection('users');
-      var querySnapshot = await usersCollection.where('email', isEqualTo: userEmail).get();
-
-      if (querySnapshot.docs.isNotEmpty) {
-        var userDocument = querySnapshot.docs.first;
-        GlobalUser.userName = userDocument['username'];
-        GlobalUser.userLevel = userDocument['level'];
-        GlobalUser.userPoints = userDocument['points'];
-
-        if (_rememberMe) {
-          _saveAuthenticationState();
-        }
-
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const HomePage()),
+          UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: _usernameController.text.trim(),
+          password: _passwordController.text.trim(),
         );
-      }
+
+        if (userCredential.user != null) {
+          // Fetch the user's data from Firestore
+          DocumentSnapshot userDocSnapshot = await FirebaseFirestore.instance.collection('users').doc(userCredential.user!.uid).get();
+
+          if (!userDocSnapshot.exists) {
+            _showErrorSnackBar('User data not found in the database.');
+            return;
+          }
+
+          Map<String, dynamic> userDoc = userDocSnapshot.data() as Map<String, dynamic>;
+
+          // Get the user level and check if it's an admin
+          int userLevel = userDoc['level'] ?? 0;
+
+          // Allow admins to bypass email verification check
+          if (userLevel == 1 || userCredential.user!.emailVerified) {
+            // Admin or email verified, proceed with login
+            // Set global user information
+            GlobalUser.userName = userDoc['username'];
+            GlobalUser.userLevel = userDoc['level'];
+            GlobalUser.userPoints = userDoc['points'];
+
+            if (_rememberMe) {
+              _saveAuthenticationState();
+            }
+
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const HomePage()),
+            );
+          } else {
+            // Not an admin and email not verified
+            _showErrorSnackBar('Please verify your email before logging in.');
+          }
+        }
     } on FirebaseAuthException catch (e) {
       print('FirebaseAuthException with code: ${e.code}');
       String errorMessage;
