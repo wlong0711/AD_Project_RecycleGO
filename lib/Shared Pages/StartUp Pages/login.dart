@@ -1,9 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:recycle_go/Shared%20Pages/StartUp%20Pages/home_page.dart';
-import 'package:recycle_go/models/company_logo.dart';
 import 'package:recycle_go/models/global_user.dart';
 import 'forgot.dart';
 import 'register.dart';
@@ -52,7 +50,6 @@ class _LoginPageState extends State<LoginPage> {
     setState(() => _isLoading = true);  // Start loading
 
     try {
-
       // Check if the user exists in Firestore
     var usersCollection = FirebaseFirestore.instance.collection('users');
     var querySnapshot = await usersCollection.where('email', isEqualTo: _usernameController.text).get();
@@ -61,6 +58,7 @@ class _LoginPageState extends State<LoginPage> {
       _showErrorSnackBar('The provided email is not registered.');
       return;
     }
+      
       UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: _usernameController.text,
         password: _passwordController.text,
@@ -161,20 +159,13 @@ Widget build(BuildContext context) {
       body: Stack(
         children: [
           Center(child: _buildLoginForm()),
-          if (_isLoading)
-            Container(
-              color: Colors.black.withOpacity(0.5),
-              child: Center(
-                child: _buildLoadingOverlay(),
-              ),
-            ),
+          if (_isLoading) _buildLoadingOverlay(),
         ],
       ),
     );
   }
 
   Widget _buildLoginForm() {
-  CompanyLogo companyLogo = Provider.of<CompanyLogo>(context, listen: false);
   return SingleChildScrollView(
     padding: EdgeInsets.only(
       bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -186,11 +177,11 @@ Widget build(BuildContext context) {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Container(
-                width: 100,
-                height: 100,
-                child: companyLogo.image, // Use the provided CompanyLogo's image
-              ),
+          Image.network(
+            'https://firebasestorage.googleapis.com/v0/b/recyclego-64b10.appspot.com/o/Company%20Logo%2FLogo.png?alt=media&token=aac89fba-a30d-4a9a-8c39-d6cd85e1f4d5',
+            width: 100,
+            height: 100,
+          ),
           const SizedBox(height: 20),
           _buildInputBox("Email", _usernameController, isPassword: false),
           _buildPasswordInputBox(),
@@ -205,12 +196,10 @@ Widget build(BuildContext context) {
           const SizedBox(height: 10),
           _buildButton("Login", Colors.green, _login),
           const SizedBox(height: 20),
-          
           // _buildOrSeparator(),
           // const SizedBox(height: 10),
           // _buildOtherLoginMethods(),
           // const SizedBox(height: 20),
-          
           _buildCreateAccountText(),
         ],
       ),
@@ -406,7 +395,10 @@ Widget build(BuildContext context) {
       ],
     );
   }
+
 }
+
+
 
 void main() {
   runApp(const MaterialApp(
