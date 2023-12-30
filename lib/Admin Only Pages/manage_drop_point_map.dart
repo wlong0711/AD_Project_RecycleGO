@@ -374,26 +374,57 @@ Marker _createMarker(String id, LatLng point, Map<String, dynamic> pointData) {
           TextButton(
             child: const Text('Confirm'),
             onPressed: () {
-              _dropPointTitle = titleController.text;
+              // Validation checks before confirming
+              if (titleController.text.isEmpty) {
+                _showErrorDialog(context, 'Please enter a title.');
+                return;
+              }
+
               List<String> selectedPickupDays = daysOfWeek
                   .asMap()
                   .entries
                   .where((entry) => selectedDays[entry.key])
                   .map((entry) => entry.value)
                   .toList();
+              if (selectedPickupDays.isEmpty) {
+                _showErrorDialog(context, 'Please select at least one pickup day.');
+                return;
+              }
 
               List<String> selectedRecycleItems = recycleItemsMap.entries
                   .where((entry) => entry.value)
                   .map((entry) => entry.key)
                   .toList();
+              if (selectedRecycleItems.isEmpty) {
+                _showErrorDialog(context, 'Please select at least one recyclable item.');
+                return;
+              }
 
-              Navigator.of(context).pop(); // Close the dialog first
-              _saveDropPoint(tempPoint!, _dropPointTitle, address, selectedPickupDays, selectedRecycleItems);
+                Navigator.of(context).pop(); // Close the dialog first
+              _saveDropPoint(point, titleController.text, address, selectedPickupDays, selectedRecycleItems);
             },
           ),
         ],
       );
     },
+  );
+}
+
+void _showErrorDialog(BuildContext context, String message) {
+  showDialog(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      title: Text('Invalid Input'),
+      content: Text(message),
+      actions: <Widget>[
+        TextButton(
+          child: Text('Okay'),
+          onPressed: () {
+            Navigator.of(ctx).pop(); // Close the dialog
+          },
+        )
+      ],
+    ),
   );
 }
 
@@ -411,19 +442,22 @@ Marker _createMarker(String id, LatLng point, Map<String, dynamic> pointData) {
   }
 
   void _saveDropPoint(LatLng point, String title, String address, List<String> pickupDays, List<String> recycleItems) {
-    FirebaseFirestore.instance.collection('drop_points').add({
-      'latitude': point.latitude,
-      'longitude': point.longitude,
-      'title': title,
-      'address': address,
-      'pickupDays': pickupDays,
-      'recycleItems': recycleItems,
-    }).then((result) {
-      print("Drop point added");
-    }).catchError((error) {
-      print("Failed to add drop point: $error");
-    });
-  }
+  FirebaseFirestore.instance.collection('drop_points').add({
+    'latitude': point.latitude,
+    'longitude': point.longitude,
+    'title': title,
+    'address': address,
+    'pickupDays': pickupDays,
+    'recycleItems': recycleItems,
+  }).then((result) {
+    print("Drop point added");
+    // Call loadDropPoints again to refresh the list of markers
+    _loadDropPoints();
+  }).catchError((error) {
+    print("Failed to add drop point: $error");
+  });
+}
+
   
   void _onMapCreated(GoogleMapController controller) {
   setState(() {
@@ -690,33 +724,67 @@ class _EditDropPointScreenState extends State<EditDropPointScreen> {
   }
 
   void _saveDropPoint() async {
-    // Gather the selected pickup days and recyclable items
-    List<String> selectedPickupDays = _daysOfWeekMap.entries
-        .where((entry) => entry.value)
-        .map((entry) => entry.key)
-        .toList();
-    List<String> selectedRecyclableItems = _recyclableItemsMap.entries
-        .where((entry) => entry.value)
-        .map((entry) => entry.key)
-        .toList();
-
-    try {
-      await FirebaseFirestore.instance
-          .collection('drop_points')
-          .doc(widget.dropPointId)
-          .update({
-            'title': _titleController.text,
-            'pickupDays': selectedPickupDays,
-            'recycleItems': selectedRecyclableItems,
-          });
-
-      Navigator.of(context).pop();
-    } catch (e) {
-      print("Error updating document: $e");
-    }
+  // Validation: Ensure title is not empty
+  if (_titleController.text.isEmpty) {
+    _showErrorDialog('Title cannot be empty.');
+    return; // Exit the function if validation fails
   }
 
-  @override
+  // Validation: Ensure at least one pickup day is selected
+  List<String> selectedPickupDays = _daysOfWeekMap.entries
+      .where((entry) => entry.value)
+      .map((entry) => entry.key)
+      .toList();
+  if (selectedPickupDays.isEmpty) {
+    _showErrorDialog('Please select at least one pickup day.');
+    return; // Exit the function if validation fails
+  }
+
+  // Validation: Ensure at least one recyclable item is selected
+  List<String> selectedRecyclableItems = _recyclableItemsMap.entries
+      .where((entry) => entry.value)
+      .map((entry) => entry.key)
+      .toList();
+  if (selectedRecyclableItems.isEmpty) {
+    _showErrorDialog('Please select at least one recyclable item.');
+    return; // Exit the function if validation fails
+  }
+
+  // Proceed with updating the drop point details if all validations pass
+  try {
+    await FirebaseFirestore.instance
+        .collection('drop_points')
+        .doc(widget.dropPointId)
+        .update({
+          'title': _titleController.text,
+          'pickupDays': selectedPickupDays,
+          'recycleItems': selectedRecyclableItems,
+        });
+
+    Navigator.of(context).pop(); // Return to the previous screen on success
+  } catch (e) {
+    _showErrorDialog('Error updating drop point: $e'); // Show error on exception
+  }
+}
+
+void _showErrorDialog(String message) {
+  showDialog(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      title: Text('Invalid Input'),
+      content: Text(message),
+      actions: <Widget>[
+        TextButton(
+          child: Text('Okay'),
+          onPressed: () {
+            Navigator.of(ctx).pop(); // Close the dialog
+          },
+        )
+      ],
+    ),
+  );
+}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
