@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:recycle_go/Shared%20Pages/StartUp%20Pages/welcome_page.dart';
 import 'edit_user_profile_page.dart'; // Ensure correct import path
-import 'login.dart'; // Ensure correct import path
 
 class UserProfilePage extends StatefulWidget {
   const UserProfilePage({Key? key}) : super(key: key);
@@ -100,7 +99,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
 
   Future<void> _logout() async {
     await FirebaseAuth.instance.signOut();
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const LoginPage()));
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const WelcomePage()));
   }
 
   Future<void> _confirmDeleteAccount() async {
