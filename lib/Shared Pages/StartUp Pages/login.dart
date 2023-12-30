@@ -47,46 +47,40 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    setState(() => _isLoading = true);  // Start loading
+    setState(() => _isLoading = true); // Start loading
 
     try {
-      // Check if the user exists in Firestore
-    var usersCollection = FirebaseFirestore.instance.collection('users');
-    var querySnapshot = await usersCollection.where('email', isEqualTo: _usernameController.text).get();
-
-    if (querySnapshot.docs.isEmpty) {
-      _showErrorSnackBar('The provided email is not registered.');
-      return;
-    }
-      
       UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: _usernameController.text,
-        password: _passwordController.text,
+        email: _usernameController.text.trim(),
+        password: _passwordController.text.trim(),
       );
 
-      if (userCredential.user != null) {
-        String userEmail = _usernameController.text.trim();
-        var usersCollection = FirebaseFirestore.instance.collection('users');
-        var querySnapshot = await usersCollection.where('email', isEqualTo: userEmail).get();
+      if (userCredential.user != null && !userCredential.user!.emailVerified) {
+        // User's email is not verified
+        _showErrorSnackBar('Please verify your email before logging in.');
+        setState(() => _isLoading = false); // Stop loading
+        return; // Stop further execution if email is not verified
+      }
 
-        if (querySnapshot.docs.isNotEmpty) {
-          var userDocument = querySnapshot.docs.first;
-          GlobalUser.userName = userDocument['username'];
-          GlobalUser.userLevel = userDocument['level'];
-          GlobalUser.userPoints = userDocument['points'];
+      // User's email is verified, proceed with login
+      String userEmail = _usernameController.text.trim();
+      var usersCollection = FirebaseFirestore.instance.collection('users');
+      var querySnapshot = await usersCollection.where('email', isEqualTo: userEmail).get();
 
-          if (_rememberMe) {
-            _saveAuthenticationState();
-          }
+      if (querySnapshot.docs.isNotEmpty) {
+        var userDocument = querySnapshot.docs.first;
+        GlobalUser.userName = userDocument['username'];
+        GlobalUser.userLevel = userDocument['level'];
+        GlobalUser.userPoints = userDocument['points'];
 
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const HomePage()),
-          );
-        } 
-      }else {
-        // The user was not found (email not registered)
-        _showErrorSnackBar('The provided email is not registered.');
+        if (_rememberMe) {
+          _saveAuthenticationState();
+        }
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomePage()),
+        );
       }
     } on FirebaseAuthException catch (e) {
       print('FirebaseAuthException with code: ${e.code}');
@@ -98,7 +92,7 @@ class _LoginPageState extends State<LoginPage> {
         case 'user-not-found':
           errorMessage = 'The provided email is not registered.';
           break;
-        case 'invalid-credential':
+        case 'wrong-password':
           errorMessage = 'The password is invalid for the given email address.';
           break;
         default:
@@ -110,7 +104,7 @@ class _LoginPageState extends State<LoginPage> {
       _showErrorSnackBar('Login failed. Please try again.');
       print(e);
     } finally {
-      setState(() => _isLoading = false);  // Stop loading
+      setState(() => _isLoading = false); // Stop loading
     }
   }
 
