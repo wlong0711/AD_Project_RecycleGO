@@ -396,7 +396,26 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
               ),
               TextButton(
                 child: const Text('Save'),
-                onPressed: () => updateVoucherDetails(voucher, _nameController.text, int.parse(_pointsNeededController.text), _selectedDateTime),
+                onPressed: () {
+                  // Check if the input for Points Needed is a number
+                  if (_pointsNeededController.text.isEmpty || int.tryParse(_pointsNeededController.text) == null) {
+                    // Show an error if it's not a valid number
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text("Please enter a valid number for Points Needed."),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  } else {
+                    // If it's a valid number, proceed to update the voucher details
+                    updateVoucherDetails(
+                      voucher,
+                      _nameController.text,
+                      int.parse(_pointsNeededController.text),
+                      _selectedDateTime,
+                    );
+                  }
+                },
               ),
             ],
           ),
