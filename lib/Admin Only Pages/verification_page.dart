@@ -7,7 +7,7 @@ import '../models/upload.dart';
 class VerificationPage extends StatefulWidget {
   final Upload upload;
 
-  const VerificationPage({Key? key, required this.upload}) : super(key: key);
+  const VerificationPage({super.key, required this.upload});
 
   @override
   _VerificationPageState createState() => _VerificationPageState();
@@ -72,7 +72,7 @@ class _VerificationPageState extends State<VerificationPage> {
                 onPressed: () => _verifyUpload(widget.upload),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
-                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                 ),
                 child: const Text('Verify',
                   style: TextStyle(color: Colors.white, fontSize: 16),
@@ -82,7 +82,7 @@ class _VerificationPageState extends State<VerificationPage> {
                 onPressed: () => _rejectUpload(widget.upload),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
-                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                 ),
                 child: const Text('Reject',
                   style: TextStyle(color: Colors.white, fontSize: 16),
@@ -112,7 +112,7 @@ class _VerificationPageState extends State<VerificationPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Verify Upload"),
+        title: const Text("Verify Upload"),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -264,7 +264,7 @@ class _VerificationPageState extends State<VerificationPage> {
 class VideoPlayerItem extends StatefulWidget {
   final String videoUrl;
 
-  const VideoPlayerItem({Key? key, required this.videoUrl}) : super(key: key);
+  const VideoPlayerItem({super.key, required this.videoUrl});
 
   @override
   _VideoPlayerItemState createState() => _VideoPlayerItemState();
@@ -319,7 +319,7 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
           _showControls = true; // Show controls on every tap
 
           // Hide the controls after some time
-          Future.delayed(Duration(seconds: 2), () {
+          Future.delayed(const Duration(seconds: 2), () {
             if (mounted) {
               setState(() {
                 _showControls = false; // Hide controls
@@ -329,7 +329,7 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
         });
       },
       child: Center(
-        child: Container(
+        child: SizedBox(
           width: desiredWidth, // for full width of the device
           height: desiredHeight, // modify this as per your aspect ratio need
           child: AspectRatio(
@@ -345,7 +345,7 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
                     child: VideoProgressIndicator(
                       _controller,
                       allowScrubbing: true,
-                      padding: EdgeInsets.all(10),
+                      padding: const EdgeInsets.all(10),
                     ),
                   ),
                 ),
@@ -354,7 +354,7 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
                   left: 10,
                   child: AnimatedOpacity(
                     opacity: _showControls ? 1 : 0,
-                    duration: Duration(milliseconds: 300),
+                    duration: const Duration(milliseconds: 300),
                     child: Icon(
                       _isPlaying ? Icons.pause : Icons.play_arrow,
                       size: 30.0,
@@ -367,7 +367,7 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
                   right: 10,
                   child: Text(
                     "${_formatDuration(_controller.value.position)} / ${_formatDuration(_controller.value.duration)}",
-                    style: TextStyle(color: Colors.white),
+                    style: const TextStyle(color: Colors.white),
                   ),
                 ),
               ],

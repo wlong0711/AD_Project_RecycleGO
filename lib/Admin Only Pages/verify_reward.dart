@@ -115,7 +115,7 @@ class _VerifyRewardPageState extends State<VerifyRewardPage> {
           child: DropdownButtonHideUnderline(
             child: DropdownButtonFormField<String>(
               value: selectedLocation,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 border: InputBorder.none,
                 contentPadding: EdgeInsets.zero, // Zero padding inside the button
                 // Adjust alignment to center if needed
@@ -189,7 +189,7 @@ class _VerifyRewardPageState extends State<VerifyRewardPage> {
               String formattedTime = DateFormat('dd/MM/yyyy HH:mm').format(dateTime); // Using DateFormat from intl package
               // Wrap each list item in a container with a bottom border
               return Container(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Color.fromARGB(255, 179, 224, 128),
                   border: Border(
                     bottom: BorderSide(color: Colors.green, width: 2), // Bottom border for each item
@@ -202,7 +202,7 @@ class _VerifyRewardPageState extends State<VerifyRewardPage> {
                       Text('${locationUploads[index].userName}\'s upload'),
                       Text(
                         formattedTime, // Display formatted timestamp
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           color: Colors.black,
                         ),
@@ -224,7 +224,7 @@ class _VerifyRewardPageState extends State<VerifyRewardPage> {
                 ),
               );
             },
-            separatorBuilder: (context, index) => SizedBox(height: 0), // Remove space between items if not needed
+            separatorBuilder: (context, index) => const SizedBox(height: 0), // Remove space between items if not needed
           ),
         ),
       ),
@@ -250,13 +250,13 @@ class _VerifyRewardPageState extends State<VerifyRewardPage> {
           InkWell(
             onTap: _toggleSortOrder,
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 12),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
                     'Sort by ${_isSortedByOldest ? "Oldest" : "Latest"}',
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.bold, // Make text bold
                       fontSize: 16, // Optionally adjust font size as needed

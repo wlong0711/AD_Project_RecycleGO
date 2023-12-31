@@ -71,7 +71,7 @@ class _AddVoucherPageState extends State<AddVoucherPage> {
 
       if (_selectedDate == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Please pick an expiry date and time.'),
             backgroundColor: Colors.red,
           ),
@@ -93,8 +93,8 @@ class _AddVoucherPageState extends State<AddVoucherPage> {
           int lastVoucherId = counterSnapshot.exists ? int.parse(counterSnapshot.get('lastVoucherId') as String) + 1 : 1;
           DocumentReference newVoucherRef = FirebaseFirestore.instance.collection('vouchers').doc();
 
-          await transaction.set(newVoucherRef, {
-            'voucherID': 'V' + lastVoucherId.toString().padLeft(4, '0'),
+          transaction.set(newVoucherRef, {
+            'voucherID': 'V${lastVoucherId.toString().padLeft(4, '0')}',
             'voucherName': _voucherNameController.text.trim(),
             'pointsNeeded': int.parse(_pointsNeededController.text.trim()),
             'expiredDate': _selectedDate != null ? Timestamp.fromDate(_selectedDate!) : null,
@@ -129,7 +129,7 @@ class _AddVoucherPageState extends State<AddVoucherPage> {
             String lastId = snapshot.get('lastVoucherId') as String;
             int nextId = int.parse(lastId) + 1;
             setState(() {
-              _nextVoucherId = 'V' + nextId.toString().padLeft(4, '0');
+              _nextVoucherId = 'V${nextId.toString().padLeft(4, '0')}';
             });
           }
         }
@@ -187,9 +187,9 @@ class _AddVoucherPageState extends State<AddVoucherPage> {
               key: _formKey,
               child: ListView(
                 children: [
-                  SizedBox(height: 10,),
+                  const SizedBox(height: 10,),
                   Container(
-                    padding: EdgeInsets.all(8), // Add some padding inside the container
+                    padding: const EdgeInsets.all(8), // Add some padding inside the container
                     decoration: BoxDecoration(
                       color: Colors.green, // Background color of the box
                       borderRadius: BorderRadius.circular(8), // Rounded corners
@@ -197,14 +197,14 @@ class _AddVoucherPageState extends State<AddVoucherPage> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min, // Use the minimum space that is needed by the child widgets
                       children: <Widget>[
-                        Icon(
+                        const Icon(
                           Icons.discount, // The icon
                           color: Colors.white, // Icon color
                         ),
-                        SizedBox(width: 8), // A sized box for spacing
+                        const SizedBox(width: 8), // A sized box for spacing
                         Text(
                           'Voucher ID: $_nextVoucherId', // The text
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Colors.white, // Text color
                             fontWeight: FontWeight.bold, // Make the text bold
                           ),
@@ -212,7 +212,7 @@ class _AddVoucherPageState extends State<AddVoucherPage> {
                       ],
                     ),
                   ),
-                  SizedBox(height: 10,),
+                  const SizedBox(height: 10,),
                   TextFormField(
                     controller: _voucherNameController,
                     decoration: const InputDecoration(labelText: 'Voucher Name'),

@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'UserProfilePage.dart';  // Ensure this is the correct path for your UserProfilePage.
 
 class EditUserProfilePage extends StatefulWidget {
-  const EditUserProfilePage({Key? key}) : super(key: key);
+  const EditUserProfilePage({super.key});
 
   @override
   _EditUserProfilePageState createState() => _EditUserProfilePageState();
@@ -12,9 +12,9 @@ class EditUserProfilePage extends StatefulWidget {
 
 class _EditUserProfilePageState extends State<EditUserProfilePage> {
   User? user = FirebaseAuth.instance.currentUser;
-  TextEditingController _usernameController = TextEditingController();
-  TextEditingController _addressController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   String _passwordError = '';
 
   @override
@@ -165,10 +165,10 @@ class _EditUserProfilePageState extends State<EditUserProfilePage> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _saveChanges,
-              child: const Text('Save Changes'),
               style: ElevatedButton.styleFrom(
                 foregroundColor: Colors.white, backgroundColor: Colors.green,
               ),
+              child: const Text('Save Changes'),
             ),
           ],
         ),

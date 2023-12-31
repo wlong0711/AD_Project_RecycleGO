@@ -73,7 +73,7 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
     await _fetchUserPoints();
     await fetchVouchers();
     await fetchClaimedVouchers();
-    _timer = Timer.periodic(Duration(minutes: 1), (Timer t) {
+    _timer = Timer.periodic(const Duration(minutes: 1), (Timer t) {
         setState(() {});
       });
   }
@@ -234,7 +234,7 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
       // After deletion, fetch vouchers and claimed vouchers again
       refreshData();
 
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text("Voucher deleted successfully"),
         backgroundColor: Colors.green,
       ));
@@ -266,26 +266,26 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
   }
 
   void editVoucher(Voucher voucher, int index) {
-    TextEditingController _nameController = TextEditingController(text: voucher.voucherName);
-    TextEditingController _pointsNeededController = TextEditingController(text: voucher.pointsNeeded.toString());
-    DateTime _selectedDateTime = voucher.expiredDate.toLocal(); // Initialize with current expiry date
+    TextEditingController nameController = TextEditingController(text: voucher.voucherName);
+    TextEditingController pointsNeededController = TextEditingController(text: voucher.pointsNeeded.toString());
+    DateTime selectedDateTime = voucher.expiredDate.toLocal(); // Initialize with current expiry date
     
     // Function to select date and time
-    Future<void> _selectDateTime(BuildContext context) async {
+    Future<void> selectDateTime(BuildContext context) async {
       final DateTime? pickedDate = await showDatePicker(
         context: context,
-        initialDate: _selectedDateTime,
+        initialDate: selectedDateTime,
         firstDate: DateTime(2020),
         lastDate: DateTime(2100),
       );
       if (pickedDate != null) {
         final TimeOfDay? pickedTime = await showTimePicker(
           context: context,
-          initialTime: TimeOfDay.fromDateTime(_selectedDateTime),
+          initialTime: TimeOfDay.fromDateTime(selectedDateTime),
         );
         if (pickedTime != null) {
           setState(() {
-            _selectedDateTime = DateTime(
+            selectedDateTime = DateTime(
               pickedDate.year,
               pickedDate.month,
               pickedDate.day,
@@ -317,10 +317,10 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
                         'Voucher ID - ${voucher.voucherID}', // Display Voucher ID
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       TextField(
-                        controller: _nameController,
-                        decoration: InputDecoration(
+                        controller: nameController,
+                        decoration: const InputDecoration(
                           labelText: 'Voucher Name',
                           labelStyle: TextStyle(
                             fontWeight: FontWeight.bold, // Make the label text bold
@@ -328,10 +328,10 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
                           ),
                         ),
                       ),
-                      SizedBox(height: 10,),
+                      const SizedBox(height: 10,),
                       TextField(
-                        controller: _pointsNeededController,
-                        decoration: InputDecoration(
+                        controller: pointsNeededController,
+                        decoration: const InputDecoration(
                           labelText: 'Points Needed',
                           labelStyle: TextStyle(
                             fontWeight: FontWeight.bold, // Make the label text bold
@@ -340,7 +340,7 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
                         ),
                         keyboardType: TextInputType.number,
                       ),
-                      SizedBox(height: 10,),
+                      const SizedBox(height: 10,),
                       ListTile(
                         title: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -349,26 +349,26 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
-                                  Text(
+                                  const Text(
                                     "Expired Date:",
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold, // Make it bold or style it as needed
                                     ),
                                   ),
                                   Text(
-                                    "${DateFormat.yMd().add_Hm().format(_selectedDateTime)}", // Your date formatting
-                                    style: TextStyle(
+                                    DateFormat.yMd().add_Hm().format(selectedDateTime), // Your date formatting
+                                    style: const TextStyle(
                                       color: Colors.black, // Optional: style it as needed
                                     ),
                                   ),
                                 ],
                               ),
                             ),
-                            Icon(Icons.calendar_today), // Your trailing icon
+                            const Icon(Icons.calendar_today), // Your trailing icon
                           ],
                         ),
                         onTap: () async {
-                          await _selectDateTime(context);
+                          await selectDateTime(context);
                           setState(() {}); // Refresh the ListTile with the new date and time
                         },
                       ),
@@ -389,7 +389,7 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
                   Navigator.of(context).pop(), // Close the dialog
                 },
               ),
-              SizedBox(width: 70,),
+              const SizedBox(width: 70,),
               TextButton(
                 child: const Text('Cancel'),
                 onPressed: () => Navigator.of(context).pop(),
@@ -398,10 +398,10 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
                 child: const Text('Save'),
                 onPressed: () {
                   // Check if the input for Points Needed is a number
-                  if (_pointsNeededController.text.isEmpty || int.tryParse(_pointsNeededController.text) == null) {
+                  if (pointsNeededController.text.isEmpty || int.tryParse(pointsNeededController.text) == null) {
                     // Show an error if it's not a valid number
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
+                      const SnackBar(
                         content: Text("Please enter a valid number for Points Needed."),
                         backgroundColor: Colors.red,
                       ),
@@ -410,9 +410,9 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
                     // If it's a valid number, proceed to update the voucher details
                     updateVoucherDetails(
                       voucher,
-                      _nameController.text,
-                      int.parse(_pointsNeededController.text),
-                      _selectedDateTime,
+                      nameController.text,
+                      int.parse(pointsNeededController.text),
+                      selectedDateTime,
                     );
                   }
                 },
@@ -502,15 +502,15 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
           width: cardWidth,
           child: Card(
             elevation: 4.0,
-            margin: EdgeInsets.all(8.0),
+            margin: const EdgeInsets.all(8.0),
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Row(
+                  const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
+                    children: [
                       Text(
                         'Available Points',
                         style: TextStyle(
@@ -524,7 +524,7 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
                   ),
                   Text(
                     '$_userPoints Points',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 40.0,
                       color: Colors.green,
                       fontWeight: FontWeight.bold,
@@ -586,11 +586,11 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
         child: Row(
           children: [
             Container(
-              padding: EdgeInsets.all(7),
+              padding: const EdgeInsets.all(7),
               color: greenColor, // The icon container remains green regardless of the voucher state
-              child: Icon(Icons.discount, color: Colors.white, size: 40),
+              child: const Icon(Icons.discount, color: Colors.white, size: 40),
             ),
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -627,7 +627,7 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
             ElevatedButton(
               onPressed: isExpired || isClaimed ? null : () => claimVoucher(voucher.voucherID,voucher.pointsNeeded),
               style: ElevatedButton.styleFrom(
-                primary: isExpired || isClaimed ? lightGreyColor : greenColor, // Use light grey if expired or claimed, green if not
+                backgroundColor: isExpired || isClaimed ? lightGreyColor : greenColor, // Use light grey if expired or claimed, green if not
               ),
               child: Text(
                 isExpired ? 'Expired' : isClaimed ? 'Claimed' : 'Claim',
@@ -646,7 +646,7 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
   Widget build(BuildContext context) {
     Widget content; // This will hold the current state widget
       content = Scaffold(
-        key: ValueKey("Loaded"),
+        key: const ValueKey("Loaded"),
         appBar: AppBar(
           title: const Text('View Rewards'),
           flexibleSpace: Container(
@@ -695,7 +695,7 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
                         labelColor: Colors.yellow, // Color for the text of the selected tab
                         unselectedLabelColor: Colors.white, // Color for the text of the unselected tabs
                         indicatorColor: Colors.yellow,
-                        tabs: [
+                        tabs: const [
                           Tab(text: 'Available'),
                           Tab(text: 'Expired'),
                         ],

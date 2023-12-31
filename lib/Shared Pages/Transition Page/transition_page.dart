@@ -9,12 +9,12 @@ class TransitionOverlay extends StatefulWidget {
   final Duration duration;
   final String pageName;
 
-  TransitionOverlay({
-    Key? key,
+  const TransitionOverlay({
+    super.key,
     required this.iconData,
     required this.pageName,
     this.duration = const Duration(seconds: 3),
-  }) : super(key: key);
+  });
 
   @override
   _TransitionOverlayState createState() => _TransitionOverlayState();
@@ -76,11 +76,11 @@ class _TransitionOverlayState extends State<TransitionOverlay> with SingleTicker
   }
 
   void _startBlinkingDots() {
-    _blinkTimer = Timer.periodic(Duration(milliseconds: 500), (Timer timer) {
+    _blinkTimer = Timer.periodic(const Duration(milliseconds: 500), (Timer timer) {
       if (mounted) {
         setState(() {
           dotCount = (dotCount + 1) % 4;
-          loadingText = "Now Loading" + "." * dotCount;
+          loadingText = "Now Loading${"." * dotCount}";
         });
       }
     });
@@ -106,51 +106,51 @@ class _TransitionOverlayState extends State<TransitionOverlay> with SingleTicker
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Spacer(),
-              Container(
+              const Spacer(),
+              SizedBox(
                   width: 250,
                   height: 250,
                   child: companyLogo.image, // Use the provided CompanyLogo's image
                 ),
-              SizedBox(height: 50),
+              const SizedBox(height: 50),
               Icon(
                 widget.iconData,
                 size: 50.0,
                 color: Colors.white,
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Text(
                 widget.pageName,  // Display the pageName here
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
               ),
-              SizedBox(height: 150),
+              const SizedBox(height: 150),
               Text(
                 loadingText,  // Display the dynamic loading text here
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ClipRRect(
                 borderRadius: BorderRadius.circular(10),
-                child: Container(
+                child: SizedBox(
                   height: 5,
                   width: 200,
                   child: LinearProgressIndicator(
                     value: progress,
                     backgroundColor: Colors.greenAccent,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
                     minHeight: 5,
                   ),
                 ),
               ),
-              Spacer(),
+              const Spacer(),
             ],
           ),
         ),
