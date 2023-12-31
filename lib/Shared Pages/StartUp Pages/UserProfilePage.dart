@@ -5,7 +5,7 @@ import 'package:recycle_go/Shared%20Pages/StartUp%20Pages/welcome_page.dart';
 import 'edit_user_profile_page.dart'; // Ensure correct import path
 
 class UserProfilePage extends StatefulWidget {
-  const UserProfilePage({Key? key}) : super(key: key);
+  const UserProfilePage({super.key});
 
   @override
   _UserProfilePageState createState() => _UserProfilePageState();
@@ -107,15 +107,15 @@ class _UserProfilePageState extends State<UserProfilePage> {
     bool confirm = await showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Delete Account'),
-        content: Text('Are you sure you want to delete your account? This action cannot be undone.'),
+        title: const Text('Delete Account'),
+        content: const Text('Are you sure you want to delete your account? This action cannot be undone.'),
         actions: <Widget>[
           TextButton(
-            child: Text('No'),
+            child: const Text('No'),
             onPressed: () => Navigator.of(context).pop(false), // User pressed No
           ),
           TextButton(
-            child: Text('Yes'),
+            child: const Text('Yes'),
             onPressed: () => Navigator.of(context).pop(true), // User pressed Yes
           ),
         ],
@@ -181,16 +181,16 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
                   child: ElevatedButton(
                     onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const EditUserProfilePage())),
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
                     child: const Text('Edit Profile'),
-                    style: ElevatedButton.styleFrom(primary: Colors.green),
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
                   child: ElevatedButton(
                     onPressed: _deleteAccount,
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                     child: const Text('Delete Account'),
-                    style: ElevatedButton.styleFrom(primary: Colors.red),
                   ),
                 ),
               ],

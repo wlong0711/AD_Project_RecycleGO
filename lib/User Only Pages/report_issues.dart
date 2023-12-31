@@ -165,8 +165,8 @@ void _pickImage() async {
 Future<void> _submitReport() async {
   if (_formKey.currentState!.validate()) {
 
-    String _title = titleController.text;
-    String _description = descriptionController.text;
+    String title = titleController.text;
+    String description = descriptionController.text;
 
     // Checking for user authentication
     User? user = FirebaseAuth.instance.currentUser;
@@ -202,8 +202,8 @@ Future<void> _submitReport() async {
         'userId': user.uid,
         'username': userData['username'], // Assuming these fields exist in your documents
         'email': userData['email'],
-        'title': _title,
-        'description': _description,
+        'title': title,
+        'description': description,
         // 'phoneNumber': _phoneNumber,  // Uncomment if needed
         'imageUrl': imageUrl,
         'timestamp': FieldValue.serverTimestamp(),

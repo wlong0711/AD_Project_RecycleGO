@@ -32,7 +32,7 @@ class WelcomePage extends StatelessWidget {
           Center(
             child: Column(
               children: [
-                Container(
+                SizedBox(
                   width: 150,
                   height: 150,
                   child: companyLogo.image, // Changed to use the provided CompanyLogo

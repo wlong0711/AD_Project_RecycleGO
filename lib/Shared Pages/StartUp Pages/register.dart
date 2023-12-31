@@ -23,10 +23,10 @@ class _RegisterPageState extends State<RegisterPage> {
   bool _isLoading = false;
 
   String _selectedCountryCode = '+60'; // Default country code, you can set it to any valid one
-  List<String> _countryCodes = ['+60', '+1', '+91', '+44', '+61', '+65']; // Add more country codes as needed
+  final List<String> _countryCodes = ['+60', '+1', '+91', '+44', '+61', '+65']; // Add more country codes as needed
 
   bool _hasAttemptedSubmit = false; // Add this to track if the user has attempted to submit the form
-  FocusNode _phoneFocusNode = FocusNode(); // Add this to track focus on the phone number field
+  final FocusNode _phoneFocusNode = FocusNode(); // Add this to track focus on the phone number field
 
   @override
   void initState() {
@@ -238,7 +238,7 @@ class _RegisterPageState extends State<RegisterPage> {
         children: <Widget>[
           // Dropdown for selecting country code
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             decoration: BoxDecoration(
               border: Border.all(color: Colors.grey),
               borderRadius: BorderRadius.circular(5.0),
@@ -248,7 +248,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 value: _selectedCountryCode,
                 iconSize: 24,
                 elevation: 16,
-                style: TextStyle(color: Colors.black, fontSize: 16),
+                style: const TextStyle(color: Colors.black, fontSize: 16),
                 onChanged: (String? newValue) {
                   setState(() {
                     _selectedCountryCode = newValue!;
@@ -270,7 +270,7 @@ class _RegisterPageState extends State<RegisterPage> {
               controller: _phoneNumberController,
               decoration: InputDecoration(
                 labelText: 'Phone Number',
-                border: OutlineInputBorder(),
+                border: const OutlineInputBorder(),
                 errorText: !isValidPhoneNumber(_selectedCountryCode + _phoneNumberController.text) && _hasAttemptedSubmit
                     ? 'Enter a valid number.'
                     : null,
