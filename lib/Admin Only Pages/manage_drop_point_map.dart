@@ -16,10 +16,10 @@ class _DropPointMapState extends State<DropPointMap> {
   Marker? tempMarker;
   LatLng? tempPoint;
   LatLng _currentPosition = const LatLng(0.0, 0.0);
-  String _dropPointTitle = '';
+  final String _dropPointTitle = '';
 
-  List<String> _pickupDays = [];
-  List<String> _recycleItems = [];
+  final List<String> _pickupDays = [];
+  final List<String> _recycleItems = [];
 
 
   @override
@@ -178,7 +178,7 @@ Future<bool> _confirmDeleteDialog() async {
 
         actions: <Widget>[
           TextButton(
-            child: Text('Cancel'),
+            child: const Text('Cancel'),
             onPressed: () {
               Navigator.of(context).pop(false);
             },
@@ -222,7 +222,7 @@ void _loadDropPoints() async {
   setState(() {
     markers.clear();
     for (var doc in snapshot.docs) {
-      Map<String, dynamic> pointData = doc.data() as Map<String, dynamic>;
+      Map<String, dynamic> pointData = doc.data();
       List<String> recycleItems = List<String>.from(pointData['recycleItems']); // Cast to List<String>
       if (_matchesFilter(recycleItems)) {
         LatLng point = LatLng(pointData['latitude'], pointData['longitude']);
@@ -414,11 +414,11 @@ void _showErrorDialog(BuildContext context, String message) {
   showDialog(
     context: context,
     builder: (ctx) => AlertDialog(
-      title: Text('Invalid Input'),
+      title: const Text('Invalid Input'),
       content: Text(message),
       actions: <Widget>[
         TextButton(
-          child: Text('Okay'),
+          child: const Text('Okay'),
           onPressed: () {
             Navigator.of(ctx).pop(); // Close the dialog
           },
@@ -771,11 +771,11 @@ void _showErrorDialog(String message) {
   showDialog(
     context: context,
     builder: (ctx) => AlertDialog(
-      title: Text('Invalid Input'),
+      title: const Text('Invalid Input'),
       content: Text(message),
       actions: <Widget>[
         TextButton(
-          child: Text('Okay'),
+          child: const Text('Okay'),
           onPressed: () {
             Navigator.of(ctx).pop(); // Close the dialog
           },

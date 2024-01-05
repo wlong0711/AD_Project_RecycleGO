@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
+import 'package:recycle_go/models/company_logo.dart';
 import 'login.dart'; // Import the LoginPage
 
 class RegisterPage extends StatefulWidget {
@@ -23,10 +25,10 @@ class _RegisterPageState extends State<RegisterPage> {
   bool _isLoading = false;
 
   String _selectedCountryCode = '+60'; // Default country code, you can set it to any valid one
-  List<String> _countryCodes = ['+60', '+1', '+91', '+44', '+61', '+65']; // Add more country codes as needed
+  final List<String> _countryCodes = ['+60', '+1', '+91', '+44', '+61', '+65']; // Add more country codes as needed
 
   bool _hasAttemptedSubmit = false; // Add this to track if the user has attempted to submit the form
-  FocusNode _phoneFocusNode = FocusNode(); // Add this to track focus on the phone number field
+  final FocusNode _phoneFocusNode = FocusNode(); // Add this to track focus on the phone number field
 
   @override
   void initState() {
@@ -238,7 +240,7 @@ class _RegisterPageState extends State<RegisterPage> {
         children: <Widget>[
           // Dropdown for selecting country code
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             decoration: BoxDecoration(
               border: Border.all(color: Colors.grey),
               borderRadius: BorderRadius.circular(5.0),
@@ -248,7 +250,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 value: _selectedCountryCode,
                 iconSize: 24,
                 elevation: 16,
-                style: TextStyle(color: Colors.black, fontSize: 16),
+                style: const TextStyle(color: Colors.black, fontSize: 16),
                 onChanged: (String? newValue) {
                   setState(() {
                     _selectedCountryCode = newValue!;
@@ -270,7 +272,7 @@ class _RegisterPageState extends State<RegisterPage> {
               controller: _phoneNumberController,
               decoration: InputDecoration(
                 labelText: 'Phone Number',
-                border: OutlineInputBorder(),
+                border: const OutlineInputBorder(),
                 errorText: !isValidPhoneNumber(_selectedCountryCode + _phoneNumberController.text) && _hasAttemptedSubmit
                     ? 'Enter a valid number.'
                     : null,
@@ -285,6 +287,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
+    CompanyLogo companyLogo = Provider.of<CompanyLogo>(context, listen: false);
     return Stack(
       children: [
         Scaffold(
@@ -316,10 +319,10 @@ class _RegisterPageState extends State<RegisterPage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     // Company Logo
-                    Image.network(
-                      'https://firebasestorage.googleapis.com/v0/b/recyclego-64b10.appspot.com/o/Company%20Logo%2FLogo.png?alt=media&token=aac89fba-a30d-4a9a-8c39-d6cd85e1f4d5',
+                    SizedBox(
                       width: 100,
                       height: 100,
+                      child: companyLogo.image, // Use the provided CompanyLogo's image
                     ),
                     const SizedBox(height: 20),
 
