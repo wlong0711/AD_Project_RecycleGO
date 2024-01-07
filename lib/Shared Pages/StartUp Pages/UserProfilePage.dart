@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:recycle_go/Shared%20Pages/StartUp%20Pages/home_page.dart';
 import 'package:recycle_go/Shared%20Pages/StartUp%20Pages/welcome_page.dart';
 import 'edit_user_profile_page.dart'; // Ensure correct import path
 
@@ -97,104 +98,106 @@ class _UserProfilePageState extends State<UserProfilePage> {
     }
   }
 
+  Future<void> _confirmLogout() async {
+    bool confirm = await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Logout'),
+        content: const Text('Are you sure you want to logout?'),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Cancel'),
+            onPressed: () => Navigator.of(context).pop(false),
+          ),
+          TextButton(
+            child: const Text('Logout'),
+            onPressed: () => Navigator.of(context).pop(true),
+          ),
+        ],
+      ),
+    ) ?? false;
+
+    if (confirm) {
+      _logout();
+    }
+  }
+
   Future<void> _logout() async {
     await FirebaseAuth.instance.signOut();
     Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const WelcomePage()));
   }
 
-  Future<void> _confirmDeleteAccount() async {
-    // Show confirmation dialog
-    bool confirm = await showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Account'),
-        content: const Text('Are you sure you want to delete your account? This action cannot be undone.'),
-        actions: <Widget>[
-          TextButton(
-            child: const Text('No'),
-            onPressed: () => Navigator.of(context).pop(false), // User pressed No
-          ),
-          TextButton(
-            child: const Text('Yes'),
-            onPressed: () => Navigator.of(context).pop(true), // User pressed Yes
-          ),
-        ],
-      ),
-    ) ?? false; // In case the user dismisses the dialog by tapping outside of it
-
-    // If the user pressed "Yes", proceed with deleting the account
-    if (confirm) {
-      _deleteAccount();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("User Profile"),
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.greenAccent, Colors.green],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
+    return WillPopScope(
+      onWillPop: () async{
+        // Navigate to the HomePage when the back button is pressed
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomePage()),
+        );
+        return false; // return false to cancel the default back button action
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text("User Profile"),
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.greenAccent, Colors.green],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
             ),
           ),
+          elevation: 10,
+          shadowColor: Colors.greenAccent.withOpacity(0.5),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.logout),
+              onPressed: _confirmLogout,
+            ),
+          ],
         ),
-        elevation: 10,
-        shadowColor: Colors.greenAccent.withOpacity(0.5),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (_) => const EditUserProfilePage()));
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: _logout,
-          ),
-        ],
+        body: userData == null
+            ? const Center(child: CircularProgressIndicator())
+            : ListView(
+                children: [
+                  const SizedBox(height: 20),
+                  CircleAvatar(
+                    radius: 50,
+                    backgroundColor: Colors.grey.shade300,
+                    child: const Icon(Icons.person, size: 50),
+                  ),
+                  const SizedBox(height: 20),
+                  Center(
+                    child: Text(
+                      userData!.get('username') ?? 'Not Available',
+                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  _buildInfoSection('Email', user!.email ?? 'Not Available', Icons.email),
+                  _buildInfoSection('Address', userData!.get('address') ?? 'Not Available', Icons.home),
+                  _buildInfoSection('Phone Number', userData!.get('phoneNumber') ?? 'Not Available', Icons.phone),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const EditUserProfilePage())),
+                      style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                      child: const Text('Edit Profile'),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
+                    child: ElevatedButton(
+                      onPressed: _deleteAccount,
+                      style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                      child: const Text('Delete Account'),
+                    ),
+                  ),
+                ],
+              ),
       ),
-      body: userData == null
-          ? const Center(child: CircularProgressIndicator())
-          : ListView(
-              children: [
-                const SizedBox(height: 20),
-                CircleAvatar(
-                  radius: 50,
-                  backgroundColor: Colors.grey.shade300,
-                  child: const Icon(Icons.person, size: 50),
-                ),
-                const SizedBox(height: 20),
-                Center(
-                  child: Text(
-                    userData!.get('username') ?? 'Not Available',
-                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  ),
-                ),
-                _buildInfoSection('Email', user!.email ?? 'Not Available', Icons.email),
-                _buildInfoSection('Address', userData!.get('address') ?? 'Not Available', Icons.home),
-                _buildInfoSection('Phone Number', userData!.get('phoneNumber') ?? 'Not Available', Icons.phone),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
-                  child: ElevatedButton(
-                    onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const EditUserProfilePage())),
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                    child: const Text('Edit Profile'),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
-                  child: ElevatedButton(
-                    onPressed: _deleteAccount,
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                    child: const Text('Delete Account'),
-                  ),
-                ),
-              ],
-            ),
     );
   }
 }

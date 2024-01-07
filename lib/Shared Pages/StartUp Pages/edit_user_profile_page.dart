@@ -14,8 +14,6 @@ class _EditUserProfilePageState extends State<EditUserProfilePage> {
   User? user = FirebaseAuth.instance.currentUser;
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  String _passwordError = '';
 
   @override
   void initState() {
@@ -39,86 +37,39 @@ class _EditUserProfilePageState extends State<EditUserProfilePage> {
         'username': _usernameController.text,
         'address': _addressController.text,
       });
+
+      // Show a success dialog
+      await _showSuccessDialog();
+      // Navigate back to UserProfilePage after showing dialog
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const UserProfilePage()));
     }
   }
 
-  Future<void> _confirmDeleteAccount() async {
-    _passwordController.clear();
-    _passwordError = '';
-
-    bool confirmed = await showDialog<bool>(
+  Future<void> _showSuccessDialog() async {
+    return showDialog<void>(
       context: context,
-      barrierDismissible: false,  // User must tap a button to close the dialog
-      builder: (BuildContext dialogContext) {
+      barrierDismissible: false, // User must tap button to close the dialog
+      builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Confirm Account Deletion'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text('Please confirm your password to delete your account. This action cannot be undone.'),
-              TextField(
-                controller: _passwordController,
-                obscureText: true,
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                  errorText: _passwordError.isEmpty ? null : _passwordError,
-                ),
-              ),
-            ],
+          title: const Text('Success'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: const <Widget>[
+                Text('Your profile changes have been saved.'),
+              ],
+            ),
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('Cancel'),
-              onPressed: () => Navigator.of(dialogContext).pop(false),
-            ),
-            TextButton(
-              child: const Text('Confirm'),
-              onPressed: () async {
-                try {
-                  AuthCredential credential = EmailAuthProvider.credential(
-                    email: user!.email!,
-                    password: _passwordController.text,
-                  );
-                  await user!.reauthenticateWithCredential(credential);
-                  await _deleteAccount();
-                  Navigator.of(dialogContext).pop(true);
-                } on FirebaseAuthException catch (e) {
-                  if (e.code == 'wrong-password') {
-                    setState(() => _passwordError = 'Incorrect password.');
-                  } else {
-                    setState(() => _passwordError = 'An unexpected error occurred.');
-                  }
-                }
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
               },
             ),
           ],
         );
       },
-    ) ?? false;  // Default to false if dialog is dismissed without tapping Confirm or Cancel
-
-    // Proceed with deletion if confirmed
-    if (confirmed) {
-      await _deleteAccount();
-    }
-  }
-
-  Future<void> _deleteAccount() async {
-    if (user == null || user!.uid.isEmpty) {
-      setState(() => _passwordError = 'No authenticated user found.');
-      return;
-    }
-
-    try {
-      // Delete user data from Firestore
-      await FirebaseFirestore.instance.collection('users').doc(user!.uid).delete();
-      // Delete user from Firebase Auth
-      await user!.delete();
-      // Navigate to UserProfileLoginPage or equivalent
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const UserProfilePage()));  // Make sure to have a proper landing page
-    } on FirebaseAuthException catch (e) {
-      setState(() => _passwordError = e.message ?? 'Failed to delete user.');
-    }
+    );
   }
 
   @override
@@ -138,15 +89,9 @@ class _EditUserProfilePageState extends State<EditUserProfilePage> {
         elevation: 10,
         shadowColor: Colors.greenAccent.withOpacity(0.5),
         actions: [
-          TextButton(
-            onPressed: _confirmDeleteAccount,
-            child: const Text('Delete Account', style: TextStyle(color: Colors.red)),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const UserProfilePage()));
-            },
-            child: const Text('Cancel', style: TextStyle(color: Colors.white)),
+          IconButton(
+            icon: const Icon(Icons.check, color: Colors.white),
+            onPressed: _saveChanges,
           ),
         ],
       ),
