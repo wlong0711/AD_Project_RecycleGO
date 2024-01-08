@@ -206,6 +206,28 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
     fetchClaimedVouchers();
   }
 
+  Future<bool> _confirmDeletion() async {
+    return await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Confirm Deletion"),
+          content: const Text("Are you sure you want to delete this voucher? This action cannot be undone."),
+          actions: <Widget>[
+            TextButton(
+              child: const Text("Cancel"),
+              onPressed: () => Navigator.of(context).pop(false), // User pressed "Cancel", return false
+            ),
+            TextButton(
+              child: const Text("Delete", style: TextStyle(color: Colors.red)),
+              onPressed: () => Navigator.of(context).pop(true), // User pressed "Delete", return true
+            ),
+          ],
+        );
+      },
+    ) ?? false; // In case the dialog is dismissed by clicking outside of it, default to returning false
+}
+
   void deleteVoucher(String voucherId, int index) async {
     setState(() {
       _isDeleting = true; // Turn on loading overlay
@@ -384,9 +406,13 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
                                   color: Colors.red,
                                 ),
                               ),
-                onPressed: () => {
-                  deleteVoucher(voucher.voucherID, index),
-                  Navigator.of(context).pop(), // Close the dialog
+                onPressed: () async {
+                  // Get user confirmation before deleting
+                  bool shouldDelete = await _confirmDeletion();
+                  if (shouldDelete) {
+                    deleteVoucher(voucher.voucherID, index);
+                    Navigator.of(context).pop(); // Close the dialog
+                  }
                 },
               ),
               const SizedBox(width: 70,),
