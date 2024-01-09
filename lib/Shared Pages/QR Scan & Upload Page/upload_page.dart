@@ -124,18 +124,25 @@ class _UploadPageState extends State<UploadPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Upload Video for ${widget.locationName}'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white), // Custom icon and color
+          onPressed: () => Navigator.of(context).pop(), // Go back on press
+        ),
+        title: Text(
+          'Upload Video for ${widget.locationName}',
+          style: const TextStyle(color: Colors.white),
+        ),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Colors.greenAccent, Colors.green],
+              colors: [Colors.green, Colors.green],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
             ),
           ),
         ),
         elevation: 10,
-        shadowColor: Colors.greenAccent.withOpacity(0.5),
+        shadowColor: Colors.green.withOpacity(0.5),
       ),
       body: _isUploading
           ? const Center(child: CircularProgressIndicator())
@@ -149,11 +156,17 @@ class _UploadPageState extends State<UploadPage> {
                     const SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: _pickVideo,
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white, backgroundColor: Colors.blue, // Button text color
+                      ),
                       child: Text(videoFile == null ? 'Select Video' : 'Reselect Video'),
                     ),
                     const SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: _uploadVideo,
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white, backgroundColor: Colors.green, // Button text color
+                      ),
                       child: const Text('Submit Video'),
                     ),
                   ],

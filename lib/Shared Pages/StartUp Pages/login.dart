@@ -145,23 +145,17 @@ class _LoginPageState extends State<LoginPage> {
 @override
 Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Login'),
-        centerTitle: true,
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.greenAccent, Colors.green],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
-          ),
-        ),
-        elevation: 10,
-        shadowColor: Colors.greenAccent.withOpacity(0.5),
-      ),
       body: Stack(
         children: [
+          Positioned.fill(
+            child: Image.asset(
+              'assets/images/startup background.png',
+              fit: BoxFit.cover,
+            ),
+          ),
+          AppBar(
+            backgroundColor: Colors.transparent,
+          ),
           Center(child: _buildLoginForm()),
           if (_isLoading) _buildLoadingOverlay(),
         ],
@@ -186,6 +180,11 @@ Widget build(BuildContext context) {
             width: 100,
             height: 100,
             child: companyLogo.image, // Use the provided CompanyLogo's image
+          ),
+          const SizedBox(height: 20),
+          Text(
+            'Login',
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
           ),
           const SizedBox(height: 20),
           _buildInputBox("Email", _usernameController, isPassword: false),
@@ -319,8 +318,7 @@ Widget build(BuildContext context) {
         child: const Text(
           'Forgot password?',
           style: TextStyle(
-            color: Colors.green, // Green text color
-            decoration: TextDecoration.underline,
+            color: Colors.green,
           ),
         ),
       ),
@@ -350,10 +348,9 @@ Widget build(BuildContext context) {
         );
       },
       child: const Text(
-        'Not a member? Create a new account.',
+        'Not a member? Create a new account',
         style: TextStyle(
-          color: Colors.blue,
-          decoration: TextDecoration.underline,
+          color: Colors.green,
         ),
       ),
     );
@@ -379,21 +376,23 @@ Widget build(BuildContext context) {
   Widget _buildLoadingOverlay() {
     return Stack(
       children: [
-        Positioned(
-          top: MediaQuery.of(context).size.height * 0.3, // Adjust the position from top
-          left: 0,
-          right: 0,
-          child: Center(
-            child: Container(
-              width: 80, // Set the width of the overlay
-              height: 80, // Set the height of the overlay
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.5), // Semi-transparent overlay
-                borderRadius: BorderRadius.circular(10), // Rounded corners
-              ),
-              child: const Center(
-                child: CircularProgressIndicator(),
-              ),
+        // Full screen semi-transparent overlay
+        Positioned.fill(
+          child: Container(
+            color: Colors.grey.withOpacity(0.5), // Semi-transparent grey color
+          ),
+        ),
+        // Centered loading indicator
+        Center(
+          child: Container(
+            width: 80, // Set the width of the overlay
+            height: 80, // Set the height of the overlay
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.5), // Semi-transparent black for the loading box
+              borderRadius: BorderRadius.circular(10), // Rounded corners for the loading box
+            ),
+            child: const Center(
+              child: CircularProgressIndicator(),
             ),
           ),
         ),
@@ -402,8 +401,6 @@ Widget build(BuildContext context) {
   }
 
 }
-
-
 
 void main() {
   runApp(const MaterialApp(

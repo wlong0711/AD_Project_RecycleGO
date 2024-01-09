@@ -99,7 +99,7 @@ class ReportDetailsPage extends StatelessWidget {
 
   void _markAsSolved(BuildContext context) async {
     await FirebaseFirestore.instance
-        .collection('reports issues')
+        .collection('issues')
         .doc(documentId)
         .update({'status': 'solved'});
 

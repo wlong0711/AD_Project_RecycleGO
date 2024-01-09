@@ -282,17 +282,21 @@ void _showFilterDialog() async {
   Widget build(BuildContext context) {
       return Scaffold(
         appBar: AppBar(
+          leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white), // Custom icon and color
+          onPressed: () => Navigator.of(context).pop(), // Go back on press
+        ),
           flexibleSpace: Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: [Colors.greenAccent, Colors.green],
+                colors: [Colors.green, Colors.green],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
               ),
             ),
           ),
           elevation: 10,
-          shadowColor: Colors.greenAccent.withOpacity(0.5),
+          shadowColor: Colors.green.withOpacity(0.5),
           title: Container(
             padding: const EdgeInsets.symmetric(horizontal: 10),
             decoration: BoxDecoration(
@@ -374,14 +378,14 @@ void _showFilterDialog() async {
     return Container(
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Colors.greenAccent, Colors.green],
+          colors: [Colors.green, Colors.green],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
-            color: Colors.greenAccent.withOpacity(0.5),
+            color: Colors.green.withOpacity(0.5),
             spreadRadius: 2,
             blurRadius: 10,
             offset: const Offset(0, 3),

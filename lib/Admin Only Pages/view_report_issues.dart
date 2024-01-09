@@ -61,7 +61,7 @@ class _AdminReportsPageState extends State<AdminReportsPage> with SingleTickerPr
   Widget buildReportList(String status) {
     return StreamBuilder(
       stream: _firestore
-          .collection('reports issues')
+          .collection('issues')
           .where('status', isEqualTo: status)
           .orderBy('timestamp', descending: true)
           .snapshots(),
@@ -126,11 +126,18 @@ class _AdminReportsPageState extends State<AdminReportsPage> with SingleTickerPr
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("View Issues"),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white), // Custom icon and color
+          onPressed: () => Navigator.of(context).pop(), // Go back on press
+        ),
+        title: Text(
+          "View Issues",
+          style: const TextStyle(color: Colors.white),
+        ),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Colors.greenAccent, Colors.green],
+              colors: [Colors.green, Colors.green],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
             ),
@@ -138,8 +145,11 @@ class _AdminReportsPageState extends State<AdminReportsPage> with SingleTickerPr
         ),
         bottom: TabBar(
           controller: _tabController,
+          labelColor: Colors.yellow, // Color for the text of the selected tab
+          unselectedLabelColor: Colors.white, // Color for the text of the unselected tabs
+          indicatorColor: Colors.yellow,
           tabs: const [
-            Tab(text: "To Solve"),
+            Tab(text: "Pending"),
             Tab(text: "Solved"),
           ],
         ),
@@ -147,7 +157,7 @@ class _AdminReportsPageState extends State<AdminReportsPage> with SingleTickerPr
       body: TabBarView(
         controller: _tabController,
         children: [
-          buildReportList("to solve"), // to solve tab
+          buildReportList("pending"), // pending tab
           buildReportList("solved"),   // solved tab
         ],
       ),
