@@ -1,3 +1,4 @@
+import 'package:url_launcher/url_launcher.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -188,6 +189,13 @@ void _updateFilterCriteria(List<String> newCriteria) {
         ),
         actions: <Widget>[
           TextButton(
+            child: const Text('Navigate', style: TextStyle(color: Colors.blue, fontSize: 18)),
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the dialog
+              _navigateToPoint(pointData['latitude'], pointData['longitude']); // Add this line
+            },
+          ),
+          TextButton(
             child: const Text('Close', style: TextStyle(color: Colors.blue, fontSize: 18)),
             onPressed: () {
               Navigator.of(context).pop();
@@ -197,6 +205,17 @@ void _updateFilterCriteria(List<String> newCriteria) {
       );
     },
   );
+}
+
+void _navigateToPoint(double latitude, double longitude) async {
+  String googleMapsUrl = "https://www.google.com/maps/dir/?api=1&destination=$latitude,$longitude&travelmode=driving";
+
+  if (await canLaunch(googleMapsUrl)) {
+    await launch(googleMapsUrl);
+  } else {
+    print('Could not launch $googleMapsUrl');
+    // Optionally, show a dialog or a toast to inform the user that the URL could not be opened
+  }
 }
 
   void _onMapCreated(GoogleMapController controller) {

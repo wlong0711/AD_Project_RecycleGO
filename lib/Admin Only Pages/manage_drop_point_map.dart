@@ -210,9 +210,15 @@ void _navigateToEditView(BuildContext context, String docId) {
   Navigator.push(
     context,
     MaterialPageRoute(
-      builder: (context) => EditDropPointScreen(dropPointId: docId),
+      builder: (context) => EditDropPointScreen(
+        dropPointId: docId,
+        onDropPointUpdated: _loadDropPoints, // Pass the callback here
+      ),
     ),
-  );
+  ).then((_) {
+    // This will be called when EditDropPointScreen is popped
+    _loadDropPoints(); // Refresh drop points when returning back to the map
+  });
 }
 
 
@@ -451,6 +457,7 @@ void _showErrorDialog(BuildContext context, String message) {
     'recycleItems': recycleItems,
   }).then((result) {
     print("Drop point added");
+    //Refresh Data
     // Call loadDropPoints again to refresh the list of markers
     _loadDropPoints();
   }).catchError((error) {
@@ -655,7 +662,8 @@ class DetailedViewScreen extends StatelessWidget {
 
 class EditDropPointScreen extends StatefulWidget {
   final String dropPointId;
-  const EditDropPointScreen({super.key, required this.dropPointId});
+  final VoidCallback onDropPointUpdated;
+  const EditDropPointScreen({super.key, required this.dropPointId, required this.onDropPointUpdated});
 
   @override
   _EditDropPointScreenState createState() => _EditDropPointScreenState();
@@ -729,11 +737,11 @@ class _EditDropPointScreenState extends State<EditDropPointScreen> {
     _titleController.dispose();
     super.dispose();
   }
-
+  
   void _saveDropPoint() async {
   // Validation: Ensure title is not empty
   if (_titleController.text.isEmpty) {
-    _showErrorDialog('Title cannot be empty.');
+    _showErrorDialog('Title cannot be empty.'); 
     return; // Exit the function if validation fails
   }
 
@@ -767,7 +775,7 @@ class _EditDropPointScreenState extends State<EditDropPointScreen> {
           'pickupDays': selectedPickupDays,
           'recycleItems': selectedRecyclableItems,
         });
-
+    widget.onDropPointUpdated(); // Call the callback here after successful update
     Navigator.of(context).pop(); // Return to the previous screen on success
   } catch (e) {
     _showErrorDialog('Error updating drop point: $e'); // Show error on exception
