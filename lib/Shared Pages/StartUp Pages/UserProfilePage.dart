@@ -140,21 +140,28 @@ class _UserProfilePageState extends State<UserProfilePage> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("User Profile"),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white), // Custom icon and color
+          onPressed: () => Navigator.of(context).pop(), // Go back on press
+        ),
+        title: Text(
+          "User Profile",
+          style: const TextStyle(color: Colors.white),
+        ),
           flexibleSpace: Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: [Colors.greenAccent, Colors.green],
+                colors: [Colors.green, Colors.green],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
               ),
             ),
           ),
           elevation: 10,
-          shadowColor: Colors.greenAccent.withOpacity(0.5),
+          shadowColor: Colors.green.withOpacity(0.5),
           actions: [
             IconButton(
-              icon: const Icon(Icons.logout),
+              icon: const Icon(Icons.logout, color: Colors.white),
               onPressed: _confirmLogout,
             ),
           ],
@@ -183,7 +190,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
                     child: ElevatedButton(
                       onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const EditUserProfilePage())),
-                      style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white, backgroundColor: Colors.green, // Button text color
+                      ),
                       child: const Text('Edit Profile'),
                     ),
                   ),
@@ -191,7 +200,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
                     child: ElevatedButton(
                       onPressed: _deleteAccount,
-                      style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white, backgroundColor: Colors.red, // Button text color
+                      ),
                       child: const Text('Delete Account'),
                     ),
                   ),

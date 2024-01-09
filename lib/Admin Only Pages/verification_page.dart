@@ -39,13 +39,20 @@ class _VerificationPageState extends State<VerificationPage> {
   Widget _buildLoadingOverlay() {
     return Stack(
       children: [
+        // Full screen semi-transparent overlay
+        Positioned.fill(
+          child: Container(
+            color: Colors.grey.withOpacity(0.5), // Semi-transparent grey color
+          ),
+        ),
+        // Centered loading indicator
         Center(
           child: Container(
-            width: 80,
-            height: 80,
+            width: 80, // Set the width of the overlay
+            height: 80, // Set the height of the overlay
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.5),
-              borderRadius: BorderRadius.circular(10),
+              color: Colors.black.withOpacity(0.5), // Semi-transparent black for the loading box
+              borderRadius: BorderRadius.circular(10), // Rounded corners for the loading box
             ),
             child: const Center(
               child: CircularProgressIndicator(),

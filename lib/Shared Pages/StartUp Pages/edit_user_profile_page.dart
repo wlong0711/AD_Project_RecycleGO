@@ -76,24 +76,25 @@ class _EditUserProfilePageState extends State<EditUserProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Edit Profile"),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white), // Custom icon and color
+          onPressed: () => Navigator.of(context).pop(), // Go back on press
+        ),
+        title: Text(
+          "Edit Profile",
+          style: const TextStyle(color: Colors.white),
+        ),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Colors.greenAccent, Colors.green],
+              colors: [Colors.green, Colors.green],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
             ),
           ),
         ),
         elevation: 10,
-        shadowColor: Colors.greenAccent.withOpacity(0.5),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.check, color: Colors.white),
-            onPressed: _saveChanges,
-          ),
-        ],
+        shadowColor: Colors.green.withOpacity(0.5),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

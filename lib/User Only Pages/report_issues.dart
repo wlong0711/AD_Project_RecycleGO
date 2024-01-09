@@ -70,11 +70,18 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Report Issue"),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white), // Custom icon and color
+          onPressed: () => Navigator.of(context).pop(), // Go back on press
+        ),
+        title: Text(
+                "Report Issue",
+                style: const TextStyle(color: Colors.white),
+              ),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Colors.greenAccent, Colors.green],
+              colors: [Colors.green, Colors.green],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
             ),
@@ -114,10 +121,7 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
               const SizedBox(height: 16),
               _buildImageUploadSection(),
               const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: _submitReport,
-                child: const Text("Submit Report"),
-              ),
+              _buildSubmitButton(),
             ],
           ),
         ),
@@ -198,7 +202,7 @@ Future<void> _submitReport() async {
       }
 
       // Save report details to Firestore under "reports issues" collection
-      await FirebaseFirestore.instance.collection('reports issues').add({
+      await FirebaseFirestore.instance.collection('issues').add({
         'userId': user.uid,
         'username': userData['username'], // Assuming these fields exist in your documents
         'email': userData['email'],
@@ -207,7 +211,7 @@ Future<void> _submitReport() async {
         // 'phoneNumber': _phoneNumber,  // Uncomment if needed
         'imageUrl': imageUrl,
         'timestamp': FieldValue.serverTimestamp(),
-        'status': 'to solve',
+        'status': 'pending',
       });
 
       // Show a success message upon successful submission
@@ -276,21 +280,21 @@ void _showErrorDialog(String message) {
 }
 
 Widget _buildSubmitButton() {
-    return ElevatedButton(
-      onPressed: _submitReport,
-      style: ElevatedButton.styleFrom(
-        foregroundColor: Colors.white, backgroundColor: Colors.green, // Button text color
-      ),
-      child: const Text("Submit Report"),
-    );
-  }
+  return ElevatedButton(
+    onPressed: _submitReport,
+    style: ElevatedButton.styleFrom(
+      foregroundColor: Colors.white, backgroundColor: Colors.green, // Button text color
+    ),
+    child: const Text("Submit Report"),
+  );
+}
 
   Widget _buildImageUploadSection() {
     return _image == null
         ? ElevatedButton(
             onPressed: _pickImage,
             style: ElevatedButton.styleFrom(
-              foregroundColor: Colors.white, backgroundColor: Colors.green, // Button text color
+              foregroundColor: Colors.white, backgroundColor: Colors.blue, // Button text color
             ),
             child: const Text("Upload Image"),
           )

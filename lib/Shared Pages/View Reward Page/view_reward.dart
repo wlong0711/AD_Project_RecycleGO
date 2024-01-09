@@ -487,13 +487,20 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
   Widget _buildLoadingOverlay() {
     return Stack(
       children: [
+        // Full screen semi-transparent overlay
+        Positioned.fill(
+          child: Container(
+            color: Colors.grey.withOpacity(0.5), // Semi-transparent grey color
+          ),
+        ),
+        // Centered loading indicator
         Center(
           child: Container(
-            width: 80,
-            height: 80,
+            width: 80, // Set the width of the overlay
+            height: 80, // Set the height of the overlay
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.5),
-              borderRadius: BorderRadius.circular(10),
+              color: Colors.black.withOpacity(0.5), // Semi-transparent black for the loading box
+              borderRadius: BorderRadius.circular(10), // Rounded corners for the loading box
             ),
             child: const Center(
               child: CircularProgressIndicator(),
@@ -674,11 +681,18 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
       content = Scaffold(
         key: const ValueKey("Loaded"),
         appBar: AppBar(
-          title: const Text('View Rewards'),
+          leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white), // Custom icon and color
+          onPressed: () => Navigator.of(context).pop(), // Go back on press
+        ),
+        title: Text(
+                'View Rewards',
+                style: const TextStyle(color: Colors.white),
+              ),
           flexibleSpace: Container(
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [Colors.greenAccent, Colors.green],
+                    colors: [Colors.green, Colors.green],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                   ),
@@ -689,7 +703,7 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
               actions: [
                 if (GlobalUser.userLevel == 1)
                   IconButton(
-                    icon: const Icon(Icons.add),
+                    icon: const Icon(Icons.add, color: Colors.white),
                     onPressed: () {
                       Navigator.push(
                         context,

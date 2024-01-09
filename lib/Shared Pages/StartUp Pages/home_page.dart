@@ -166,7 +166,7 @@ class _HomePageState extends State<HomePage> {
             label: 'QR Scan',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.card_giftcard),
+            icon: Icon(Icons.discount),
             label: 'View Reward',
           ),
           BottomNavigationBarItem(
