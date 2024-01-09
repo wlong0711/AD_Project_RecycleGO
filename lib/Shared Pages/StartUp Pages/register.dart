@@ -56,7 +56,6 @@ class _RegisterPageState extends State<RegisterPage> {
   Future<void> _register() async {
     setState(() {
       _hasAttemptedSubmit = true;
-      _isLoading = true; // Show the loading overlay
     });
 
     String fullPhoneNumber = _selectedCountryCode + _phoneNumberController.text;
@@ -66,6 +65,9 @@ class _RegisterPageState extends State<RegisterPage> {
     }
 
     try {
+      setState(() {
+        _isLoading = true; // Show the loading overlay
+      });
       // Create a new user with email and password
       UserCredential userCredential =
           await FirebaseAuth.instance.createUserWithEmailAndPassword(
