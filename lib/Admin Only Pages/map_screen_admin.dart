@@ -110,6 +110,7 @@ void _loadDropPoints() {
           _markers.add(Marker(
             markerId: MarkerId(doc.id),
             position: point,
+            icon: BitmapDescriptor.defaultMarkerWithHue(_getBinColorHue(pointData['currentCapacity'])),
             infoWindow: InfoWindow(
               title: pointData['title'],
               snippet: 'Tap here for details',
@@ -125,6 +126,12 @@ void _loadDropPoints() {
       }
     });
   });
+}
+
+double _getBinColorHue(int capacity) {
+  if (capacity <= 10) return BitmapDescriptor.hueGreen; // Green for empty
+  if (capacity <= 20) return BitmapDescriptor.hueOrange; // Orange for half full
+  return BitmapDescriptor.hueRed; // Red for full
 }
 
 // Helper function to determine if a drop point matches the filter criteria
@@ -149,63 +156,74 @@ void _updateFilterCriteria(List<String> newCriteria) {
 }
 
   void _showDropPointDetails(Map<String, dynamic> pointData) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text(
-          pointData['title'] ?? 'Not available',
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
-        ),
-        content: SingleChildScrollView(
-          child: ListBody(
-            children: <Widget>[
-              ListTile(
-                leading: const Icon(Icons.location_on, color: Colors.green),
-                title: const Text('Address', style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold)),
-                subtitle: Text(
-                  pointData['address'] ?? 'Not available',
-                  style: const TextStyle(fontSize: 18),
-                ),
-              ),
-              ListTile(
-                leading: const Icon(Icons.event, color: Colors.green),
-                title: const Text('Pickup Days', style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold)),
-                subtitle: Text(
-                  (pointData['pickupDays'] as List<dynamic>).join(', '),
-                  style: const TextStyle(fontSize: 18),
-                ),
-              ),
-              ListTile(
-                leading: const Icon(Icons.recycling, color: Colors.green),
-                title: const Text('Recyclable Items', style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold)),
-                subtitle: Text(
-                  (pointData['recycleItems'] as List<dynamic>).join(', '),
-                  style: const TextStyle(fontSize: 18),
-                ),
-              ),
-            ],
+    int currentCapacity = pointData['currentCapacity'] ?? 0;
+    int maxCapacity = pointData['maxCapacity'] ?? 0;
+    String capacityInfo = 'Capacity: $currentCapacity/$maxCapacity';
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            pointData['title'] ?? 'Not available',
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
           ),
-        ),
-        actions: <Widget>[
-          TextButton(
-            child: const Text('Navigate', style: TextStyle(color: Colors.blue, fontSize: 18)),
-            onPressed: () {
-              Navigator.of(context).pop(); // Close the dialog
-              _navigateToPoint(pointData['latitude'], pointData['longitude']); // Add this line
-            },
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                ListTile(
+                  leading: const Icon(Icons.location_on, color: Colors.green),
+                  title: const Text('Address', style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold)),
+                  subtitle: Text(
+                    pointData['address'] ?? 'Not available',
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.event, color: Colors.green),
+                  title: const Text('Pickup Days', style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold)),
+                  subtitle: Text(
+                    (pointData['pickupDays'] as List<dynamic>).join(', '),
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.recycling, color: Colors.green),
+                  title: const Text('Recyclable Items', style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold)),
+                  subtitle: Text(
+                    (pointData['recycleItems'] as List<dynamic>).join(', '),
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.storage, color: Colors.green),
+                  title: const Text('Capacity', style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold)),
+                  subtitle: Text(
+                    capacityInfo,
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                ),
+              ],
+            ),
           ),
-          TextButton(
-            child: const Text('Close', style: TextStyle(color: Colors.blue, fontSize: 18)),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-      );
-    },
-  );
-}
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Navigate', style: TextStyle(color: Colors.blue, fontSize: 18)),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+                _navigateToPoint(pointData['latitude'], pointData['longitude']); // Add this line
+              },
+            ),
+            TextButton(
+              child: const Text('Close', style: TextStyle(color: Colors.blue, fontSize: 18)),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
 void _navigateToPoint(double latitude, double longitude) async {
   String googleMapsUrl = "https://www.google.com/maps/dir/?api=1&destination=$latitude,$longitude&travelmode=driving";

@@ -109,6 +109,7 @@ void _loadDropPoints() {
           _markers.add(Marker(
             markerId: MarkerId(doc.id),
             position: point,
+            icon: BitmapDescriptor.defaultMarkerWithHue(_getBinColorHue(pointData['currentCapacity'])),
             infoWindow: InfoWindow(
               title: pointData['title'],
               snippet: 'Tap here for details',
@@ -124,6 +125,12 @@ void _loadDropPoints() {
       }
     });
   });
+}
+
+double _getBinColorHue(int capacity) {
+  if (capacity <= 10) return BitmapDescriptor.hueGreen; // Green for empty
+  if (capacity <= 20) return BitmapDescriptor.hueOrange; // Orange for half full
+  return BitmapDescriptor.hueRed; // Red for full
 }
 
 // Helper function to determine if a drop point matches the filter criteria
@@ -149,6 +156,9 @@ void _updateFilterCriteria(List<String> newCriteria) {
 
 
   void _showDropPointDetails(Map<String, dynamic> pointData) {
+    int currentCapacity = pointData['currentCapacity'] ?? 0;
+    int maxCapacity = pointData['maxCapacity'] ?? 0;
+    String capacityInfo = 'Capacity: $currentCapacity/$maxCapacity';
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -181,6 +191,14 @@ void _updateFilterCriteria(List<String> newCriteria) {
                   title: const Text('Recyclable Items', style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold)),
                   subtitle: Text(
                     (pointData['recycleItems'] as List<dynamic>).join(', '),
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.storage, color: Colors.green),
+                  title: const Text('Capacity', style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold)),
+                  subtitle: Text(
+                    capacityInfo,
                     style: const TextStyle(fontSize: 18),
                   ),
                 ),
