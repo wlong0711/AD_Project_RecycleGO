@@ -129,9 +129,53 @@ void _loadDropPoints() {
 
 double _getBinColorHue(int capacity) {
   if (capacity <= 10) return BitmapDescriptor.hueGreen; // Green for empty
-  if (capacity <= 20) return BitmapDescriptor.hueOrange; // Orange for half full
+  if (capacity <= 20) return BitmapDescriptor.hueYellow; // Yellow for half full
+  if (capacity <= 29) return BitmapDescriptor.hueOrange; // Orange for about full
   return BitmapDescriptor.hueRed; // Red for full
 }
+
+void _showLegend() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Capacity of the Drop Points'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 16.0), // Add some spacing
+                  child: Text(
+                    'Note: Capacity information is for reference only and does not reflect current capacity. If the bin is full, please report it to us.',
+                    style: TextStyle(fontSize: 16), // You can customize the style
+                  ),
+                ),
+                _buildColorStatusTile(Colors.green, 'Empty'),
+                _buildColorStatusTile(Colors.yellow, 'Half Full'),
+                _buildColorStatusTile(Colors.orange, 'About Full'),
+                _buildColorStatusTile(Colors.red, 'Full'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Close'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildColorStatusTile(Color color, String status) {
+    return ListTile(
+      leading: Icon(Icons.location_on, color: color),
+      title: Text(status),
+    );
+  }
 
 // Helper function to determine if a drop point matches the filter criteria
 bool _matchesFilter(List<dynamic> dropPointItems) {
@@ -323,56 +367,54 @@ void _updateFilterCriteria(List<String> newCriteria) {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white), // Custom icon and color
-          onPressed: () => Navigator.of(context).pop(), // Go back on press
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
         ),
         flexibleSpace: Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Colors.green, Colors.green],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-              ),
-            ),
-          ),
-          elevation: 10,
-          shadowColor: Colors.green.withOpacity(0.5),
-          title: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(30),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _searchController,
-                    onChanged: (value) {
-                      setState(() {}); // update the visibility of the clear button
-                    },
-                    onSubmitted: (value) => _searchAndNavigate(),
-                    decoration: const InputDecoration(
-                      icon: Icon(Icons.search, color: Colors.black),
-                      hintText: 'Enter location name',
-                      border: InputBorder.none,
-                    ),
-                  ),
-                ),
-                Visibility(
-                  visible: _searchController.text.isNotEmpty,
-                  child: IconButton(
-                    icon: const Icon(Icons.clear, color: Colors.black),
-                    onPressed: () {
-                      _searchController.clear();
-                      setState(() {}); // update the visibility of the clear button
-                    },
-                  ),
-                ),
-              ],
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.green, Colors.green],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
             ),
           ),
         ),
+        elevation: 10,
+        shadowColor: Colors.green.withOpacity(0.5),
+        title: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(30),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _searchController,
+                  onChanged: (value) => setState(() {}),
+                  onSubmitted: (value) => _searchAndNavigate(),
+                  decoration: const InputDecoration(
+                    icon: Icon(Icons.search, color: Colors.black),
+                    hintText: 'Enter location name',
+                    border: InputBorder.none,
+                  ),
+                ),
+              ),
+              Visibility(
+                visible: _searchController.text.isNotEmpty,
+                child: IconButton(
+                  icon: const Icon(Icons.clear, color: Colors.black),
+                  onPressed: () {
+                    _searchController.clear();
+                    setState(() {});
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
       body: GoogleMap(
         onMapCreated: _onMapCreated,
         initialCameraPosition: CameraPosition(
@@ -384,53 +426,60 @@ void _updateFilterCriteria(List<String> newCriteria) {
         zoomControlsEnabled: true,
         mapType: MapType.normal,
       ),
-       
       floatingActionButton: SafeArea(
         child: Align(
           alignment: Alignment.topLeft,
           child: Padding(
-            padding: const EdgeInsets.only(top: 120.0, left: 25.0), // Adjust these values as needed
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Colors.green, Colors.green],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+            padding: const EdgeInsets.only(top: 120.0, left: 25.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildGradientFAB(
+                  onPressed: _showLegend,
+                  tooltip: 'Show Legend',
+                  icon: Icons.info_outline,
                 ),
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.green.withOpacity(0.5),
-                    spreadRadius: 2,
-                    blurRadius: 10,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-              ),
-              child: FloatingActionButton(
-                onPressed: _showFilterDialog,
-                tooltip: 'Filter Drop Points',
-                heroTag: 'filterBtn',
-                backgroundColor: Colors.transparent, // Makes FAB transparent to reveal gradient container
-                elevation: 0,
-                child: const Icon(Icons.filter_list, color: Colors.white), // Removes shadow
-              ),
+                const SizedBox(height: 8), // Space between the buttons
+                _buildGradientFAB(
+                  onPressed: _showFilterDialog,
+                  tooltip: 'Filter Drop Points',
+                  icon: Icons.filter_list,
+                ),
+              ],
             ),
           ),
         ),
       ),
     );
   }
-}
 
-  Widget _buildActionButton({required IconData icon, required VoidCallback onPressed, required String tooltip}) {
-    return SizedBox(
-      height: 45.0,
-      width: 45.0,
+  Widget _buildGradientFAB({required VoidCallback onPressed, required String tooltip, required IconData icon}) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Colors.green, Colors.green],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.green.withOpacity(0.5),
+            spreadRadius: 2,
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
       child: FloatingActionButton(
-        onPressed: onPressed, // Adjust icon size if needed
+        onPressed: onPressed,
         tooltip: tooltip,
-        child: Icon(icon, size: 24.0),
+        heroTag: null, // Ensure each FAB has a unique heroTag or set it to null
+        backgroundColor: Colors.transparent, // Makes FAB transparent to reveal gradient container
+        elevation: 0, // Removes shadow
+        child: Icon(icon, color: Colors.white),
       ),
     );
   }
+}

@@ -263,9 +263,10 @@ Marker _createMarker(String id, LatLng point, Map<String, dynamic> pointData) {
 }
 
 double _getBinColorHue(int capacity) {
-  if (capacity <= 10) return BitmapDescriptor.hueGreen; // Green for low capacity
-  if (capacity <= 20) return BitmapDescriptor.hueYellow; // Yellow for medium capacity
-  return BitmapDescriptor.hueRed; // Red for high capacity or full
+  if (capacity <= 10) return BitmapDescriptor.hueGreen; // Green for empty
+  if (capacity <= 20) return BitmapDescriptor.hueYellow; // Yellow for half full
+  if (capacity <= 29) return BitmapDescriptor.hueOrange; // Orange for about full
+  return BitmapDescriptor.hueRed; // Red for full
 }
 
   Future<String?> _showLocationNameDialog() async {
