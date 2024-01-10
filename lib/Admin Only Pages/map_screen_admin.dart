@@ -130,7 +130,8 @@ void _loadDropPoints() {
 
 double _getBinColorHue(int capacity) {
   if (capacity <= 10) return BitmapDescriptor.hueGreen; // Green for empty
-  if (capacity <= 20) return BitmapDescriptor.hueOrange; // Orange for half full
+  if (capacity <= 20) return BitmapDescriptor.hueYellow; // Yellow for half full
+  if (capacity <= 29) return BitmapDescriptor.hueOrange; // Orange for about full
   return BitmapDescriptor.hueRed; // Red for full
 }
 
