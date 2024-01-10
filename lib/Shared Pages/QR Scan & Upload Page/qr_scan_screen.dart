@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:recycle_go/Shared%20Pages/QR%20Scan%20&%20Upload%20Page/upload_page.dart';
@@ -134,32 +135,76 @@ class _QRScanScreenState extends State<QRScanScreen> {
   void _navigateToNextScreen(BuildContext context, String scanResult) {
     // Pause the camera before navigating away
     controller?.pauseCamera();
+
     try {
       final data = jsonDecode(scanResult);
-      //read data from {"location": "location#1"}
       final String locationName = data['location'];
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => UploadPage(
-            locationName: locationName,
-            onUploadCompleted: () {
-              setState(() {
-                uploadCompleted = true; // Use setState to update the flag
-              });
-            },
-          ),
-        ),
-      ).then((value) {
-        // Check if upload was completed and only resume camera if it wasn't
-        if (!uploadCompleted && mounted && controller != null) {
-          controller?.resumeCamera();
-        }
-      });
+
+      FirebaseFirestore.instance.collection('drop_points')
+        .where('title', isEqualTo: locationName)
+        .get()
+        .then((querySnapshot) {
+          if (querySnapshot.docs.isNotEmpty) {
+            final docSnapshot = querySnapshot.docs.first;
+            int currentCapacity = docSnapshot.data()['currentCapacity'];
+            int maxCapacity = docSnapshot.data()['maxCapacity'];
+
+            if (currentCapacity < maxCapacity) {
+              // Navigate to UploadPage if bin is not full
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => UploadPage(
+                    locationName: locationName,
+                    onUploadCompleted: () {
+                      setState(() {
+                        uploadCompleted = true; // Use setState to update the flag
+                      });
+                    },
+                  ),
+                ),
+              ).then((value) => _handleAfterUpload(context));
+            } else {
+              // Show bin full dialog if bin is full
+              _showBinFullDialog(context);
+            }
+          } else {
+            print('No drop point found with the name: $locationName');
+          }
+        });
     } catch (e) {
-      // Handle or show error that QR didn't contain valid data
       print('Error parsing scanned data: $e');
     }
+  }
+
+  void _handleAfterUpload(BuildContext context) {
+    // This function is called after returning from the UploadPage
+    if (!uploadCompleted && mounted && controller != null) {
+      controller?.resumeCamera();
+    }
+  }
+
+  void _showBinFullDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Text('Bin Full'),
+          content: const Text('This bin is full already.'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(dialogContext).pop(); // Close the dialog
+                // Optionally, you can navigate back to a specific page in the stack
+                // Navigator.popUntil(context, ModalRoute.withName('/specificPage'));
+                Navigator.of(context).pop(); // Navigate back to the previous page
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override

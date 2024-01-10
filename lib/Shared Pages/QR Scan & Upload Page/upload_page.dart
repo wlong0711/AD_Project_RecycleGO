@@ -55,6 +55,33 @@ class _UploadPageState extends State<UploadPage> {
           .ref(fileName)
           .getDownloadURL();
 
+      // Get the drop point document by location name
+      var dropPointSnapshot = await FirebaseFirestore.instance
+          .collection('drop_points')
+          .where('title', isEqualTo: widget.locationName)
+          .limit(1)
+          .get();
+
+      if (dropPointSnapshot.docs.isEmpty) {
+        throw Exception("Drop point not found");
+      }
+
+      var dropPointDocument = dropPointSnapshot.docs.first;
+      int currentCapacity = dropPointDocument.data()['currentCapacity'] ?? 0;
+      int maxCapacity = dropPointDocument.data()['maxCapacity'] ?? 0;
+
+      // Check if max capacity is reached
+      if (currentCapacity >= maxCapacity) {
+        // Show dialog and navigate back without updating the current capacity
+        _showBinFullDialog();
+        return;
+      }
+
+      // Update current capacity in Firestore
+      await dropPointDocument.reference.update({
+        'currentCapacity': FieldValue.increment(1),
+      });
+
       // Save the user name, location name and video URL in Firestore
       await FirebaseFirestore.instance.collection('uploads').add({
         'username' : GlobalUser.userName,
@@ -83,6 +110,27 @@ class _UploadPageState extends State<UploadPage> {
         _isUploading = false; // Stop uploading
       });
     }
+  }
+
+  void _showBinFullDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Text('Bin Full'),
+          content: const Text('This bin is full already.'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(dialogContext).pop(); // Close the dialog
+                Navigator.of(context).pop(); // Navigate back to the previous page
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _showSuccessDialog() {
