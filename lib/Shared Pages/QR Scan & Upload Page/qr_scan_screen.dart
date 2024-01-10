@@ -40,9 +40,36 @@ class _QRScanScreenState extends State<QRScanScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
+        _showReminderDialog();
         _showOverlay();
       }
     });
+  }
+
+  void _showReminderDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Text('Reminder'),
+          content: const SingleChildScrollView(
+            child: Text(
+              'Please make sure the recycle items are clean and empty. '
+              'Items should not contain residual water or liquids.',
+              style: TextStyle(fontSize: 16),
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Understood'),
+              onPressed: () {
+                Navigator.of(dialogContext).pop(); // Close the dialog
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _showOverlay() {
