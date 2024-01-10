@@ -321,8 +321,8 @@ void _showFilterDialog() async {
       return Scaffold(
         appBar: AppBar(
           leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white), // Custom icon and color
-          onPressed: () => Navigator.of(context).pop(), // Go back on press
+          icon: const Icon(Icons.arrow_back, color: Colors.white), // Custom icon and color
+          onPressed: () => Navigator.of(context).pop('refresh'), // Go back on press
         ),
           flexibleSpace: Container(
             decoration: const BoxDecoration(

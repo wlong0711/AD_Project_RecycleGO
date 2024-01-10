@@ -6,6 +6,9 @@ class Upload {
   String? userName;
   String? docId;
   Timestamp? uploadedTime;
+  Timestamp? verifiedTime;
+  final String? status;
+  final String? rejectionReason;
 
   Upload({
     required this.locationName,
@@ -13,6 +16,9 @@ class Upload {
     this.userName,
     this.docId,
     this.uploadedTime,
+    this.verifiedTime,
+    this.status,
+    this.rejectionReason
   });
 
   factory Upload.fromFirestore(DocumentSnapshot doc) {
@@ -23,6 +29,9 @@ class Upload {
       userName: data['username'] as String? ?? '',
       docId: doc.id,
       uploadedTime: data['uploadedTime'] as Timestamp?,
+      verifiedTime: data['verifiedTime'] as Timestamp?,
+      status: data['status'] as String?,
+      rejectionReason: data['rejectionReason'] as String?,
     );
   }
 }

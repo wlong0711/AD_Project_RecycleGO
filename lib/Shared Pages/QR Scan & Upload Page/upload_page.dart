@@ -28,11 +28,11 @@ class _UploadPageState extends State<UploadPage> {
   Future<void> _pickVideo() async {
     final ImageSource? source = await _showSourceOptionDialog();
     if (source != null) {
-      final XFile? selected = await _picker.pickVideo(source: source, maxDuration: Duration(seconds: 5));
+      final XFile? selected = await _picker.pickVideo(source: source, maxDuration: const Duration(seconds: 5));
       if (selected != null) {
         var file = File(selected.path);
         var duration = await _getVideoDuration(file);
-        if (duration <= Duration(seconds: 6)) {
+        if (duration <= const Duration(seconds: 6)) {
           _initializeVideoPlayer(selected);
         } else {
           _showVideoLengthError();
@@ -200,6 +200,7 @@ class _UploadPageState extends State<UploadPage> {
         'username' : GlobalUser.userName,
         'location': widget.locationName,
         'videoUrl': downloadUrl,
+        'status' : 'pending',
         'uploadedTime': FieldValue.serverTimestamp(),
       });
 
@@ -286,7 +287,7 @@ class _UploadPageState extends State<UploadPage> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white), // Custom icon and color
+          icon: const Icon(Icons.arrow_back, color: Colors.white), // Custom icon and color
           onPressed: () => Navigator.of(context).pop(), // Go back on press
         ),
         title: Text(
@@ -327,7 +328,7 @@ class _UploadPageState extends State<UploadPage> {
                     ),
                     const SizedBox(height: 25,),
                     if (_videoPlayerController?.value.isInitialized ?? false)
-                      Container(
+                      SizedBox(
                       width: MediaQuery.of(context).size.width * 0.8, // 80% of screen width
                       child: AspectRatio(
                         aspectRatio: _videoPlayerController!.value.aspectRatio,
@@ -342,7 +343,7 @@ class _UploadPageState extends State<UploadPage> {
                               bottom: 20,
                               child: Text(
                                 "${_formatDuration(_videoPlayerController!.value.position)} / ${_formatDuration(_videoPlayerController!.value.duration)}",
-                                style: TextStyle(color: Colors.white, fontSize: 14),
+                                style: const TextStyle(color: Colors.white, fontSize: 14),
                               ),
                             ),
                           ],

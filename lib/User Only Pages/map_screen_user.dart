@@ -143,8 +143,8 @@ void _showLegend() {
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 16.0), // Add some spacing
+                const Padding(
+                  padding: EdgeInsets.only(bottom: 16.0), // Add some spacing
                   child: Text(
                     'Note: Capacity information is for reference only and does not reflect current capacity. If the bin is full, please report it to us.',
                     style: TextStyle(fontSize: 16), // You can customize the style
@@ -367,8 +367,8 @@ void _updateFilterCriteria(List<String> newCriteria) {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.of(context).pop(),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop('refresh'),
         ),
         flexibleSpace: Container(
           decoration: const BoxDecoration(

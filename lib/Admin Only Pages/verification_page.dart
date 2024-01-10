@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:video_player/video_player.dart';
 import '../models/upload.dart';
 
@@ -152,6 +151,11 @@ class _VerificationPageState extends State<VerificationPage> {
               .where('username', isEqualTo: upload.userName)
               .limit(1)
               .get();
+          
+          await FirebaseFirestore.instance.collection('uploads').doc(upload.docId).update({
+            'status': 'Approved',
+            'verifiedTime': FieldValue.serverTimestamp(),
+          });
 
           if (userDoc.docs.isNotEmpty) {
             var userRef = userDoc.docs.first.reference;
@@ -160,14 +164,6 @@ class _VerificationPageState extends State<VerificationPage> {
 
             // Update the user's points
             await userRef.update({'points': newPoints});
-
-            // Delete video from Firebase Storage
-            if (upload.videoUrl.isNotEmpty) {
-              await firebase_storage.FirebaseStorage.instance.refFromURL(upload.videoUrl).delete();
-            }
-
-            // Delete the document from Firestore
-            await FirebaseFirestore.instance.collection('uploads').doc(uploadDocId).delete();
 
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
               content: Text('Verification successful, points added!'),
@@ -200,41 +196,53 @@ class _VerificationPageState extends State<VerificationPage> {
 
   void _rejectUpload(Upload upload) async {
     bool? confirm = await _showConfirmDialog('Reject', 'Are you sure you want to reject this upload?');
-    
     if (confirm == true) {
-      setState(() => _isLoading = true);
+      final TextEditingController reasonController = TextEditingController();
 
-      String? uploadDocId = upload.docId; // Directly using the document ID
+      // Show a dialog to enter the reason for rejection
+      String? reason = await showDialog<String>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Enter Rejection Reason'),
+            content: TextField(
+              controller: reasonController,
+              decoration: const InputDecoration(hintText: 'Reason for rejection'),
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(reasonController.text.trim()),
+                child: const Text('Submit'),
+              ),
+            ],
+          );
+        },
+      );
 
-      if (uploadDocId != null) {
+      if (reason != null && reason.isNotEmpty) {
+        setState(() => _isLoading = true);
+
         try {
-          // Delete video from Firebase Storage
-          if (upload.videoUrl.isNotEmpty) {
-            await firebase_storage.FirebaseStorage.instance.refFromURL(upload.videoUrl).delete();
-          }
-
-          // Delete the document from Firestore
-          await FirebaseFirestore.instance.collection('uploads').doc(uploadDocId).delete();
+          // Update the upload status and rejection reason in Firestore
+          await FirebaseFirestore.instance.collection('uploads').doc(upload.docId).update({
+            'status': 'Rejected',
+            'rejectionReason': reason,
+            'verifiedTime': FieldValue.serverTimestamp(),
+          });
 
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text('Upload rejected and deleted successfully.'),
+            content: Text('Upload rejected.'),
             backgroundColor: Colors.green,
           ));
-          Navigator.pop(context, true); //Added
         } catch (e) {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('Rejection failed. Error: $e'),
+            content: Text('Error during rejection: $e'),
             backgroundColor: Colors.red,
           ));
         } finally {
-            setState(() => _isLoading = false);
+          setState(() => _isLoading = false);
+          Navigator.pop(context, true); // Return to the previous screen with a result
         }
-
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Upload document not found.'),
-          backgroundColor: Colors.red,
-        ));
       }
     }
   }
