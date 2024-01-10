@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:intl/intl.dart';
 import 'package:recycle_go/Admin%20Only%20Pages/view_report_issues.dart';
 import 'package:recycle_go/Shared%20Pages/QR%20Scan%20&%20Upload%20Page/qr_scan_screen.dart';
 import 'package:recycle_go/Admin%20Only%20Pages/verify_reward.dart';
@@ -7,8 +9,10 @@ import 'package:recycle_go/Shared%20Pages/StartUp%20Pages/UserProfilePage.dart';
 import 'package:recycle_go/Shared%20Pages/View%20Reward%20Page/view_reward.dart';
 import 'package:recycle_go/models/global_user.dart';
 import 'package:recycle_go/User%20Only%20Pages/report_issues.dart';
+import 'package:recycle_go/models/upload.dart';
 import '../../Admin Only Pages/map_screen_admin.dart';
 import '../../User Only Pages/map_screen_user.dart';
+import 'view_user_upload_history.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -26,6 +30,146 @@ class _HomePageState extends State<HomePage> {
       'https://firebasestorage.googleapis.com/v0/b/recyclego-64b10.appspot.com/o/Banner%2Ft-t-4256-eco-and-recycling-the-future-of-the-planet-display-poster_ver_1.webp?alt=media&token=c95bb98d-a132-4909-a295-71cd92bbf9c7',
     ];
 
+  int todayUploads = 0;
+  int thirtyDayUploads = 0;
+  int yearUploads = 0;
+  Upload? latestUpload;
+
+  @override
+  void initState() {
+    super.initState();
+    // Fetch data when the page initializes
+    fetchUploadData();
+  }
+
+  Future<void> fetchUploadData() async {
+    try {
+      DateTime now = DateTime.now().toUtc();
+      DateTime todayStart = DateTime.utc(now.year, now.month, now.day);
+      DateTime thirtyDaysAgoStart = todayStart.subtract(Duration(days: 30));
+      DateTime oneYearAgoStart = todayStart.subtract(Duration(days: 365));
+
+      var uploadCollection = FirebaseFirestore.instance.collection('uploads')
+          .where('username', isEqualTo: GlobalUser.userName); // Filter by the current user's username
+
+      // Fetch today's approved uploads
+      var todayUploadsQuery = await uploadCollection
+          .where('uploadedTime', isGreaterThanOrEqualTo: Timestamp.fromDate(todayStart))
+          .where('status', isEqualTo: 'Approved')
+          .get();
+      todayUploads = todayUploadsQuery.docs.length;
+
+      // Fetch last 30 days' approved uploads
+      var thirtyDayUploadsQuery = await uploadCollection
+          .where('uploadedTime', isGreaterThanOrEqualTo: Timestamp.fromDate(thirtyDaysAgoStart))
+          .where('status', isEqualTo: 'Approved')
+          .get();
+      thirtyDayUploads = thirtyDayUploadsQuery.docs.length;
+
+      // Fetch last year's approved uploads
+      var yearUploadsQuery = await uploadCollection
+          .where('uploadedTime', isGreaterThanOrEqualTo: Timestamp.fromDate(oneYearAgoStart))
+          .where('status', isEqualTo: 'Approved')
+          .get();
+      yearUploads = yearUploadsQuery.docs.length;
+
+      // Fetch the latest activity
+      var latestUploadQuery = await uploadCollection
+          .orderBy('uploadedTime', descending: true)
+          .limit(1)
+          .get();
+
+      if (latestUploadQuery.docs.isNotEmpty) {
+        latestUpload = Upload.fromFirestore(latestUploadQuery.docs.first);
+      }
+      print('$uploadCollection');
+      print('$todayUploads');
+      print('$thirtyDayUploads');
+      print('$yearUploads');
+      setState(() {}); // Update the UI
+    } catch (e) {
+      print('Error fetching upload data: $e');
+    }
+  }
+
+
+  Widget _buildActivitiesSection() {
+    return Center(
+      child: Container(
+        width: MediaQuery.of(context).size.width * 0.9, // 80% of screen width
+        decoration: BoxDecoration(
+          color: Colors.green, // Green background color
+          borderRadius: BorderRadius.circular(10), // Rounded corners
+        ),
+        padding: EdgeInsets.all(10), // Padding inside the container
+        child: Column(
+          children: [
+            Text('Activities', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+            Divider(color: Colors.white),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Column(
+                  children: [
+                    Text('Today', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                    Text('$todayUploads times', style: TextStyle(color: Colors.white)), // Display today's uploads
+                  ],
+                ),
+                Column(
+                  children: [
+                    Text('Last 30 Days', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                    Text('$thirtyDayUploads times', style: TextStyle(color: Colors.white)), // Display last 30 days' uploads
+                  ],
+                ),
+                Column(
+                  children: [
+                    Text('Last 1 Year', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                    Text('$yearUploads times', style: TextStyle(color: Colors.white)), // Display last year's uploads
+                  ],
+                ),
+              ],
+            ),
+            Divider(color: Colors.white),
+            ListTile(
+              title: Text('Latest Activity', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              subtitle: latestUpload != null
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Upload at ${DateFormat('dd/MM/yyyy HH:mm').format(latestUpload!.uploadedTime!.toDate())}', style: TextStyle(color: Colors.white)),
+                        Text('Status: ${latestUpload!.status}', style: TextStyle(color: Colors.white)),
+                        if (latestUpload!.status == 'Rejected') 
+                          Text('Rejected reason: ${latestUpload!.rejectionReason}', style: TextStyle(color: Colors.white)),
+                      ],
+                    )
+                  : Text('No recent activity', style: TextStyle(color: Colors.white)),
+              trailing: ElevatedButton(
+                onPressed: () {
+                  navigateToUserHistory();
+                },
+                child: Text('View History', style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold)),
+              ),
+            ),
+            Divider(color: Colors.white),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> navigateToUserHistory() async {
+    // Navigate to the UserProfilePage and wait for the result
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const ViewUserUploadHistoryPage()),
+    );
+
+    // Check if the UserProfilePage indicates that data needs to be refreshed
+    if (result == 'refresh') {
+      await fetchUploadData();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,8 +186,11 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
+            SizedBox(height: 20,),
             if (GlobalUser.userLevel == 1) _buildAdminFunctionsTitle(),
             if (GlobalUser.userLevel == 1) _buildAdminFunctionsRow(context),
+            SizedBox(height: 20,),
+            _buildActivitiesSection(),
           ],
         ),
       ),
@@ -79,12 +226,25 @@ class _HomePageState extends State<HomePage> {
           IconButton(
             icon: const Icon(Icons.account_circle, size: 40, color: Colors.white,),
             onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute(builder: (_) => const UserProfilePage()));
+              navigateToUserProfilePage();
             },
           ),
         ],
       ),
     );
+  }
+
+  Future<void> navigateToUserProfilePage() async {
+    // Navigate to the UserProfilePage and wait for the result
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const UserProfilePage()),
+    );
+
+    // Check if the UserProfilePage indicates that data needs to be refreshed
+    if (result == 'refresh') {
+      await fetchUploadData();
+    }
   }
 
   Widget _buildAdminFunctionsTitle() {
@@ -101,20 +261,56 @@ class _HomePageState extends State<HomePage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
-        _buildMenuButton(context, Icons.admin_panel_settings, 'Map for Admin', const MapScreenAdmin(title: 'Admin View Map')),
-        _buildMenuButton(context, Icons.verified_user, 'Verify for Rewards', const VerifyRewardPage()),
-        _buildMenuButton(context, Icons.view_list, 'View Reports', const AdminReportsPage()),
+        _buildMenuButton(context, Icons.admin_panel_settings, 'Map for Admin', () => navigateToMapScreenAdmin()),
+        _buildMenuButton(context, Icons.verified_user, 'Verify for Rewards', () => navigateToVerifyRewardPage()),
+        _buildMenuButton(context, Icons.view_list, 'View Reports', () => navigateToAdminReportsPage()),
       ],
     );
   }
 
-  Widget _buildMenuButton(BuildContext context, IconData icon, String label, Widget page) {
+  Future navigateToVerifyRewardPage() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const VerifyRewardPage()),
+    );
+
+    // Check if the result is 'updateNeeded' and refresh data accordingly
+    if (result == 'refresh') {
+      await fetchUploadData();
+    }
+  }
+
+  Future<void> navigateToMapScreenAdmin() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const MapScreenAdmin(title: 'Admin View Map')),
+    );
+
+    // Check if the result is 'updateNeeded' and refresh data accordingly
+    if (result == 'refresh') {
+      await fetchUploadData();
+    }
+  }
+
+  Future<void> navigateToAdminReportsPage() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const AdminReportsPage()),
+    );
+
+    // Check if the result is 'updateNeeded' and refresh data accordingly
+    if (result == 'refresh') {
+      await fetchUploadData();
+    }
+  }
+
+  Widget _buildMenuButton(BuildContext context, IconData icon, String label, VoidCallback onTap) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       elevation: 5,
       margin: const EdgeInsets.all(8),
       child: InkWell(
-        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => page)),
+        onTap: onTap, // Use the onTap callback here
         borderRadius: BorderRadius.circular(15),
         child: Container(
           padding: const EdgeInsets.all(10), // Padding inside the container
@@ -196,20 +392,68 @@ class _HomePageState extends State<HomePage> {
         Navigator.of(context).push(MaterialPageRoute(builder: (_) => const HomePage()));
         break;
       case 1:
-        Navigator.of(context).push(MaterialPageRoute(builder: (_) => const MapScreenUser(title: 'User View Map')));
+        navigateToUserFunctions(1);
         break;
       case 2:
-        Navigator.of(context).push(MaterialPageRoute(builder: (_) => const QRScanScreen(title: 'Scan QR')));
+        navigateToUserFunctions(2);
         break;
       case 3:
-        Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ViewRewardPage()));
+        navigateToUserFunctions(3);
         break;
       case 4:
-        Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ReportIssueScreen(title: 'Report an Issue')));
+        navigateToUserFunctions(4);
         break;
       default:
         Navigator.of(context).push(MaterialPageRoute(builder: (_) => const HomePage()));
         break;
+    }
+  }
+
+  Future<void> navigateToUserFunctions(int index) async {
+    
+    switch (index) {
+      case 1:
+        final result = await Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const MapScreenUser(title: 'User View Map')),
+        );
+        
+        if (result == 'refresh') {
+          await fetchUploadData();
+        }
+        break;
+      case 2:
+        final result = await Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const QRScanScreen(title: 'Scan QR')),
+        );
+        
+        if (result == 'refresh') {
+          await fetchUploadData();
+        }
+        break;
+      case 3:
+        final result = await Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const ViewRewardPage()),
+        );
+        
+        if (result == 'refresh') {
+          await fetchUploadData();
+        }
+        break;
+      case 4:
+        final result = await Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const ReportIssueScreen(title: 'Report an Issue')),
+        );
+        
+        if (result == 'refresh') {
+          await fetchUploadData();
+        }
+        break;
+      
+      default:
     }
   }
 
