@@ -567,12 +567,12 @@ void _updateFilterCriteria(List<String> newCriteria) {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white), // Custom icon and color
+          icon: const Icon(Icons.arrow_back, color: Colors.white), // Custom icon and color
           onPressed: () => Navigator.of(context).pop(), // Go back on press
         ),
-        title: Text(
+        title: const Text(
           'Manage Drop Point',
-          style: const TextStyle(color: Colors.white),
+          style: TextStyle(color: Colors.white),
         ),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
@@ -629,7 +629,7 @@ class DetailedViewScreen extends StatelessWidget {
   final Map<String, dynamic> pointData;
   final String dropPointId;
   
-  const DetailedViewScreen({Key? key, required this.pointData, required this.dropPointId}) : super(key: key);
+  const DetailedViewScreen({super.key, required this.pointData, required this.dropPointId});
 
   @override
   Widget build(BuildContext context) {
@@ -691,10 +691,9 @@ class DetailedViewScreen extends StatelessWidget {
               ElevatedButton(
                 onPressed: () => _confirmClearBin(context),
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.green, // background (button) color
-                  onPrimary: Colors.white, // foreground (text) color
+                  foregroundColor: Colors.white, backgroundColor: Colors.green, // foreground (text) color
                 ),
-                child: Text('Clear Bin'),
+                child: const Text('Clear Bin'),
               ),
             ],
           ),

@@ -103,6 +103,6 @@ class ReportDetailsPage extends StatelessWidget {
         .doc(documentId)
         .update({'status': 'solved'});
 
-    Navigator.of(context).pop(); // Pop back to the previous page after marking as solved
+    Navigator.of(context).pop('refresh'); // Pop back to the previous page after marking as solved
   }
 }

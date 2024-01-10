@@ -682,12 +682,12 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
         key: const ValueKey("Loaded"),
         appBar: AppBar(
           leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white), // Custom icon and color
-          onPressed: () => Navigator.of(context).pop(), // Go back on press
+          icon: const Icon(Icons.arrow_back, color: Colors.white), // Custom icon and color
+          onPressed: () => Navigator.of(context).pop('refresh'), // Go back on press
         ),
-        title: Text(
+        title: const Text(
                 'View Rewards',
-                style: const TextStyle(color: Colors.white),
+                style: TextStyle(color: Colors.white),
               ),
           flexibleSpace: Container(
                 decoration: const BoxDecoration(

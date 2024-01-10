@@ -182,9 +182,9 @@ Widget build(BuildContext context) {
             child: companyLogo.image, // Use the provided CompanyLogo's image
           ),
           const SizedBox(height: 20),
-          Text(
+          const Text(
             'Login',
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
           ),
           const SizedBox(height: 20),
           _buildInputBox("Email", _usernameController, isPassword: false),

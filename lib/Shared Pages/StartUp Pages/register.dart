@@ -323,9 +323,9 @@ class _RegisterPageState extends State<RegisterPage> {
                       child: companyLogo.image, // Use the provided CompanyLogo's image
                     ),
                     const SizedBox(height: 20),
-                    Text(
+                    const Text(
                       'Register',
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
                     ),
                     const SizedBox(height: 20),
                     // Input Boxes and Buttons

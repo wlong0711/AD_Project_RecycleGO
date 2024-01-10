@@ -100,8 +100,8 @@ class _QRScanScreenState extends State<QRScanScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white), // Custom icon and color
-          onPressed: () => Navigator.of(context).pop(), // Go back on press
+          icon: const Icon(Icons.arrow_back, color: Colors.white), // Custom icon and color
+          onPressed: () => Navigator.of(context).pop('refresh'), // Go back on press
         ),
         title: Text(
                 widget.title,
@@ -225,7 +225,7 @@ class _QRScanScreenState extends State<QRScanScreen> {
                 Navigator.of(dialogContext).pop(); // Close the dialog
                 // Optionally, you can navigate back to a specific page in the stack
                 // Navigator.popUntil(context, ModalRoute.withName('/specificPage'));
-                Navigator.of(context).pop(); // Navigate back to the previous page
+                Navigator.of(context).pop('refresh'); // Navigate back to the previous page
               },
             ),
           ],

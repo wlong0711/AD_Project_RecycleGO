@@ -5,7 +5,7 @@ import 'package:recycle_go/models/global_user.dart';
 import 'package:recycle_go/models/upload.dart';
 
 class ViewUserUploadHistoryPage extends StatefulWidget {
-  const ViewUserUploadHistoryPage({Key? key}) : super(key: key);
+  const ViewUserUploadHistoryPage({super.key});
 
   @override
   _ViewUserUploadHistoryPageState createState() => _ViewUserUploadHistoryPageState();
@@ -20,12 +20,12 @@ class _ViewUserUploadHistoryPageState extends State<ViewUserUploadHistoryPage> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white), // Custom icon and color
+          icon: const Icon(Icons.arrow_back, color: Colors.white), // Custom icon and color
           onPressed: () => Navigator.of(context).pop('refresh'), // Go back on press
         ),
-        title: Text(
+        title: const Text(
           "Upload History",
-          style: const TextStyle(color: Colors.white),
+          style: TextStyle(color: Colors.white),
         ),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
@@ -99,9 +99,9 @@ class _ViewUserUploadHistoryPageState extends State<ViewUserUploadHistoryPage> {
 
   Widget _buildUploadItem(Upload upload) {
     return Card(
-      margin: EdgeInsets.all(8.0),
+      margin: const EdgeInsets.all(8.0),
       child: ListTile(
-        title: Text(upload.locationName, style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(upload.locationName, style: const TextStyle(fontWeight: FontWeight.bold)),
         subtitle: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

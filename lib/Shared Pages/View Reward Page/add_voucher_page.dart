@@ -170,12 +170,12 @@ class _AddVoucherPageState extends State<AddVoucherPage> {
         Scaffold(
           appBar: AppBar(
             leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.white), // Custom icon and color
+            icon: const Icon(Icons.arrow_back, color: Colors.white), // Custom icon and color
             onPressed: () => Navigator.of(context).pop(), // Go back on press
           ),
-          title: Text(
+          title: const Text(
                   'Add Voucher',
-                  style: const TextStyle(color: Colors.white),
+                  style: TextStyle(color: Colors.white),
                 ),
             flexibleSpace: Container(
               decoration: const BoxDecoration(

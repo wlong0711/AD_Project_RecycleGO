@@ -52,9 +52,9 @@ class _EditUserProfilePageState extends State<EditUserProfilePage> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Success'),
-          content: SingleChildScrollView(
+          content: const SingleChildScrollView(
             child: ListBody(
-              children: const <Widget>[
+              children: <Widget>[
                 Text('Your profile changes have been saved.'),
               ],
             ),
@@ -77,12 +77,12 @@ class _EditUserProfilePageState extends State<EditUserProfilePage> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white), // Custom icon and color
+          icon: const Icon(Icons.arrow_back, color: Colors.white), // Custom icon and color
           onPressed: () => Navigator.of(context).pop(), // Go back on press
         ),
-        title: Text(
+        title: const Text(
           "Edit Profile",
-          style: const TextStyle(color: Colors.white),
+          style: TextStyle(color: Colors.white),
         ),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
