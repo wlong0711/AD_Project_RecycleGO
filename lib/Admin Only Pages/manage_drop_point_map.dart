@@ -639,7 +639,11 @@ class DetailedViewScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(pointData['title'] ?? 'Detail View'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white), // Custom icon and color
+          onPressed: () => Navigator.of(context).pop(), // Go back on press
+        ),
+        title: Text(pointData['title'] ?? 'Detail View', style: TextStyle(color: Colors.white),),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -898,7 +902,14 @@ void _showErrorDialog(String message) {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit Drop Point'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white), // Custom icon and color
+          onPressed: () => Navigator.of(context).pop(), // Go back on press
+        ),
+        title: const Text(
+          'Edit Drop Point',
+          style: TextStyle(color: Colors.white),
+        ),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
