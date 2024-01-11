@@ -9,13 +9,13 @@
     },
     {
       "name": "archive",
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/archive-3.4.10",
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/archive-3.4.10",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
     {
       "name": "args",
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/args-2.4.2",
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/args-2.4.2",
       "packageUri": "lib/",
       "languageVersion": "2.19"
     },
@@ -45,13 +45,13 @@
     },
     {
       "name": "checked_yaml",
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/checked_yaml-2.0.3",
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/checked_yaml-2.0.3",
       "packageUri": "lib/",
       "languageVersion": "2.19"
     },
     {
       "name": "cli_util",
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/cli_util-0.4.1",
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/cli_util-0.4.1",
       "packageUri": "lib/",
       "languageVersion": "3.0"
     },
@@ -63,31 +63,19 @@
     },
     {
       "name": "cloud_firestore",
-<<<<<<< HEAD
-      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/cloud_firestore-4.13.6",
-=======
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/cloud_firestore-4.14.0",
->>>>>>> 21fca2bff32314770daa91be7359c6f11b527d67
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/cloud_firestore-4.14.0",
       "packageUri": "lib/",
       "languageVersion": "2.18"
     },
     {
       "name": "cloud_firestore_platform_interface",
-<<<<<<< HEAD
-      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/cloud_firestore_platform_interface-6.0.10",
-=======
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/cloud_firestore_platform_interface-6.1.0",
->>>>>>> 21fca2bff32314770daa91be7359c6f11b527d67
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/cloud_firestore_platform_interface-6.1.0",
       "packageUri": "lib/",
       "languageVersion": "2.18"
     },
     {
       "name": "cloud_firestore_web",
-<<<<<<< HEAD
-      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/cloud_firestore_web-3.8.10",
-=======
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/cloud_firestore_web-3.9.0",
->>>>>>> 21fca2bff32314770daa91be7359c6f11b527d67
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/cloud_firestore_web-3.9.0",
       "packageUri": "lib/",
       "languageVersion": "2.18"
     },
@@ -98,21 +86,16 @@
       "languageVersion": "2.18"
     },
     {
-<<<<<<< HEAD
-      "name": "cross_file",
-      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/cross_file-0.3.3+7",
-=======
       "name": "convert",
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/convert-3.1.1",
->>>>>>> 21fca2bff32314770daa91be7359c6f11b527d67
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/convert-3.1.1",
       "packageUri": "lib/",
       "languageVersion": "2.18"
     },
     {
       "name": "cross_file",
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/cross_file-0.3.3+8",
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/cross_file-0.3.3+7",
       "packageUri": "lib/",
-      "languageVersion": "3.2"
+      "languageVersion": "3.0"
     },
     {
       "name": "crypto",
@@ -164,11 +147,7 @@
     },
     {
       "name": "file_selector_platform_interface",
-<<<<<<< HEAD
-      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/file_selector_platform_interface-2.6.1",
-=======
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/file_selector_platform_interface-2.6.2",
->>>>>>> 21fca2bff32314770daa91be7359c6f11b527d67
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/file_selector_platform_interface-2.6.2",
       "packageUri": "lib/",
       "languageVersion": "3.0"
     },
@@ -180,11 +159,7 @@
     },
     {
       "name": "firebase_auth",
-<<<<<<< HEAD
-      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_auth-4.15.3",
-=======
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_auth-4.16.0",
->>>>>>> 21fca2bff32314770daa91be7359c6f11b527d67
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_auth-4.16.0",
       "packageUri": "lib/",
       "languageVersion": "2.18"
     },
@@ -196,11 +171,7 @@
     },
     {
       "name": "firebase_auth_web",
-<<<<<<< HEAD
-      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_auth_web-5.8.12",
-=======
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_auth_web-5.8.13",
->>>>>>> 21fca2bff32314770daa91be7359c6f11b527d67
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_auth_web-5.8.13",
       "packageUri": "lib/",
       "languageVersion": "2.18"
     },
@@ -224,11 +195,7 @@
     },
     {
       "name": "firebase_database",
-<<<<<<< HEAD
-      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_database-10.3.8",
-=======
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_database-10.4.0",
->>>>>>> 21fca2bff32314770daa91be7359c6f11b527d67
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_database-10.4.0",
       "packageUri": "lib/",
       "languageVersion": "2.18"
     },
@@ -246,11 +213,7 @@
     },
     {
       "name": "firebase_storage",
-<<<<<<< HEAD
-      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_storage-11.5.6",
-=======
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_storage-11.6.0",
->>>>>>> 21fca2bff32314770daa91be7359c6f11b527d67
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_storage-11.6.0",
       "packageUri": "lib/",
       "languageVersion": "2.18"
     },
@@ -267,12 +230,6 @@
       "languageVersion": "2.18"
     },
     {
-      "name": "fixnum",
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/fixnum-1.1.0",
-      "packageUri": "lib/",
-      "languageVersion": "2.19"
-    },
-    {
       "name": "flutter",
       "rootUri": "file:///C:/src/flutter/packages/flutter",
       "packageUri": "lib/",
@@ -286,7 +243,7 @@
     },
     {
       "name": "flutter_launcher_icons",
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_launcher_icons-0.13.1",
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_launcher_icons-0.13.1",
       "packageUri": "lib/",
       "languageVersion": "2.18"
     },
@@ -316,7 +273,7 @@
     },
     {
       "name": "fluttertoast",
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/fluttertoast-8.2.4",
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/fluttertoast-8.2.4",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -358,11 +315,7 @@
     },
     {
       "name": "geolocator_apple",
-<<<<<<< HEAD
-      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/geolocator_apple-2.3.3",
-=======
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/geolocator_apple-2.3.4",
->>>>>>> 21fca2bff32314770daa91be7359c6f11b527d67
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/geolocator_apple-2.3.4",
       "packageUri": "lib/",
       "languageVersion": "2.15"
     },
@@ -392,51 +345,31 @@
     },
     {
       "name": "google_maps_flutter",
-<<<<<<< HEAD
-      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/google_maps_flutter-2.5.0",
-=======
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/google_maps_flutter-2.5.2",
->>>>>>> 21fca2bff32314770daa91be7359c6f11b527d67
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/google_maps_flutter-2.5.2",
       "packageUri": "lib/",
       "languageVersion": "3.0"
     },
     {
       "name": "google_maps_flutter_android",
-<<<<<<< HEAD
-      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/google_maps_flutter_android-2.6.0",
-=======
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/google_maps_flutter_android-2.6.2",
->>>>>>> 21fca2bff32314770daa91be7359c6f11b527d67
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/google_maps_flutter_android-2.6.2",
       "packageUri": "lib/",
       "languageVersion": "3.0"
     },
     {
       "name": "google_maps_flutter_ios",
-<<<<<<< HEAD
-      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/google_maps_flutter_ios-2.3.3",
-=======
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/google_maps_flutter_ios-2.3.5",
->>>>>>> 21fca2bff32314770daa91be7359c6f11b527d67
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/google_maps_flutter_ios-2.3.5",
       "packageUri": "lib/",
       "languageVersion": "3.0"
     },
     {
       "name": "google_maps_flutter_platform_interface",
-<<<<<<< HEAD
-      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/google_maps_flutter_platform_interface-2.4.1",
-=======
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/google_maps_flutter_platform_interface-2.4.3",
->>>>>>> 21fca2bff32314770daa91be7359c6f11b527d67
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/google_maps_flutter_platform_interface-2.4.3",
       "packageUri": "lib/",
       "languageVersion": "3.0"
     },
     {
       "name": "google_maps_flutter_web",
-<<<<<<< HEAD
-      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/google_maps_flutter_web-0.5.4+2",
-=======
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/google_maps_flutter_web-0.5.4+3",
->>>>>>> 21fca2bff32314770daa91be7359c6f11b527d67
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/google_maps_flutter_web-0.5.4+3",
       "packageUri": "lib/",
       "languageVersion": "3.1"
     },
@@ -448,13 +381,9 @@
     },
     {
       "name": "http",
-<<<<<<< HEAD
       "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/http-1.1.0",
-=======
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/http-1.1.2",
->>>>>>> 21fca2bff32314770daa91be7359c6f11b527d67
       "packageUri": "lib/",
-      "languageVersion": "3.2"
+      "languageVersion": "3.0"
     },
     {
       "name": "http_parser",
@@ -464,37 +393,25 @@
     },
     {
       "name": "image",
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/image-4.1.3",
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/image-4.1.3",
       "packageUri": "lib/",
       "languageVersion": "2.15"
     },
     {
       "name": "image_picker",
-<<<<<<< HEAD
-      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/image_picker-1.0.5",
-=======
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/image_picker-1.0.7",
->>>>>>> 21fca2bff32314770daa91be7359c6f11b527d67
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/image_picker-1.0.7",
       "packageUri": "lib/",
       "languageVersion": "3.0"
     },
     {
       "name": "image_picker_android",
-<<<<<<< HEAD
-      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/image_picker_android-0.8.9+1",
-=======
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/image_picker_android-0.8.9+3",
->>>>>>> 21fca2bff32314770daa91be7359c6f11b527d67
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/image_picker_android-0.8.9+3",
       "packageUri": "lib/",
       "languageVersion": "3.0"
     },
     {
       "name": "image_picker_for_web",
-<<<<<<< HEAD
-      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/image_picker_for_web-3.0.1",
-=======
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/image_picker_for_web-3.0.2",
->>>>>>> 21fca2bff32314770daa91be7359c6f11b527d67
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/image_picker_for_web-3.0.2",
       "packageUri": "lib/",
       "languageVersion": "3.0"
     },
@@ -518,11 +435,7 @@
     },
     {
       "name": "image_picker_platform_interface",
-<<<<<<< HEAD
-      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/image_picker_platform_interface-2.9.1",
-=======
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/image_picker_platform_interface-2.9.3",
->>>>>>> 21fca2bff32314770daa91be7359c6f11b527d67
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/image_picker_platform_interface-2.9.3",
       "packageUri": "lib/",
       "languageVersion": "3.0"
     },
@@ -552,7 +465,7 @@
     },
     {
       "name": "json_annotation",
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/json_annotation-4.8.1",
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/json_annotation-4.8.1",
       "packageUri": "lib/",
       "languageVersion": "2.19"
     },
@@ -606,11 +519,7 @@
     },
     {
       "name": "path_provider_platform_interface",
-<<<<<<< HEAD
-      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/path_provider_platform_interface-2.1.1",
-=======
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/path_provider_platform_interface-2.1.2",
->>>>>>> 21fca2bff32314770daa91be7359c6f11b527d67
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/path_provider_platform_interface-2.1.2",
       "packageUri": "lib/",
       "languageVersion": "3.0"
     },
@@ -621,35 +530,26 @@
       "languageVersion": "2.19"
     },
     {
-<<<<<<< HEAD
-      "name": "platform",
-      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/platform-3.1.3",
-=======
       "name": "petitparser",
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/petitparser-6.0.2",
->>>>>>> 21fca2bff32314770daa91be7359c6f11b527d67
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/petitparser-5.4.0",
       "packageUri": "lib/",
-      "languageVersion": "3.2"
+      "languageVersion": "2.19"
     },
     {
       "name": "platform",
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/platform-3.1.4",
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/platform-3.1.4",
       "packageUri": "lib/",
       "languageVersion": "3.0"
     },
     {
       "name": "plugin_platform_interface",
-<<<<<<< HEAD
-      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/plugin_platform_interface-2.1.7",
-=======
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/plugin_platform_interface-2.1.8",
->>>>>>> 21fca2bff32314770daa91be7359c6f11b527d67
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/plugin_platform_interface-2.1.8",
       "packageUri": "lib/",
       "languageVersion": "3.0"
     },
     {
       "name": "pointycastle",
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/pointycastle-3.7.3",
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/pointycastle-3.7.3",
       "packageUri": "lib/",
       "languageVersion": "2.14"
     },
@@ -697,23 +597,15 @@
     },
     {
       "name": "shared_preferences_platform_interface",
-<<<<<<< HEAD
-      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/shared_preferences_platform_interface-2.3.1",
-=======
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/shared_preferences_platform_interface-2.3.2",
->>>>>>> 21fca2bff32314770daa91be7359c6f11b527d67
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/shared_preferences_platform_interface-2.3.2",
       "packageUri": "lib/",
       "languageVersion": "3.0"
     },
     {
       "name": "shared_preferences_web",
-<<<<<<< HEAD
       "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/shared_preferences_web-2.2.1",
-=======
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/shared_preferences_web-2.2.2",
->>>>>>> 21fca2bff32314770daa91be7359c6f11b527d67
       "packageUri": "lib/",
-      "languageVersion": "3.2"
+      "languageVersion": "2.19"
     },
     {
       "name": "shared_preferences_windows",
@@ -831,13 +723,9 @@
     },
     {
       "name": "uuid",
-<<<<<<< HEAD
       "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/uuid-4.2.2",
-=======
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/uuid-4.3.3",
->>>>>>> 21fca2bff32314770daa91be7359c6f11b527d67
       "packageUri": "lib/",
-      "languageVersion": "3.0"
+      "languageVersion": "2.14"
     },
     {
       "name": "vector_math",
@@ -847,51 +735,31 @@
     },
     {
       "name": "video_player",
-<<<<<<< HEAD
-      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/video_player-2.8.1",
-=======
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/video_player-2.8.2",
->>>>>>> 21fca2bff32314770daa91be7359c6f11b527d67
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/video_player-2.8.2",
       "packageUri": "lib/",
       "languageVersion": "3.1"
     },
     {
       "name": "video_player_android",
-<<<<<<< HEAD
-      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/video_player_android-2.4.10",
-=======
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/video_player_android-2.4.11",
->>>>>>> 21fca2bff32314770daa91be7359c6f11b527d67
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/video_player_android-2.4.11",
       "packageUri": "lib/",
       "languageVersion": "3.0"
     },
     {
       "name": "video_player_avfoundation",
-<<<<<<< HEAD
       "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/video_player_avfoundation-2.5.2",
-=======
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/video_player_avfoundation-2.5.5",
->>>>>>> 21fca2bff32314770daa91be7359c6f11b527d67
       "packageUri": "lib/",
-      "languageVersion": "3.2"
+      "languageVersion": "3.1"
     },
     {
       "name": "video_player_platform_interface",
-<<<<<<< HEAD
-      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/video_player_platform_interface-6.2.1",
-=======
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/video_player_platform_interface-6.2.2",
->>>>>>> 21fca2bff32314770daa91be7359c6f11b527d67
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/video_player_platform_interface-6.2.2",
       "packageUri": "lib/",
       "languageVersion": "3.0"
     },
     {
       "name": "video_player_web",
-<<<<<<< HEAD
-      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/video_player_web-2.1.2",
-=======
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/video_player_web-2.1.3",
->>>>>>> 21fca2bff32314770daa91be7359c6f11b527d67
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/video_player_web-2.1.3",
       "packageUri": "lib/",
       "languageVersion": "3.1"
     },
@@ -903,33 +771,25 @@
     },
     {
       "name": "win32",
-<<<<<<< HEAD
       "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/win32-5.1.1",
-=======
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/win32-5.2.0",
->>>>>>> 21fca2bff32314770daa91be7359c6f11b527d67
       "packageUri": "lib/",
-      "languageVersion": "3.2"
+      "languageVersion": "3.1"
     },
     {
       "name": "xdg_directories",
-<<<<<<< HEAD
-      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/xdg_directories-1.0.3",
-=======
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/xdg_directories-1.0.4",
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/xdg_directories-1.0.4",
       "packageUri": "lib/",
       "languageVersion": "3.0"
     },
     {
       "name": "xml",
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/xml-6.5.0",
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/xml-6.3.0",
       "packageUri": "lib/",
-      "languageVersion": "3.2"
+      "languageVersion": "2.19"
     },
     {
       "name": "yaml",
-      "rootUri": "file:///C:/Users/alvin/AppData/Local/Pub/Cache/hosted/pub.dev/yaml-3.1.2",
->>>>>>> 21fca2bff32314770daa91be7359c6f11b527d67
+      "rootUri": "file:///C:/Users/weilo/AppData/Local/Pub/Cache/hosted/pub.dev/yaml-3.1.2",
       "packageUri": "lib/",
       "languageVersion": "2.19"
     },
@@ -940,13 +800,7 @@
       "languageVersion": "3.1"
     }
   ],
-<<<<<<< HEAD
-  "generated": "2024-01-10T16:03:53.099633Z",
+  "generated": "2024-01-11T16:01:01.950218Z",
   "generator": "pub",
   "generatorVersion": "3.1.5"
-=======
-  "generated": "2024-01-11T15:35:44.404856Z",
-  "generator": "pub",
-  "generatorVersion": "3.2.3"
->>>>>>> 21fca2bff32314770daa91be7359c6f11b527d67
 }
