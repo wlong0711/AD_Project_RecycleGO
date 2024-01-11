@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'UserProfilePage.dart';  // Ensure this is the correct path for your UserProfilePage.
 
 class EditUserProfilePage extends StatefulWidget {
   const EditUserProfilePage({super.key});
@@ -14,6 +13,7 @@ class _EditUserProfilePageState extends State<EditUserProfilePage> {
   User? user = FirebaseAuth.instance.currentUser;
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
+  bool _isSaving = false;
 
   @override
   void initState() {
@@ -32,16 +32,28 @@ class _EditUserProfilePageState extends State<EditUserProfilePage> {
   }
 
   Future<void> _saveChanges() async {
-    if (user != null) {
-      await FirebaseFirestore.instance.collection('users').doc(user!.uid).update({
-        'username': _usernameController.text,
-        'address': _addressController.text,
-      });
+    setState(() {
+      _isSaving = true; // Show loading overlay
+    });
 
-      // Show a success dialog
-      await _showSuccessDialog();
-      // Navigate back to UserProfilePage after showing dialog
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const UserProfilePage()));
+    if (user != null) {
+      try {
+        await FirebaseFirestore.instance.collection('users').doc(user!.uid).update({
+          'username': _usernameController.text,
+          'address': _addressController.text,
+        });
+        await _showSuccessDialog();
+      } catch (e) {
+        // Handle errors here, if any
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isSaving = false; // Hide loading overlay
+          });
+          Navigator.of(context).pop();
+          Navigator.of(context).pop('refresh');
+        }
+      }
     }
   }
 
@@ -72,53 +84,83 @@ class _EditUserProfilePageState extends State<EditUserProfilePage> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white), // Custom icon and color
-          onPressed: () => Navigator.of(context).pop(), // Go back on press
+  Widget _buildLoadingOverlay() {
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: Container(
+            color: Colors.grey.withOpacity(0.5),
+          ),
         ),
-        title: const Text(
-          "Edit Profile",
-          style: TextStyle(color: Colors.white),
-        ),
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.green, Colors.green],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
+        Center(
+          child: Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.5),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: const Center(
+              child: CircularProgressIndicator(),
             ),
           ),
         ),
-        elevation: 10,
-        shadowColor: Colors.green.withOpacity(0.5),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _usernameController,
-              decoration: const InputDecoration(labelText: 'Username'),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Scaffold(
+          appBar: AppBar(
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: () => Navigator.of(context).pop(),
             ),
-            TextField(
-              controller: _addressController,
-              decoration: const InputDecoration(labelText: 'Address'),
+            title: const Text(
+              "Edit Profile",
+              style: TextStyle(color: Colors.white),
             ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _saveChanges,
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white, backgroundColor: Colors.green,
+            flexibleSpace: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.green, Colors.green],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
               ),
-              child: const Text('Save Changes'),
             ),
-          ],
+            elevation: 10,
+            shadowColor: Colors.green.withOpacity(0.5),
+          ),
+          body: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                TextField(
+                  controller: _usernameController,
+                  decoration: const InputDecoration(labelText: 'Username'),
+                ),
+                TextField(
+                  controller: _addressController,
+                  decoration: const InputDecoration(labelText: 'Address'),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: _saveChanges,
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white, backgroundColor: Colors.green,
+                  ),
+                  child: const Text('Save Changes'),
+                ),
+              ],
+            ),
+          ),
         ),
-      ),
+        if (_isSaving) _buildLoadingOverlay(), // Show loading overlay when saving
+      ],
     );
   }
 }

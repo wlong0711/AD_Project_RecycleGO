@@ -25,9 +25,9 @@ class _HomePageState extends State<HomePage> {
   final int _selectedIndex = 0;
   int _currentCarouselIndex = 0;
   final List<String> imageUrls = [
-      'https://firebasestorage.googleapis.com/v0/b/recyclego-64b10.appspot.com/o/Banner%2FRecycle-Right-Banner.jpg?alt=media&token=0f09deef-3e48-4833-9614-b299289bf226',
-      'https://firebasestorage.googleapis.com/v0/b/recyclego-64b10.appspot.com/o/Banner%2Frecycling-poster-final.webp?alt=media&token=f1e1d089-ee91-4883-bf38-0ff17bfcc4a3',
-      'https://firebasestorage.googleapis.com/v0/b/recyclego-64b10.appspot.com/o/Banner%2Ft-t-4256-eco-and-recycling-the-future-of-the-planet-display-poster_ver_1.webp?alt=media&token=c95bb98d-a132-4909-a295-71cd92bbf9c7',
+      'assets/images/banner1.jpg',
+      'assets/images/banner2.jpg',
+      'assets/images/banner3.jpg',
     ];
 
   int todayUploads = 0;
@@ -268,6 +268,42 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Widget _buildMenuButton(BuildContext context, IconData icon, String label, VoidCallback onTap) {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      elevation: 5,
+      margin: const EdgeInsets.all(8),
+      child: InkWell(
+        onTap: onTap, // Use the onTap callback here
+        borderRadius: BorderRadius.circular(15),
+        child: Container(
+          width: MediaQuery.of(context).size.width * 0.28, // Set width as a fraction of screen width
+          padding: const EdgeInsets.all(10), // Padding inside the container
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [Colors.lightGreen, Colors.lightGreen],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center, // Center items vertically
+            crossAxisAlignment: CrossAxisAlignment.center, // Center items horizontally
+            children: [
+              Icon(icon, size: 30.0, color: Colors.white), // Reduced icon size
+              const SizedBox(height: 5), // Space between the icon and the text
+              Text(label, 
+                  style: const TextStyle(fontSize: 12.0, color: Colors.white), 
+                  textAlign: TextAlign.center), // Reduced font size and centered text
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Future navigateToVerifyRewardPage() async {
     final result = await Navigator.push(
       context,
@@ -302,38 +338,6 @@ class _HomePageState extends State<HomePage> {
     if (result == 'refresh') {
       await fetchUploadData();
     }
-  }
-
-  Widget _buildMenuButton(BuildContext context, IconData icon, String label, VoidCallback onTap) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      elevation: 5,
-      margin: const EdgeInsets.all(8),
-      child: InkWell(
-        onTap: onTap, // Use the onTap callback here
-        borderRadius: BorderRadius.circular(15),
-        child: Container(
-          padding: const EdgeInsets.all(10), // Padding inside the container
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [Colors.lightGreen, Colors.lightGreen],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.circular(15),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, size: 50.0, color: Colors.white),
-              const SizedBox(height: 5), // Space between the icon and the text
-              Text(label, style: const TextStyle(fontSize: 16.0, color: Colors.white))
-            ],
-          ),
-        ),
-      ),
-    );
   }
 
   Widget _buildBottomNavigationBar() {
@@ -482,7 +486,7 @@ class _HomePageState extends State<HomePage> {
             items: imageUrls.map((url) {
               return ClipRRect(
                 borderRadius: BorderRadius.circular(15.0),
-                child: Image.network(url, fit: BoxFit.contain), // Using BoxFit.contain
+                child: Image.asset(url, fit: BoxFit.contain), // Using BoxFit.contain
               );
             }).toList(),
           ),
