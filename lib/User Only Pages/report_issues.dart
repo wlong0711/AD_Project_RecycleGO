@@ -20,6 +20,7 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
   final descriptionController = TextEditingController();
   // String? _phoneNumber;
   File? _image;
+  bool _isSubmitting = false;
 
   OverlayEntry? _overlayEntry;
   final int loadingTimeForOverlay = 2;
@@ -68,64 +69,68 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white), // Custom icon and color
-          onPressed: () => Navigator.of(context).pop('refresh'), // Go back on press
-        ),
-        title: const Text(
-                "Report Issue",
-                style: TextStyle(color: Colors.white),
+    return Stack(
+      children: [
+        Scaffold(
+          appBar: AppBar(
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: () => Navigator.of(context).pop('refresh'),
+            ),
+            title: const Text(
+              "Report Issue",
+              style: TextStyle(color: Colors.white),
+            ),
+            flexibleSpace: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.green, Colors.green],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
               ),
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.green, Colors.green],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
+            ),
+          ),
+          body: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Form(
+              key: _formKey,
+              child: ListView(
+                children: <Widget>[
+                  TextFormField(
+                    controller: titleController,
+                    decoration: const InputDecoration(labelText: 'Title'),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a title';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: descriptionController,
+                    decoration: const InputDecoration(labelText: 'Description'),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a description';
+                      }
+                      return null;
+                    },
+                    keyboardType: TextInputType.multiline,
+                    maxLines: null,
+                  ),
+                  const SizedBox(height: 16),
+                  _buildImageUploadSection(),
+                  const SizedBox(height: 16),
+                  _buildSubmitButton(),
+                ],
+              ),
             ),
           ),
         ),
-        
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: <Widget>[
-              TextFormField(
-                controller: titleController,
-                decoration: const InputDecoration(labelText: 'Title'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a title';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: descriptionController,
-                decoration: const InputDecoration(labelText: 'Description'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a description';
-                  }
-                  return null;
-                },
-                keyboardType: TextInputType.multiline,
-                maxLines: null,
-              ),
-              const SizedBox(height: 16),
-              _buildImageUploadSection(),
-              const SizedBox(height: 16),
-              _buildSubmitButton(),
-            ],
-          ),
-        ),
-      ),
+        if (_isSubmitting) _buildLoadingOverlay(),
+      ],
     );
   }
 
@@ -168,6 +173,10 @@ void _pickImage() async {
 
 Future<void> _submitReport() async {
   if (_formKey.currentState!.validate()) {
+
+    setState(() {
+      _isSubmitting = true; // Show the loading overlay
+    });
 
     String title = titleController.text;
     String description = descriptionController.text;
@@ -216,13 +225,14 @@ Future<void> _submitReport() async {
 
       // Show a success message upon successful submission
       await _showSuccessDialog();
+      setState(() {
+        _isSubmitting = false; // Hide the loading overlay after submission is done
+      });
     } catch (e) {
       _showErrorDialog("Failed to submit report: $e");
     }
   }
 }
-
-
 
 Future<void> _showSuccessDialog() async {
   return showDialog<void>(
@@ -278,6 +288,31 @@ void _showErrorDialog(String message) {
     },
   );
 }
+
+Widget _buildLoadingOverlay() {
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: Container(
+            color: Colors.grey.withOpacity(0.5),
+          ),
+        ),
+        Center(
+          child: Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.5),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: const Center(
+              child: CircularProgressIndicator(),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 
 Widget _buildSubmitButton() {
   return ElevatedButton(

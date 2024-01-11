@@ -22,6 +22,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
   bool _rememberMe = false;
   bool _isLoading = false;  // Flag for loading indicator
+  final GlobalKey<ScaffoldMessengerState> _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
 
   @override
   void initState() {
@@ -62,7 +63,7 @@ class _LoginPageState extends State<LoginPage> {
           DocumentSnapshot userDocSnapshot = await FirebaseFirestore.instance.collection('users').doc(userCredential.user!.uid).get();
 
           if (!userDocSnapshot.exists) {
-            _showErrorSnackBar('User data not found in the database.');
+            _showErrorSnackBar('The provided email is not registered.');
             return;
           }
 
@@ -93,7 +94,7 @@ class _LoginPageState extends State<LoginPage> {
           }
         }
     } on FirebaseAuthException catch (e) {
-      print('FirebaseAuthException with code: ${e.code}');
+      print("FirebaseAuthException caught: ${e.code}");
       String errorMessage;
       switch (e.code) {
         case 'invalid-email':
@@ -106,7 +107,7 @@ class _LoginPageState extends State<LoginPage> {
           errorMessage = 'The password is invalid for the given email address.';
           break;
         default:
-          errorMessage = 'An error occurred. Please try again later.';
+          errorMessage = 'Login failed. Please check your email and your password.';
           break;
       }
       _showErrorSnackBar(errorMessage);
@@ -134,33 +135,39 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _showErrorSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.red,
-      ),
-    );
+    if (_scaffoldKey.currentState != null) {
+      _scaffoldKey.currentState!.showSnackBar(
+        SnackBar(
+          content: Text(message, style: TextStyle(color: Colors.white),),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating, // optional: to float the snackbar
+        ),
+      );
+    }
   }
 
 @override
 Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: Image.asset(
-              'assets/images/startup background.png',
-              fit: BoxFit.cover,
+  return ScaffoldMessenger(
+    key: _scaffoldKey,
+      child: Scaffold(
+        body: Stack(
+          children: [
+            Positioned.fill(
+              child: Image.asset(
+                'assets/images/startup background.png',
+                fit: BoxFit.cover,
+              ),
             ),
-          ),
-          AppBar(
-            backgroundColor: Colors.transparent,
-          ),
-          Center(child: _buildLoginForm()),
-          if (_isLoading) _buildLoadingOverlay(),
-        ],
+            AppBar(
+              backgroundColor: Colors.transparent,
+            ),
+            Center(child: _buildLoginForm()),
+            if (_isLoading) _buildLoadingOverlay(),
+          ],
+        ),
       ),
-    );
+  );
   }
 
   Widget _buildLoginForm() {

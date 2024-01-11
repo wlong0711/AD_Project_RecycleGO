@@ -16,25 +16,36 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   bool _isLoading = false;
 
   void _resetPassword() async {
-    if (_emailController.text.isEmpty) {
+    String email = _emailController.text.trim();
+    if (email.isEmpty) {
       _showErrorSnackBar("Please enter your email address");
       return;
     }
-    if (!mounted) return;
+
     setState(() {
       _isLoading = true;
     });
+
     try {
-      await FirebaseAuth.instance.sendPasswordResetEmail(email: _emailController.text.trim());
-      _showSuccessDialog();
-    } catch (e) {
-      if (mounted) _showErrorSnackBar("An error occurred, please try again.");
-    } finally {
-      if (mounted) {
+      // Check if the email is registered
+      var methods = await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
+      if (methods.isEmpty) {
+        _showErrorSnackBar("Email not registered. Please check your email address.");
         setState(() {
           _isLoading = false;
         });
+        return;
       }
+
+      // Send password reset email
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      _showSuccessDialog();
+    } catch (e) {
+      _showErrorSnackBar("An error occurred, please try again.");
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -58,33 +69,26 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     );
   }
 
-  void _showErrorSnackBar(String message) {
-    _scaffoldKey.currentState?.showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.red,
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ScaffoldMessenger(
       key: _scaffoldKey,
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: Image.asset(
-              'assets/images/startup background.png',
-              fit: BoxFit.cover,
+      child: Scaffold(
+        body: Stack(
+          children: [
+            Positioned.fill(
+              child: Image.asset(
+                'assets/images/startup background.png',
+                fit: BoxFit.cover,
+              ),
             ),
-          ),
-          AppBar(
-            backgroundColor: Colors.transparent,
-          ),
-          Center(child: _buildForgetForm()),
-          if (_isLoading) _buildLoadingOverlay(),
-        ],
+            AppBar(
+              backgroundColor: Colors.transparent,
+            ),
+            Center(child: _buildForgetForm()),
+            if (_isLoading) _buildLoadingOverlay(),
+          ],
+        ),
       ),
     );
   }
@@ -180,6 +184,18 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         ),
       ],
     );
+  }
+
+  void _showErrorSnackBar(String message) {
+    if (_scaffoldKey.currentState != null) {
+      _scaffoldKey.currentState!.showSnackBar(
+        SnackBar(
+          content: Text(message, style: TextStyle(color: Colors.white),),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating, // optional: to float the snackbar
+        ),
+      );
+    }
   }
 
 }
