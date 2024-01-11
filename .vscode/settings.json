@@ -1,5 +1,5 @@
 {
-    "java.configuration.updateBuildConfiguration": "interactive",
+    "java.configuration.updateBuildConfiguration": "automatic",
     "cmake.sourceDirectory": "C:/Users/brian/OneDrive/Desktop/Degree File/Year 3 Sem 1/Application Development/Project/recycle_go/build/windows/extracted/firebase_cpp_sdk_windows",
     "cmake.configureOnOpen": false
 }
