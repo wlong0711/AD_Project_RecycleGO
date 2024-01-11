@@ -118,11 +118,18 @@ class _VerificationPageState extends State<VerificationPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Verify Upload"),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white), // Custom icon and color
+          onPressed: () => Navigator.of(context).pop(), // Go back on press
+        ),
+        title: const Text(
+          'Verify Upload',
+          style: TextStyle(color: Colors.white),
+        ),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Colors.greenAccent, Colors.green],
+              colors: [Colors.green, Colors.green],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
             ),

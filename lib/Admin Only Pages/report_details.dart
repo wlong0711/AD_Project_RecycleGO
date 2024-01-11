@@ -11,12 +11,15 @@ class ReportDetailsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(reportData['title'] ?? 'Report Details'),
-        // AppBar styling...
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white), // Custom icon and color
+          onPressed: () => Navigator.of(context).pop(), // Go back on press
+        ),
+        title: Text(reportData['title'] ?? 'Report Details', style: TextStyle(color: Colors.white),),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Colors.greenAccent, Colors.green],
+              colors: [Colors.green, Colors.green],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
             ),
@@ -88,7 +91,7 @@ class ReportDetailsPage extends StatelessWidget {
                 ),
                 child: const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 32.0, vertical: 12.0),
-                  child: Text("Mark as Solved"),
+                  child: Text("Mark as Solved", style: TextStyle(color: Colors.white),),
                 ),
               ),
             ),
