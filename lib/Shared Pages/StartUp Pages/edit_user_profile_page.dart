@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'UserProfilePage.dart';  // Ensure this is the correct path for your UserProfilePage.
 
 class EditUserProfilePage extends StatefulWidget {
   const EditUserProfilePage({super.key});
@@ -40,8 +39,8 @@ class _EditUserProfilePageState extends State<EditUserProfilePage> {
 
       // Show a success dialog
       await _showSuccessDialog();
-      // Navigate back to UserProfilePage after showing dialog
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const UserProfilePage()));
+      Navigator.of(context).pop();
+      Navigator.of(context).pop('refresh');
     }
   }
 

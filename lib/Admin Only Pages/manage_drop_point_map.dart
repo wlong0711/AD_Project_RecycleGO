@@ -643,7 +643,7 @@ class DetailedViewScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back, color: Colors.white), // Custom icon and color
           onPressed: () => Navigator.of(context).pop(), // Go back on press
         ),
-        title: Text(pointData['title'] ?? 'Detail View', style: TextStyle(color: Colors.white),),
+        title: Text(pointData['title'] ?? 'Detail View', style: const TextStyle(color: Colors.white),),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
