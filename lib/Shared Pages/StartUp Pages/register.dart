@@ -23,6 +23,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _phoneNumberController = TextEditingController();
   bool _isLoading = false;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   String _selectedCountryCode = '+60'; // Default country code, you can set it to any valid one
   final List<String> _countryCodes = ['+60', '+1', '+91', '+44', '+61', '+65']; // Add more country codes as needed
@@ -122,7 +123,7 @@ class _RegisterPageState extends State<RegisterPage> {
       );
     } catch (e) {
       print("Error during registration: $e");
-      // Handle registration failure (show a snackbar, etc.)
+      _showErrorSnackBar('The email address has been registred.');
     } finally {
       if (mounted) {
         setState(() {
@@ -237,54 +238,95 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Widget _buildPhoneNumberInputBox() {
-    return SizedBox(
-      width: 300, // Adjust this width to match the width of your other TextFields
-      child: Row(
-        children: <Widget>[
-          // Dropdown for selecting country code
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey),
-              borderRadius: BorderRadius.circular(5.0),
-            ),
-            child: DropdownButtonHideUnderline(
-              child: DropdownButton<String>(
-                value: _selectedCountryCode,
-                iconSize: 24,
-                elevation: 16,
-                style: const TextStyle(color: Colors.black, fontSize: 16),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    _selectedCountryCode = newValue!;
-                  });
-                },
-                items: _countryCodes.map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-              ),
-            ),
-          ),
+    String? errorText;
+    bool showError = false;
 
-          // Expanded TextField for entering the remaining phone number
-          Expanded(
-            child: TextField(
-              controller: _phoneNumberController,
-              decoration: InputDecoration(
-                labelText: 'Phone Number',
-                border: const OutlineInputBorder(),
-                errorText: !isValidPhoneNumber(_selectedCountryCode + _phoneNumberController.text) && _hasAttemptedSubmit
-                    ? 'Enter a valid number.'
-                    : null,
-              ),
-              keyboardType: TextInputType.phone,
-            ),
+    if (_hasAttemptedSubmit || _phoneNumberController.text.isNotEmpty) {
+      errorText = !isValidPhoneNumber(_selectedCountryCode + _phoneNumberController.text) ? 'Enter a valid number.' : null;
+      showError = errorText != null;
+    }
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Container(
+          width: 300, // Maintain the width consistency
+          decoration: BoxDecoration(
+            border: Border.all(color: showError ? Colors.red : Colors.grey),
+            borderRadius: BorderRadius.circular(5.0),
           ),
-        ],
-      ),
+          child: Row(
+            children: <Widget>[
+              // Dropdown for selecting country code
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.horizontal(left: Radius.circular(4.0)),
+                ),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    value: _selectedCountryCode,
+                    iconSize: 24,
+                    elevation: 16,
+                    style: TextStyle(color: showError ? Colors.red : Colors.black, fontSize: 16),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        _selectedCountryCode = newValue!;
+                        // To trigger the validation
+                        _phoneFocusNode.requestFocus();
+                        _phoneFocusNode.unfocus();
+                      });
+                    },
+                    items: _countryCodes.map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ),
+              // Expanded TextField for entering the remaining phone number
+              Expanded(
+                child: TextField(
+                  focusNode: _phoneFocusNode,
+                  controller: _phoneNumberController,
+                  style: TextStyle(color: showError ? Colors.red : Colors.black),
+                  decoration: InputDecoration(
+                    labelText: 'Phone Number',
+                    labelStyle: TextStyle(color: showError ? Colors.red : Colors.grey),
+                    contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                    border: InputBorder.none,
+                  ),
+                  keyboardType: TextInputType.phone,
+                  onEditingComplete: () {
+                    // To trigger the validation
+                    _phoneFocusNode.requestFocus();
+                    _phoneFocusNode.unfocus();
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+        // Error message
+        showError
+          ? Padding(
+            padding: const EdgeInsets.only(top: 4, left: 52, bottom: 4,),
+            child: Row(
+              children: [
+                Icon(Icons.error_outline, color: Colors.red, size: 12),
+                SizedBox(width: 5),
+                Text(
+                  errorText ?? '',
+                  style: TextStyle(color: Colors.red, fontSize: 12),
+                ),
+              ],
+            ),
+          )
+          : SizedBox(height: 23), // Reserve space for the error message
+      ],
     );
   }
 
@@ -300,10 +342,8 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
           ),
         Scaffold(
+          key: _scaffoldKey,
           backgroundColor: Colors.transparent,
-          appBar: AppBar(
-            backgroundColor: Colors.transparent,
-          ),
           body: Center(
             child: SingleChildScrollView(
               // Added SingleChildScrollView for better UX on smaller devices
@@ -322,19 +362,19 @@ class _RegisterPageState extends State<RegisterPage> {
                       height: 100,
                       child: companyLogo.image, // Use the provided CompanyLogo's image
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 10),
                     const Text(
                       'Register',
                       style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 10),
                     // Input Boxes and Buttons
-                    _buildInputBox("Email", _emailController, isPassword: false),
-                    _buildInputBox("Username", _usernameController, isPassword: false),
-                    _buildInputBox("College Address", _addressController, isPassword: false),
+                    _buildInputBox("Email", _emailController, isEmail: true),
+                    _buildInputBox("Username", _usernameController, isUsername: true),
+                    _buildInputBox("College Address", _addressController, isAddress: true),
                     _buildPhoneNumberInputBox(),
-                    _buildPasswordInputBox(),
-                    _buildConfirmPasswordInputBox(),
+                    _buildInputBox("Password", _passwordController, isPassword: true),
+                    _buildInputBox("Confirm Password", _confirmPasswordController, isConfirmPassword: true),
                     const SizedBox(height: 10),
                     _buildButton("Register", Colors.green),
                     const SizedBox(height: 20),
@@ -355,33 +395,204 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Widget _buildInputBox(
-  String label,
-  TextEditingController controller, {
-  bool isPassword = false,
-  bool showWarning = false,
+    String label,
+    TextEditingController controller, {
+    bool isPassword = false,
+    bool isEmail = false,
+    bool isUsername = false,
+    bool isAddress = false,
+    bool isPhoneNumber = false,
+    bool isConfirmPassword = false,
   }) {
-    return SizedBox(
-      width: 300,
+    // Determine if there's an error
+    bool hasError = _getHasError(controller,
+        isEmail: isEmail,
+        isUsername: isUsername,
+        isAddress: isAddress,
+        isPhoneNumber: isPhoneNumber,
+        isPassword: isPassword,
+        isConfirmPassword: isConfirmPassword);
+
+    // Get the error widget
+    Widget? errorWidget = _getInputErrorText(controller,
+        isEmail: isEmail,
+        isUsername: isUsername,
+        isAddress: isAddress,
+        isPhoneNumber: isPhoneNumber,
+        isPassword: isPassword,
+        isConfirmPassword: isConfirmPassword);
+
+    // Use the appropriate border depending on whether there is an error
+    OutlineInputBorder border = OutlineInputBorder(
+      borderSide: BorderSide(
+        color: hasError ? Colors.red : Colors.grey,
+      ),
+    );
+
+    return Container(
+      width: 300, // Set the width of the input field container
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TextField(
             controller: controller,
-            obscureText: isPassword && !_isPasswordVisible,
-            onChanged: (value) {
-              // Only update the state for the phone number field if it's not empty
-              if (controller == _phoneNumberController && value.isNotEmpty) {
-                setState(() {});
-              }
-            },
+            obscureText: (isPassword && !_isPasswordVisible) || (isConfirmPassword && !_isConfirmPasswordVisible),
             decoration: InputDecoration(
               labelText: controller.text.isEmpty ? label : '',
-              border: const OutlineInputBorder(),
-              // Only show the error text if the user has attempted to submit the form or the field is not empty
-              errorText: controller == _phoneNumberController && showWarning && (_hasAttemptedSubmit || controller.text.isNotEmpty) ? 'Please enter a valid phone number with +60.' : null,
+              border: border,
+              enabledBorder: border,
+              focusedBorder: border,
+              errorBorder: hasError ? border : null,
+              focusedErrorBorder: hasError ? border : null,
+              labelStyle: TextStyle(color: hasError ? Colors.red : Colors.grey),
+              suffixIcon: (isPassword || isConfirmPassword) ? GestureDetector(
+                onTap: () {
+                  setState(() {
+                    if (isPassword) {
+                      _isPasswordVisible = !_isPasswordVisible;
+                    } else if (isConfirmPassword) {
+                      _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                    }
+                  });
+                },
+                child: Icon(
+                  (isPassword && _isPasswordVisible) || (isConfirmPassword && _isConfirmPasswordVisible)
+                    ? Icons.visibility
+                    : Icons.visibility_off,
+                ),
+              ) : null,
             ),
           ),
+          hasError ? errorWidget ?? SizedBox.shrink() : SizedBox(height: 23),
         ],
+      ),
+    );
+  }
+
+  bool _getHasError(
+    TextEditingController controller, {
+    required bool isEmail,
+    bool isUsername = false,
+    bool isAddress = false,
+    bool isPhoneNumber = false,
+    bool isPassword = false,
+    bool isConfirmPassword = false,
+  }) {
+    if (_hasAttemptedSubmit || controller.text.isNotEmpty) {
+      if (_hasAttemptedSubmit || controller.text.isNotEmpty) {
+          if (isEmail && !isValidEmail(controller.text)) {
+            return true;
+          }
+          if (isUsername && controller.text.isEmpty) {
+            return true;
+          }
+          if (isAddress && controller.text.isEmpty) {
+            return true;
+          }
+          if (isPhoneNumber && !isValidPhoneNumber(_selectedCountryCode + controller.text)) {
+            return true;
+          }
+          if (isPassword && controller.text.length < 6) {
+            return true;
+          }
+          if (isConfirmPassword && controller.text != _passwordController.text) {
+            return true;
+          }
+        }
+    }
+    return false;
+  }
+
+  bool isValidEmail(String email) {
+    // Regular expression pattern for validating an email address
+    RegExp emailRegexp = RegExp(
+      r'^[^@\s]+@[^@\s]+\.[^@\s]+$',
+      caseSensitive: false,
+      multiLine: false,
+    );
+    return emailRegexp.hasMatch(email);
+  }
+
+  Widget? _getInputErrorText(
+    TextEditingController controller, {
+    required bool isEmail,
+    required bool isUsername,
+    required bool isAddress,
+    required bool isPhoneNumber,
+    required bool isPassword,
+    required bool isConfirmPassword,
+  }) {
+    String? errorMessage;
+
+    if (_hasAttemptedSubmit || controller.text.isNotEmpty) {
+        if (isEmail && !isValidEmail(controller.text)) {
+          errorMessage = 'Please enter a valid email address.';
+        }
+        if (isUsername && controller.text.isEmpty) {
+          errorMessage = 'Please enter your username.';
+        }
+        if (isAddress && controller.text.isEmpty) {
+          errorMessage = 'Please enter your address.';
+        }
+        if (isPhoneNumber && !isValidPhoneNumber(_selectedCountryCode + controller.text)) {
+          errorMessage = 'Enter a valid phone number.';
+        }
+        if (isPassword && controller.text.length < 6) {
+          errorMessage = 'Password must be at least 6 characters.';
+        }
+        if (isConfirmPassword && controller.text != _passwordController.text) {
+          errorMessage = 'Passwords do not match.';
+        }
+      }
+
+    if (errorMessage != null) {
+      return Padding(
+        padding: const EdgeInsets.only(top: 4, bottom: 4, left: 7,),
+        child: Row(
+          children: [
+            Icon(Icons.error_outline, color: Colors.red, size: 12),
+            SizedBox(width: 5),
+            Text(
+              errorMessage,
+              style: TextStyle(color: Colors.red, fontSize: 12),
+            ),
+          ],
+        ),
+      );
+    }
+    return null; // Return null if there is no error
+  }
+
+  Future<void> _attemptRegister(BuildContext context) async {
+    setState(() {
+      _hasAttemptedSubmit = true;
+    });
+
+    if (_getHasError(_emailController, isEmail: true)) {
+      return;
+    }
+
+    try {
+      await _register();
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'email-already-in-use') {
+        _showErrorSnackBar('The email address is already registered.');
+      } else {
+        // Handle other FirebaseAuthExceptions
+        _showErrorSnackBar('An error occurred during registration.');
+      }
+    } catch (e) {
+      // Handle any other exceptions
+      _showErrorSnackBar('An unexpected error occurred.');
+    }
+  }
+
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message, style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.red,
+        behavior: SnackBarBehavior.floating,
       ),
     );
   }
@@ -454,7 +665,7 @@ class _RegisterPageState extends State<RegisterPage> {
         borderRadius: BorderRadius.circular(10),
       ),
       child: TextButton(
-        onPressed: _register,
+        onPressed: () => _attemptRegister(context),
         child: Center(
           child: Text(
             label,
