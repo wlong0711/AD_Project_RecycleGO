@@ -159,9 +159,6 @@ Widget build(BuildContext context) {
                 fit: BoxFit.cover,
               ),
             ),
-            AppBar(
-              backgroundColor: Colors.transparent,
-            ),
             Center(child: _buildLoginForm()),
             if (_isLoading) _buildLoadingOverlay(),
           ],
@@ -195,6 +192,7 @@ Widget build(BuildContext context) {
           ),
           const SizedBox(height: 20),
           _buildInputBox("Email", _usernameController, isPassword: false),
+          const SizedBox(height: 23),
           _buildPasswordInputBox(),
           const SizedBox(height: 10),
           Row(
@@ -234,7 +232,16 @@ Widget build(BuildContext context) {
         },
         decoration: InputDecoration(
           labelText: controller.text.isEmpty ? label : '',
-          border: const OutlineInputBorder(),
+          labelStyle: TextStyle(color: Colors.grey), // Grey label text
+          border: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey), // Grey border
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey), // Grey border
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey), // Grey border
+          ),
         ),
       ),
     );
@@ -252,7 +259,16 @@ Widget build(BuildContext context) {
         },
         decoration: InputDecoration(
           labelText: _passwordController.text.isEmpty ? 'Password' : '',
-          border: const OutlineInputBorder(),
+          labelStyle: TextStyle(color: Colors.grey), // Grey label text
+          border: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey), // Grey border
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey), // Grey border
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey), // Grey border
+          ),
           suffixIcon: GestureDetector(
             onTap: () {
               setState(() {
