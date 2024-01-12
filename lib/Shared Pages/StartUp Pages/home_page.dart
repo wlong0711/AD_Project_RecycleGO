@@ -106,29 +106,45 @@ class _HomePageState extends State<HomePage> {
           children: [
             const Text('Activities', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
             const Divider(color: Colors.white),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Column(
-                  children: [
-                    const Text('Today', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                    Text('$todayUploads times', style: const TextStyle(color: Colors.white)), // Display today's uploads
-                  ],
-                ),
-                Column(
-                  children: [
-                    const Text('Last 30 Days', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                    Text('$thirtyDayUploads times', style: const TextStyle(color: Colors.white)), // Display last 30 days' uploads
-                  ],
-                ),
-                Column(
-                  children: [
-                    const Text('Last 1 Year', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                    Text('$yearUploads times', style: const TextStyle(color: Colors.white)), // Display last year's uploads
-                  ],
-                ),
-              ],
-            ),
+              Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Column(
+                        children: [
+                          const Text('Today', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                          Text('$todayUploads times', style: const TextStyle(color: Colors.white)), // Display today's uploads
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          const Text('Last 30 Days', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                          Text('$thirtyDayUploads times', style: const TextStyle(color: Colors.white)), // Display last 30 days' uploads
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          const Text('Last 1 Year', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                          Text('$yearUploads times', style: const TextStyle(color: Colors.white)), // Display last year's uploads
+                        ],
+                      ),
+                    ],
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.only(top: 6, bottom: 0,),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text('Note: This section only records', style: TextStyle(color: Colors.white, fontSize: 10)),
+                        Text(' Approved* ', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 10)),
+                        Text('uploads', style: TextStyle(color: Colors.white, fontSize: 10)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             const Divider(color: Colors.white),
             ListTile(
               title: const Text('Latest Activity', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
