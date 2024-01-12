@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:recycle_go/Component/dialogs.dart';
 import 'package:video_player/video_player.dart';
 import '../models/upload.dart';
 
@@ -172,22 +173,16 @@ class _VerificationPageState extends State<VerificationPage> {
             // Update the user's points
             await userRef.update({'points': newPoints});
 
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              content: Text('Verification successful, points added!'),
-              backgroundColor: Colors.green,
-            ));
-            Navigator.pop(context, true); //Added
+            showSuccessDialog(context, 'Verification successful, points added!', () {
+              Navigator.pop(context, true); // Navigate back
+            });
           } else {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              content: Text('User not found.'),
-              backgroundColor: Colors.red,
-            ));
+            showErrorDialog(context, 'User not found.');
+
           }
         } catch (e) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('Verification failed. Error: $e'),
-            backgroundColor: Colors.red,
-          ));
+          showErrorDialog(context, 'Verification failed. Error: $e');
+
         } finally {
             setState(() => _isLoading = false);
         }
@@ -237,18 +232,14 @@ class _VerificationPageState extends State<VerificationPage> {
             'verifiedTime': FieldValue.serverTimestamp(),
           });
 
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text('Upload rejected.'),
-            backgroundColor: Colors.green,
-          ));
+          showSuccessDialog(context, 'Upload rejected successfully.', () {
+            Navigator.pop(context, true); // Navigate back
+          });
         } catch (e) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('Error during rejection: $e'),
-            backgroundColor: Colors.red,
-          ));
+          showErrorDialog(context, 'Error during rejection: $e');
+
         } finally {
           setState(() => _isLoading = false);
-          Navigator.pop(context, true); // Return to the previous screen with a result
         }
       }
     }

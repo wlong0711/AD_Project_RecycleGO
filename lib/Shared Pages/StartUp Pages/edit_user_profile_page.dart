@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:recycle_go/Component/dialogs.dart';
+import 'package:recycle_go/Shared%20Pages/StartUp%20Pages/login.dart';
 
 class EditUserProfilePage extends StatefulWidget {
   const EditUserProfilePage({super.key});
@@ -21,6 +23,13 @@ class _EditUserProfilePageState extends State<EditUserProfilePage> {
     _loadUserData();
   }
 
+  String? _validateField(String value, String fieldName) {
+    if (value.trim().isEmpty) {
+      return '$fieldName cannot be empty';
+    }
+    return null;
+  }
+
   Future<void> _loadUserData() async {
     if (user != null) {
       DocumentSnapshot userInfo = await FirebaseFirestore.instance.collection('users').doc(user!.uid).get();
@@ -32,6 +41,14 @@ class _EditUserProfilePageState extends State<EditUserProfilePage> {
   }
 
   Future<void> _saveChanges() async {
+
+    if (_validateField(_usernameController.text, 'Username') != null || 
+        _validateField(_addressController.text, 'Address') != null) {
+
+      showErrorDialog(context, 'Please fill all the fields');
+      return;
+    }
+
     setState(() {
       _isSaving = true; // Show loading overlay
     });
@@ -42,45 +59,33 @@ class _EditUserProfilePageState extends State<EditUserProfilePage> {
           'username': _usernameController.text,
           'address': _addressController.text,
         });
-        await _showSuccessDialog();
+
+        showSuccessDialog(
+                context, 
+                'Your profile changes have been saved. Please login again.', 
+                () {
+                    Navigator.of(context).pop(); // Close the dialog
+                    _logoutUser(); // Call the logout function
+                }
+            );
       } catch (e) {
-        // Handle errors here, if any
+        showErrorDialog(context, 'Error saving changes: $e');
       } finally {
         if (mounted) {
           setState(() {
             _isSaving = false; // Hide loading overlay
           });
-          Navigator.of(context).pop();
-          Navigator.of(context).pop('refresh');
         }
       }
     }
   }
 
-  Future<void> _showSuccessDialog() async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false, // User must tap button to close the dialog
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Success'),
-          content: const SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                Text('Your profile changes have been saved.'),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-            ),
-          ],
-        );
-      },
+  void _logoutUser() {
+    FirebaseAuth.instance.signOut();
+
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (context) => LoginPage()),
+      (Route<dynamic> route) => false,
     );
   }
 
@@ -141,11 +146,19 @@ class _EditUserProfilePageState extends State<EditUserProfilePage> {
               children: [
                 TextField(
                   controller: _usernameController,
-                  decoration: const InputDecoration(labelText: 'Username'),
+                  decoration: InputDecoration(
+                    labelText: 'Username',
+                    errorText: _validateField(_usernameController.text, 'Username'),
+                  ),
+                  onEditingComplete: () => setState(() {}),
                 ),
                 TextField(
                   controller: _addressController,
-                  decoration: const InputDecoration(labelText: 'Address'),
+                  decoration: InputDecoration(
+                    labelText: 'Address',
+                    errorText: _validateField(_addressController.text, 'Address'),
+                  ),
+                  onEditingComplete: () => setState(() {}),
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(
