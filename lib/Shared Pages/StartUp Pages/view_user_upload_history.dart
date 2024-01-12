@@ -66,7 +66,7 @@ class _ViewUserUploadHistoryPageState extends State<ViewUserUploadHistoryPage> {
       body: StreamBuilder(
         stream: FirebaseFirestore.instance
             .collection('uploads')
-            .where('username', isEqualTo: GlobalUser.userName)
+            .where('userId', isEqualTo: GlobalUser.userID)
             .orderBy('uploadedTime', descending: _isSortedByOldest)
             .snapshots(),
         builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {

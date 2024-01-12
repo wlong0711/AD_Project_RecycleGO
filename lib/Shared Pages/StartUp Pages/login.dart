@@ -79,7 +79,8 @@ class _LoginPageState extends State<LoginPage> {
             GlobalUser.userName = userDoc['username'];
             GlobalUser.userLevel = userDoc['level'];
             GlobalUser.userPoints = userDoc['points'];
-
+            GlobalUser.userID = userDocSnapshot.id;
+            
             if (_rememberMe) {
               _saveAuthenticationState();
             }

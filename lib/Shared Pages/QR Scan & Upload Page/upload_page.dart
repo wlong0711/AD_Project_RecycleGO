@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:recycle_go/Component/dialogs.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter/material.dart';
@@ -194,8 +195,15 @@ class _UploadPageState extends State<UploadPage> {
         'currentCapacity': FieldValue.increment(1),
       });
 
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        showErrorDialog(context, "No authenticated user found. Please login first.");
+        return;
+      }
+
       // Save the user name, location name and video URL in Firestore
       await FirebaseFirestore.instance.collection('uploads').add({
+        'userId': user.uid,
         'username' : GlobalUser.userName,
         'location': widget.locationName,
         'videoUrl': downloadUrl,
@@ -241,9 +249,9 @@ class _UploadPageState extends State<UploadPage> {
   }
 
   void _navigateToHomePage() {
-    Navigator.pushReplacement(
-      context,
+    Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(builder: (context) => const HomePage()),
+      (Route<dynamic> route) => false,
     );
   }
 
