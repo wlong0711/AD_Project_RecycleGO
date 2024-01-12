@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-void showSuccessDialog(BuildContext context, String message, VoidCallback onConfirm) {
-  showDialog(
+Future<void> showSuccessDialog(BuildContext context, String message, VoidCallback onConfirm) async {
+  return showDialog<void>(
     context: context,
     barrierDismissible: false,
     builder: (BuildContext dialogContext) {
@@ -12,7 +12,7 @@ void showSuccessDialog(BuildContext context, String message, VoidCallback onConf
           children: <Widget>[
             const Text('Success!', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30)),
             const SizedBox(height: 15),
-            Text(message),
+            Text(message, textAlign: TextAlign.center),
           ],
         ),
         actions: <Widget>[
@@ -45,7 +45,7 @@ void showErrorDialog(BuildContext context, String message) {
           children: <Widget>[
             const Text('Error!', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30)),
             const SizedBox(height: 15),
-            Text(message),
+            Text(message, textAlign: TextAlign.center),
           ],
         ),
         actions: <Widget>[
