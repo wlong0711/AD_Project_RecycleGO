@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:recycle_go/Admin%20Only%20Pages/register_admin.dart';
 import 'package:recycle_go/Shared%20Pages/StartUp%20Pages/home_page.dart';
 import 'package:recycle_go/Shared%20Pages/StartUp%20Pages/welcome_page.dart';
+import 'package:recycle_go/models/global_user.dart';
 import 'edit_user_profile_page.dart'; // Ensure correct import path
 
 class UserProfilePage extends StatefulWidget {
@@ -180,7 +182,15 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     backgroundColor: Colors.grey.shade300,
                     child: const Icon(Icons.person, size: 50),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 10),
+                  if (GlobalUser.userLevel == 1) // Conditionally display 'Admin Account' text
+                    Center(
+                      child: Text(
+                        'Admin Account',
+                        style: TextStyle(fontSize: 15, color: Colors.grey),
+                      ),
+                    ),
+                  const SizedBox(height: 10),
                   Center(
                     child: Text(
                       userData!.get('username') ?? 'Not Available',
@@ -200,6 +210,20 @@ class _UserProfilePageState extends State<UserProfilePage> {
                       child: const Text('Edit Profile'),
                     ),
                   ),
+                  if (GlobalUser.userLevel == 1)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 30),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          // Navigate to RegisterAdminPage
+                          Navigator.push(context, MaterialPageRoute(builder: (_) => const RegisterAdminPage()));
+                        },
+                        style: ElevatedButton.styleFrom(
+                          foregroundColor: Colors.white, backgroundColor: Colors.blue,
+                        ),
+                        child: const Text('Register for Admin'),
+                      ),
+                    ),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
                     child: ElevatedButton(
