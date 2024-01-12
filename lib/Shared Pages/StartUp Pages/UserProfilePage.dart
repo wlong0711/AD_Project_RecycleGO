@@ -124,7 +124,11 @@ class _UserProfilePageState extends State<UserProfilePage> {
 
   Future<void> _logout() async {
     await FirebaseAuth.instance.signOut();
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const WelcomePage()));
+
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (context) => const WelcomePage()),
+      (Route<dynamic> route) => false,
+    );
   }
 
   @override
