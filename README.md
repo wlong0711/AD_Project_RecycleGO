@@ -1,4 +1,4 @@
-# RecycleGO by AKATech
+# RecycleGO by AKATech for *Android*
 ## How to download our app
 You can find and download the latest version of our app at the "Releases" section on the right side.
 
