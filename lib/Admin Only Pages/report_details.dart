@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:recycle_go/Component/dialogs.dart';
 
 class ReportDetailsPage extends StatelessWidget {
   final Map<String, dynamic> reportData;
@@ -33,7 +34,10 @@ class ReportDetailsPage extends StatelessWidget {
             Map<String, dynamic> userData = snapshot.data!.data() as Map<String, dynamic>;
             return _buildReportDetails(context, userData);
           } else if (snapshot.hasError) {
-            return Center(child: Text("Error: ${snapshot.error}"));
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              showErrorDialog(context, "Error: ${snapshot.error}");
+            });
+            return const SizedBox.shrink();
           }
           return const Center(child: CircularProgressIndicator());
         },
@@ -101,11 +105,15 @@ class ReportDetailsPage extends StatelessWidget {
   }
 
   void _markAsSolved(BuildContext context) async {
-    await FirebaseFirestore.instance
-        .collection('issues')
-        .doc(documentId)
-        .update({'status': 'solved'});
-
-    Navigator.of(context).pop('refresh'); // Pop back to the previous page after marking as solved
+    try {
+      await FirebaseFirestore.instance
+          .collection('issues')
+          .doc(documentId)
+          .update({'status': 'solved'});
+      Navigator.of(context).pop('refresh'); // Pop back to the previous page
+    } catch (e) {
+      // Use the centralized error dialog
+      showErrorDialog(context, 'Failed to mark as solved: $e');
+    }
   }
 }
