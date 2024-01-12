@@ -360,7 +360,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     SizedBox(
                       width: 100,
                       height: 100,
-                      child: companyLogo.image, // Use the provided CompanyLogo's image
+                      child: companyLogo.image,
                     ),
                     const SizedBox(height: 10),
                     const Text(
