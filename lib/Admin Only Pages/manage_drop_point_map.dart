@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:recycle_go/Component/dialogs.dart';
 
 class DropPointMap extends StatefulWidget {
   const DropPointMap({super.key});
@@ -470,25 +471,25 @@ void _showErrorDialog(BuildContext context, String message) {
     return 'No address available';
   }
 
-  void _saveDropPoint(LatLng point, String title, String address, List<String> pickupDays, List<String> recycleItems, int maxCapacity) {
-  FirebaseFirestore.instance.collection('drop_points').add({
-    'latitude': point.latitude,
-    'longitude': point.longitude,
-    'title': title,
-    'address': address,
-    'pickupDays': pickupDays,
-    'recycleItems': recycleItems,
-    'currentCapacity' : 0,
-    'maxCapacity': maxCapacity,
-  }).then((result) {
-    print("Drop point added");
-    //Refresh Data
-    // Call loadDropPoints again to refresh the list of markers
-    _loadDropPoints();
-  }).catchError((error) {
-    print("Failed to add drop point: $error");
-  });
-}
+  void _saveDropPoint(LatLng point, String title, String address, List<String> pickupDays, List<String> recycleItems, int maxCapacity) async {
+    FirebaseFirestore.instance.collection('drop_points').add({
+      'latitude': point.latitude,
+      'longitude': point.longitude,
+      'title': title,
+      'address': address,
+      'pickupDays': pickupDays,
+      'recycleItems': recycleItems,
+      'currentCapacity' : 0,
+      'maxCapacity': maxCapacity,
+    }).then((result) {
+      print("Drop point added");
+      //Refresh Data
+      // Call loadDropPoints again to refresh the list of markers
+      _loadDropPoints();
+    }).catchError((error) {
+      print("Failed to add drop point: $error");
+    });
+  }
 
   
   void _onMapCreated(GoogleMapController controller) {
@@ -838,8 +839,13 @@ class _EditDropPointScreenState extends State<EditDropPointScreen> {
     int maxCapacity = int.tryParse(_maxCapacityController.text) ?? 30;
   // Validation: Ensure title is not empty
   if (_titleController.text.isEmpty) {
-    _showErrorDialog('Title cannot be empty.'); 
+    _showErrorDialog(context, 'Title cannot be empty.'); 
     return; // Exit the function if validation fails
+  }
+
+  // Validation: Ensure max capacity is not empty
+  if(_maxCapacityController.text.isEmpty) {
+    await _showErrorDialog(context, 'System will set the max capacity to default value($maxCapacity).');
   }
 
   // Validation: Ensure at least one pickup day is selected
@@ -848,7 +854,7 @@ class _EditDropPointScreenState extends State<EditDropPointScreen> {
       .map((entry) => entry.key)
       .toList();
   if (selectedPickupDays.isEmpty) {
-    _showErrorDialog('Please select at least one pickup day.');
+    _showErrorDialog(context, 'Please select at least one pickup day.');
     return; // Exit the function if validation fails
   }
 
@@ -858,7 +864,7 @@ class _EditDropPointScreenState extends State<EditDropPointScreen> {
       .map((entry) => entry.key)
       .toList();
   if (selectedRecyclableItems.isEmpty) {
-    _showErrorDialog('Please select at least one recyclable item.');
+    _showErrorDialog(context, 'Please select at least one recyclable item.');
     return; // Exit the function if validation fails
   }
 
@@ -873,14 +879,38 @@ class _EditDropPointScreenState extends State<EditDropPointScreen> {
           'recycleItems': selectedRecyclableItems,
           'maxCapacity': maxCapacity,
         });
-    widget.onDropPointUpdated(); // Call the callback here after successful update
-    Navigator.of(context).pop(); // Return to the previous screen on success
+    await showSuccessDialog(context, 'Drop point updated successfully.', () {
+      widget.onDropPointUpdated();
+    });
+
+    Navigator.of(context).pop();
   } catch (e) {
-    _showErrorDialog('Error updating drop point: $e'); // Show error on exception
+    _showErrorDialog(context, 'Error updating drop point: $e'); // Show error on exception
   }
 }
 
-void _showErrorDialog(String message) {
+Future<void> _showErrorDialog(BuildContext context, String message) async {
+  return showDialog<void>(
+    context: context,
+    barrierDismissible: false, // User must tap button to close dialog
+    builder: (BuildContext ctx) {
+      return AlertDialog(
+        title: const Text('Invalid Input'),
+        content: Text(message),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Okay'),
+            onPressed: () {
+              Navigator.of(ctx).pop(); // Close the dialog
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+
+void _showConfirmDialog(String message) {
   showDialog(
     context: context,
     builder: (ctx) => AlertDialog(
@@ -888,9 +918,15 @@ void _showErrorDialog(String message) {
       content: Text(message),
       actions: <Widget>[
         TextButton(
-          child: const Text('Okay'),
+          child: const Text('Cancel'),
           onPressed: () {
             Navigator.of(ctx).pop(); // Close the dialog
+          },
+        ),
+        TextButton(
+          child: const Text('OK'),
+          onPressed: () {
+            _saveDropPoint();
           },
         )
       ],
