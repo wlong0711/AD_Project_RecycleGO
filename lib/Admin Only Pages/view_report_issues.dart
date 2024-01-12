@@ -104,7 +104,7 @@ class _AdminReportsPageState extends State<AdminReportsPage> with SingleTickerPr
                 Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
                 return ListTile(
                   title: Text(data['title'] ?? 'No Title'),
-                  subtitle: Text(DateFormat('dd MMMM yyyy – kk:mm').format((data['timestamp'] as Timestamp).toDate())),
+                  subtitle: Text(DateFormat('dd MMMM yyyy – HH:mm').format((data['timestamp'] as Timestamp).toDate())),
                   onTap: () {
                     Navigator.push(
                       context,
