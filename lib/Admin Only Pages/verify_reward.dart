@@ -20,6 +20,7 @@ class _VerifyRewardPageState extends State<VerifyRewardPage> {
   String? selectedLocation;
   Upload? selectedUpload;
   bool _isSortedByOldest = false;
+  Map<String, String> _usernames = {};
 
   OverlayEntry? _overlayEntry;
   final int loadingTimeForOverlay = 3;
@@ -32,7 +33,22 @@ class _VerifyRewardPageState extends State<VerifyRewardPage> {
         _showOverlay();
       }
     });
+    _preloadUsernames();
     fetchUploads();
+  }
+
+  Future<void> _preloadUsernames() async {
+    // Fetch all users (consider pagination or limiting for large datasets)
+    QuerySnapshot usersSnapshot = await FirebaseFirestore.instance.collection('users').get();
+    Map<String, String> usernames = {};
+    for (var doc in usersSnapshot.docs) {
+      String userId = doc.id;
+      String userName = doc['username'] ?? 'Unknown User';
+      usernames[userId] = userName;
+    }
+    setState(() {
+      _usernames = usernames;
+    });
   }
 
   void _showOverlay() {
@@ -191,29 +207,31 @@ class _VerifyRewardPageState extends State<VerifyRewardPage> {
               Timestamp? timestamp = locationUploads[index].uploadedTime;
               DateTime dateTime = timestamp?.toDate() ?? DateTime.now();
               String formattedTime = DateFormat('dd/MM/yyyy HH:mm').format(dateTime); // Using DateFormat from intl package
-              // Wrap each list item in a container with a bottom border
+              String userId = locationUploads[index].userId;
+              String username = _usernames[userId] ?? 'Unknown User';
+
               return Container(
-                decoration: const BoxDecoration(
+              decoration: const BoxDecoration(
                   color: Color.fromARGB(255, 179, 224, 128),
                   border: Border(
                     bottom: BorderSide(color: Colors.green, width: 2), // Bottom border for each item
                   ),
                 ),
-                child: ListTile(
-                  title: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('${locationUploads[index].userName}\'s upload'),
-                      Text(
+              child: ListTile(
+                title: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('$username\'s upload'),
+                    Text(
                         formattedTime, // Display formatted timestamp
                         style: const TextStyle(
                           fontSize: 12,
                           color: Colors.black,
                         ),
                       ),
-                    ],
-                  ),
-                  onTap: () {
+                  ],
+                ),
+                onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -225,16 +243,15 @@ class _VerifyRewardPageState extends State<VerifyRewardPage> {
                       }
                     });
                   },
-                ),
-              );
-            },
-            separatorBuilder: (context, index) => const SizedBox(height: 0), // Remove space between items if not needed
-          ),
+              ),
+            );
+          },
+          separatorBuilder: (context, index) => const SizedBox(height: 0),
         ),
       ),
-    );
-  }
-
+    ),
+  );
+}
 
   @override
   Widget build(BuildContext context) {

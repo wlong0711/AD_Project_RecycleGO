@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import 'package:recycle_go/Component/dialogs.dart';
 
 class AddVoucherPage extends StatefulWidget {
   final Function onVoucherAdded;
@@ -70,12 +71,7 @@ class _AddVoucherPageState extends State<AddVoucherPage> {
     if (_formKey.currentState!.validate()) {
 
       if (_selectedDate == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please pick an expiry date and time.'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        showErrorDialog(context, 'Please pick an expiry date and time.');
         return; // Return early if no date has been selected
       }
 
@@ -107,12 +103,7 @@ class _AddVoucherPageState extends State<AddVoucherPage> {
         widget.onVoucherAdded(); // Invoke the callback
         Navigator.of(context).pop(); // Navigate back to the previous screen
       } catch (error) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to add voucher: $error'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        showErrorDialog(context, 'Failed to add voucher: $error');
       } finally {
         setState(() {
           _isSubmitting = false; // Stop the loading indicator

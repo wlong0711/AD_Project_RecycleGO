@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as Path;
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:recycle_go/Component/dialogs.dart';
 import 'package:recycle_go/Shared%20Pages/Transition%20Page/transition_page.dart';
 
 class ReportIssueScreen extends StatefulWidget {
@@ -184,7 +185,7 @@ Future<void> _submitReport() async {
     // Checking for user authentication
     User? user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      _showErrorDialog("No authenticated user found. Please login first.");
+      showErrorDialog(context, "No authenticated user found. Please login first.");
       return;
     }
 
@@ -205,7 +206,7 @@ Future<void> _submitReport() async {
           TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => {});
           imageUrl = await taskSnapshot.ref.getDownloadURL();
         } catch (e) {
-          _showErrorDialog("Failed to upload image: $e");
+          showErrorDialog(context, "Failed to upload image: $e"); 
           return;
         }
       }
@@ -224,69 +225,16 @@ Future<void> _submitReport() async {
       });
 
       // Show a success message upon successful submission
-      await _showSuccessDialog();
+      showSuccessDialog(context, 'Your report has been successfully submitted.', () {
+        Navigator.of(context).pop('refresh');
+      });
       setState(() {
         _isSubmitting = false; // Hide the loading overlay after submission is done
       });
     } catch (e) {
-      _showErrorDialog("Failed to submit report: $e");
+      showErrorDialog(context, 'Failed to submit report: $e');
     }
   }
-}
-
-Future<void> _showSuccessDialog() async {
-  return showDialog<void>(
-    context: context,
-    barrierDismissible: false, // User must tap button to close
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text('Report Submitted'),
-        content: const SingleChildScrollView(
-          child: ListBody(
-            children: <Widget>[
-              Text('Your report has been successfully submitted.'),
-            ],
-          ),
-        ),
-        actions: <Widget>[
-          TextButton(
-            child: const Text('Back To Homepage'),
-            onPressed: () {
-              Navigator.of(context).pop(); // Close the dialog
-              Navigator.of(context).pop('refresh'); // Navigate back to the homepage
-            },
-          ),
-        ],
-      );
-    },
-  );
-}
-
-void _showErrorDialog(String message) {
-  showDialog<void>(
-    context: context,
-    barrierDismissible: false, 
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text('Error'),
-        content: SingleChildScrollView(
-          child: ListBody(
-            children: <Widget>[
-              Text(message),
-            ],
-          ),
-        ),
-        actions: <Widget>[
-          TextButton(
-            child: const Text('OK'),
-            onPressed: () {
-              Navigator.of(context).pop(); // Close the dialog
-            },
-          ),
-        ],
-      );
-    },
-  );
 }
 
 Widget _buildLoadingOverlay() {
