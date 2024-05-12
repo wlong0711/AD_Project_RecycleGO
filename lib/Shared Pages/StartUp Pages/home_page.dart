@@ -25,24 +25,45 @@ class _HomePageState extends State<HomePage> {
   final int _selectedIndex = 0;
   int _currentCarouselIndex = 0;
   final List<String> imageUrls = [
-      'https://firebasestorage.googleapis.com/v0/b/recyclego-64b10.appspot.com/o/Banner%2FRecycle-Right-Banner.jpg?alt=media&token=0f09deef-3e48-4833-9614-b299289bf226',
-      'https://firebasestorage.googleapis.com/v0/b/recyclego-64b10.appspot.com/o/Banner%2Frecycling-poster-final.webp?alt=media&token=f1e1d089-ee91-4883-bf38-0ff17bfcc4a3',
-      'https://firebasestorage.googleapis.com/v0/b/recyclego-64b10.appspot.com/o/Banner%2Ft-t-4256-eco-and-recycling-the-future-of-the-planet-display-poster_ver_1.webp?alt=media&token=c95bb98d-a132-4909-a295-71cd92bbf9c7',
+      'assets/images/banner1.jpg',
+      'assets/images/banner2.jpg',
+      'assets/images/banner3.jpg',
     ];
 
   int todayUploads = 0;
   int thirtyDayUploads = 0;
   int yearUploads = 0;
   Upload? latestUpload;
+  Map<String, String> _usernames = {};
+  bool _isLoadingUploadData = true;
 
   @override
   void initState() {
     super.initState();
     // Fetch data when the page initializes
+    _preloadUsernames();
     fetchUploadData();
   }
 
+  Future<void> _preloadUsernames() async {
+    // Fetch all users (consider pagination or limiting for large datasets)
+    QuerySnapshot usersSnapshot = await FirebaseFirestore.instance.collection('users').get();
+    Map<String, String> usernames = {};
+    for (var doc in usersSnapshot.docs) {
+      String userId = doc.id;
+      String userName = doc['username'] ?? 'Unknown User';
+      usernames[userId] = userName;
+    }
+    setState(() {
+      _usernames = usernames;
+    });
+  }
+
   Future<void> fetchUploadData() async {
+    setState(() {
+      _isLoadingUploadData = true; // Start loading
+    });
+
     try {
       DateTime now = DateTime.now().toUtc();
       DateTime todayStart = DateTime.utc(now.year, now.month, now.day);
@@ -50,7 +71,7 @@ class _HomePageState extends State<HomePage> {
       DateTime oneYearAgoStart = todayStart.subtract(const Duration(days: 365));
 
       var uploadCollection = FirebaseFirestore.instance.collection('uploads')
-          .where('username', isEqualTo: GlobalUser.userName); // Filter by the current user's username
+          .where('userId', isEqualTo: GlobalUser.userID); // Filter by the current user's id
 
       // Fetch today's approved uploads
       var todayUploadsQuery = await uploadCollection
@@ -86,73 +107,103 @@ class _HomePageState extends State<HomePage> {
       print('$todayUploads');
       print('$thirtyDayUploads');
       print('$yearUploads');
-      setState(() {}); // Update the UI
+      setState(() {
+        _isLoadingUploadData = false; // Stop loading once data is fetched
+      });
     } catch (e) {
       print('Error fetching upload data: $e');
+      setState(() {
+        _isLoadingUploadData = false; // Stop loading in case of error
+      });
     }
   }
 
 
   Widget _buildActivitiesSection() {
-    return Center(
-      child: Container(
-        width: MediaQuery.of(context).size.width * 0.9, // 80% of screen width
-        decoration: BoxDecoration(
-          color: Colors.green, // Green background color
-          borderRadius: BorderRadius.circular(10), // Rounded corners
-        ),
-        padding: const EdgeInsets.all(10), // Padding inside the container
-        child: Column(
-          children: [
-            const Text('Activities', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
-            const Divider(color: Colors.white),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Column(
-                  children: [
-                    const Text('Today', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                    Text('$todayUploads times', style: const TextStyle(color: Colors.white)), // Display today's uploads
-                  ],
+    // Determine the opacity based on the loading state
+    double opacity = _isLoadingUploadData ? 0.0 : 1.0;
+
+    return AnimatedOpacity(
+      opacity: opacity, // Use the determined opacity
+      duration: const Duration(seconds: 1), // Duration of the transition
+      child: Center(
+        child: _isLoadingUploadData
+          ? CircularProgressIndicator(color: Colors.green) // Show loading indicator while fetching data
+          : Container(
+              width: MediaQuery.of(context).size.width * 0.9,
+              decoration: BoxDecoration(
+                color: Colors.green,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                children: [
+                const Text('Activities', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+                const Divider(color: Colors.white),
+                  Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Column(
+                            children: [
+                              const Text('Today', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                              Text('$todayUploads times', style: const TextStyle(color: Colors.white)), // Display today's uploads
+                            ],
+                          ),
+                          Column(
+                            children: [
+                              const Text('Last 30 Days', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                              Text('$thirtyDayUploads times', style: const TextStyle(color: Colors.white)), // Display last 30 days' uploads
+                            ],
+                          ),
+                          Column(
+                            children: [
+                              const Text('Last 1 Year', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                              Text('$yearUploads times', style: const TextStyle(color: Colors.white)), // Display last year's uploads
+                            ],
+                          ),
+                        ],
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.only(top: 6, bottom: 0,),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text('Note: This section only records', style: TextStyle(color: Colors.white, fontSize: 10)),
+                            Text(' Approved* ', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 10)),
+                            Text('uploads', style: TextStyle(color: Colors.white, fontSize: 10)),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                const Divider(color: Colors.white),
+                ListTile(
+                  title: const Text('Latest Activity', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  subtitle: latestUpload != null
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Upload at ${DateFormat('dd/MM/yyyy HH:mm').format(latestUpload!.uploadedTime!.toDate())}', style: const TextStyle(color: Colors.white)),
+                            Text('Status: ${latestUpload!.status}', style: const TextStyle(color: Colors.white)),
+                            if (latestUpload!.status == 'Rejected') 
+                              Text('Rejected reason: ${latestUpload!.rejectionReason}', style: const TextStyle(color: Colors.white)),
+                          ],
+                        )
+                      : const Text('No recent activity', style: TextStyle(color: Colors.white)),
+                  trailing: ElevatedButton(
+                    onPressed: () {
+                      navigateToUserHistory();
+                    },
+                    child: const Text('View History', style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold)),
+                  ),
                 ),
-                Column(
-                  children: [
-                    const Text('Last 30 Days', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                    Text('$thirtyDayUploads times', style: const TextStyle(color: Colors.white)), // Display last 30 days' uploads
-                  ],
-                ),
-                Column(
-                  children: [
-                    const Text('Last 1 Year', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                    Text('$yearUploads times', style: const TextStyle(color: Colors.white)), // Display last year's uploads
-                  ],
-                ),
+                const Divider(color: Colors.white),
               ],
-            ),
-            const Divider(color: Colors.white),
-            ListTile(
-              title: const Text('Latest Activity', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-              subtitle: latestUpload != null
-                  ? Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Upload at ${DateFormat('dd/MM/yyyy HH:mm').format(latestUpload!.uploadedTime!.toDate())}', style: const TextStyle(color: Colors.white)),
-                        Text('Status: ${latestUpload!.status}', style: const TextStyle(color: Colors.white)),
-                        if (latestUpload!.status == 'Rejected') 
-                          Text('Rejected reason: ${latestUpload!.rejectionReason}', style: const TextStyle(color: Colors.white)),
-                      ],
-                    )
-                  : const Text('No recent activity', style: TextStyle(color: Colors.white)),
-              trailing: ElevatedButton(
-                onPressed: () {
-                  navigateToUserHistory();
-                },
-                child: const Text('View History', style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold)),
               ),
             ),
-            const Divider(color: Colors.white),
-          ],
-        ),
       ),
     );
   }
@@ -166,6 +217,7 @@ class _HomePageState extends State<HomePage> {
 
     // Check if the UserProfilePage indicates that data needs to be refreshed
     if (result == 'refresh') {
+      await fetchUploadData();
       await fetchUploadData();
     }
   }
@@ -205,6 +257,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildUserHeader() {
+    String username = _usernames[GlobalUser.userID] ?? ' ';
     return Padding(
       padding: const EdgeInsets.only(left: 20.0, top: 16.0, bottom: 16.0, right: 8.0),
       child: Row(
@@ -217,9 +270,13 @@ class _HomePageState extends State<HomePage> {
                 'Welcome,',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
               ),
-              Text(
-                GlobalUser.userName ?? 'User',
-                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+              AnimatedOpacity(
+                opacity: _usernames.isNotEmpty ? 1.0 : 0.0, // Fades in when usernames are loaded
+                duration: const Duration(seconds: 1),
+                child: Text(
+                  username,
+                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                ),
               ),
             ],
           ),
@@ -268,6 +325,42 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Widget _buildMenuButton(BuildContext context, IconData icon, String label, VoidCallback onTap) {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      elevation: 5,
+      margin: const EdgeInsets.all(8),
+      child: InkWell(
+        onTap: onTap, // Use the onTap callback here
+        borderRadius: BorderRadius.circular(15),
+        child: Container(
+          width: MediaQuery.of(context).size.width * 0.28, // Set width as a fraction of screen width
+          padding: const EdgeInsets.all(10), // Padding inside the container
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [Colors.lightGreen, Colors.lightGreen],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center, // Center items vertically
+            crossAxisAlignment: CrossAxisAlignment.center, // Center items horizontally
+            children: [
+              Icon(icon, size: 30.0, color: Colors.white), // Reduced icon size
+              const SizedBox(height: 5), // Space between the icon and the text
+              Text(label, 
+                  style: const TextStyle(fontSize: 12.0, color: Colors.white), 
+                  textAlign: TextAlign.center), // Reduced font size and centered text
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Future navigateToVerifyRewardPage() async {
     final result = await Navigator.push(
       context,
@@ -302,38 +395,6 @@ class _HomePageState extends State<HomePage> {
     if (result == 'refresh') {
       await fetchUploadData();
     }
-  }
-
-  Widget _buildMenuButton(BuildContext context, IconData icon, String label, VoidCallback onTap) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      elevation: 5,
-      margin: const EdgeInsets.all(8),
-      child: InkWell(
-        onTap: onTap, // Use the onTap callback here
-        borderRadius: BorderRadius.circular(15),
-        child: Container(
-          padding: const EdgeInsets.all(10), // Padding inside the container
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [Colors.lightGreen, Colors.lightGreen],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.circular(15),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, size: 50.0, color: Colors.white),
-              const SizedBox(height: 5), // Space between the icon and the text
-              Text(label, style: const TextStyle(fontSize: 16.0, color: Colors.white))
-            ],
-          ),
-        ),
-      ),
-    );
   }
 
   Widget _buildBottomNavigationBar() {
@@ -482,7 +543,7 @@ class _HomePageState extends State<HomePage> {
             items: imageUrls.map((url) {
               return ClipRRect(
                 borderRadius: BorderRadius.circular(15.0),
-                child: Image.network(url, fit: BoxFit.contain), // Using BoxFit.contain
+                child: Image.asset(url, fit: BoxFit.contain), // Using BoxFit.contain
               );
             }).toList(),
           ),

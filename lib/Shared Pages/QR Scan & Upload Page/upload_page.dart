@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:recycle_go/Component/dialogs.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -14,6 +16,7 @@ class UploadPage extends StatefulWidget {
   const UploadPage({super.key, required this.locationName, required this.onUploadCompleted});
 
   @override
+  // ignore: library_private_types_in_public_api
   _UploadPageState createState() => _UploadPageState();
 }
 
@@ -146,10 +149,7 @@ class _UploadPageState extends State<UploadPage> {
   
   Future<void> _uploadVideo() async {
     if (videoFile == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text("Please select a video first."),
-        backgroundColor: Colors.red,
-      ));
+      showErrorDialog(context, "Please select a video first.");
       return;
     }
 
@@ -195,8 +195,15 @@ class _UploadPageState extends State<UploadPage> {
         'currentCapacity': FieldValue.increment(1),
       });
 
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        showErrorDialog(context, "No authenticated user found. Please login first.");
+        return;
+      }
+
       // Save the user name, location name and video URL in Firestore
       await FirebaseFirestore.instance.collection('uploads').add({
+        'userId': user.uid,
         'username' : GlobalUser.userName,
         'location': widget.locationName,
         'videoUrl': downloadUrl,
@@ -204,21 +211,15 @@ class _UploadPageState extends State<UploadPage> {
         'uploadedTime': FieldValue.serverTimestamp(),
       });
 
-      // Notify user of success
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text("Upload successful!"),
-        backgroundColor: Colors.green,
-      ));
-
-      widget.onUploadCompleted(); // Trigger the onUploadCompleted callback
-      _navigateToHomePage(); // Navigate to home page
+      // ignore: use_build_context_synchronously
+      showSuccessDialog(context, "Upload successful!", () {
+        widget.onUploadCompleted(); // Trigger the onUploadCompleted callback
+        _navigateToHomePage(); // Navigate to home page
+      });
     } catch (e) {
       // Handle errors
-      print('Error during video upload: $e');
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("Upload error: $e"),
-        backgroundColor: Colors.red,
-      ));
+      // ignore: use_build_context_synchronously
+      showErrorDialog(context, "Upload error: $e");
     } finally {
       setState(() {
         _isUploading = false; // Stop uploading
@@ -247,38 +248,10 @@ class _UploadPageState extends State<UploadPage> {
     );
   }
 
-  void _showSuccessDialog() {
-  showDialog(
-    context: context,
-    barrierDismissible: false,
-    builder: (BuildContext context) {
-      return const AlertDialog(
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            CircularProgressIndicator(),
-            SizedBox(height: 20),
-            Text("Upload Successful"),
-            Text("Redirecting... Please wait"),
-          ],
-        ),
-      );
-    },
-  );
-
-  // Assuming you want to show the dialog for 2 seconds
-  Future.delayed(const Duration(seconds: 2), () {
-    widget.onUploadCompleted(); // Call the callback to set the flag
-    Navigator.of(context).pop(); // Close the dialog
-    _navigateToHomePage(); // Navigate to home page
-  });
-}
-
-
   void _navigateToHomePage() {
-    Navigator.pushReplacement(
-      context,
+    Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(builder: (context) => const HomePage()),
+      (Route<dynamic> route) => false,
     );
   }
 

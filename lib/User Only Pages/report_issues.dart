@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as Path;
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:recycle_go/Component/dialogs.dart';
 import 'package:recycle_go/Shared%20Pages/Transition%20Page/transition_page.dart';
 
 class ReportIssueScreen extends StatefulWidget {
@@ -20,6 +21,7 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
   final descriptionController = TextEditingController();
   // String? _phoneNumber;
   File? _image;
+  bool _isSubmitting = false;
 
   OverlayEntry? _overlayEntry;
   final int loadingTimeForOverlay = 2;
@@ -68,64 +70,68 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white), // Custom icon and color
-          onPressed: () => Navigator.of(context).pop('refresh'), // Go back on press
-        ),
-        title: const Text(
-                "Report Issue",
-                style: TextStyle(color: Colors.white),
+    return Stack(
+      children: [
+        Scaffold(
+          appBar: AppBar(
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: () => Navigator.of(context).pop('refresh'),
+            ),
+            title: const Text(
+              "Report Issue",
+              style: TextStyle(color: Colors.white),
+            ),
+            flexibleSpace: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.green, Colors.green],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
               ),
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.green, Colors.green],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
+            ),
+          ),
+          body: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Form(
+              key: _formKey,
+              child: ListView(
+                children: <Widget>[
+                  TextFormField(
+                    controller: titleController,
+                    decoration: const InputDecoration(labelText: 'Title'),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a title';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: descriptionController,
+                    decoration: const InputDecoration(labelText: 'Description'),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a description';
+                      }
+                      return null;
+                    },
+                    keyboardType: TextInputType.multiline,
+                    maxLines: null,
+                  ),
+                  const SizedBox(height: 16),
+                  _buildImageUploadSection(),
+                  const SizedBox(height: 16),
+                  _buildSubmitButton(),
+                ],
+              ),
             ),
           ),
         ),
-        
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: <Widget>[
-              TextFormField(
-                controller: titleController,
-                decoration: const InputDecoration(labelText: 'Title'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a title';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: descriptionController,
-                decoration: const InputDecoration(labelText: 'Description'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a description';
-                  }
-                  return null;
-                },
-                keyboardType: TextInputType.multiline,
-                maxLines: null,
-              ),
-              const SizedBox(height: 16),
-              _buildImageUploadSection(),
-              const SizedBox(height: 16),
-              _buildSubmitButton(),
-            ],
-          ),
-        ),
-      ),
+        if (_isSubmitting) _buildLoadingOverlay(),
+      ],
     );
   }
 
@@ -169,13 +175,17 @@ void _pickImage() async {
 Future<void> _submitReport() async {
   if (_formKey.currentState!.validate()) {
 
+    setState(() {
+      _isSubmitting = true; // Show the loading overlay
+    });
+
     String title = titleController.text;
     String description = descriptionController.text;
 
     // Checking for user authentication
     User? user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      _showErrorDialog("No authenticated user found. Please login first.");
+      showErrorDialog(context, "No authenticated user found. Please login first.");
       return;
     }
 
@@ -196,7 +206,7 @@ Future<void> _submitReport() async {
           TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => {});
           imageUrl = await taskSnapshot.ref.getDownloadURL();
         } catch (e) {
-          _showErrorDialog("Failed to upload image: $e");
+          showErrorDialog(context, "Failed to upload image: $e"); 
           return;
         }
       }
@@ -215,69 +225,42 @@ Future<void> _submitReport() async {
       });
 
       // Show a success message upon successful submission
-      await _showSuccessDialog();
+      showSuccessDialog(context, 'Your report has been successfully submitted.', () {
+        Navigator.of(context).pop('refresh');
+      });
+      setState(() {
+        _isSubmitting = false; // Hide the loading overlay after submission is done
+      });
     } catch (e) {
-      _showErrorDialog("Failed to submit report: $e");
+      showErrorDialog(context, 'Failed to submit report: $e');
     }
   }
 }
 
-
-
-Future<void> _showSuccessDialog() async {
-  return showDialog<void>(
-    context: context,
-    barrierDismissible: false, // User must tap button to close
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text('Report Submitted'),
-        content: const SingleChildScrollView(
-          child: ListBody(
-            children: <Widget>[
-              Text('Your report has been successfully submitted.'),
-            ],
+Widget _buildLoadingOverlay() {
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: Container(
+            color: Colors.grey.withOpacity(0.5),
           ),
         ),
-        actions: <Widget>[
-          TextButton(
-            child: const Text('Back To Homepage'),
-            onPressed: () {
-              Navigator.of(context).pop(); // Close the dialog
-              Navigator.of(context).pop('refresh'); // Navigate back to the homepage
-            },
-          ),
-        ],
-      );
-    },
-  );
-}
-
-void _showErrorDialog(String message) {
-  showDialog<void>(
-    context: context,
-    barrierDismissible: false, 
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text('Error'),
-        content: SingleChildScrollView(
-          child: ListBody(
-            children: <Widget>[
-              Text(message),
-            ],
+        Center(
+          child: Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.5),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: const Center(
+              child: CircularProgressIndicator(),
+            ),
           ),
         ),
-        actions: <Widget>[
-          TextButton(
-            child: const Text('OK'),
-            onPressed: () {
-              Navigator.of(context).pop(); // Close the dialog
-            },
-          ),
-        ],
-      );
-    },
-  );
-}
+      ],
+    );
+  }
 
 Widget _buildSubmitButton() {
   return ElevatedButton(

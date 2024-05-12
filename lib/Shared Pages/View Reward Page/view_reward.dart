@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import 'package:recycle_go/Component/dialogs.dart';
 import 'package:recycle_go/Shared%20Pages/Transition%20Page/transition_page.dart';
 import 'package:recycle_go/Shared%20Pages/View%20Reward%20Page/add_voucher_page.dart';
 import 'package:recycle_go/models/global_user.dart';
@@ -129,21 +130,7 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
 
   void claimVoucher(String voucherId, int pointsNeeded) async {
     if (_userPoints < pointsNeeded) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) => AlertDialog(
-          title: const Text('Not Enough Points'),
-          content: Text('You need $pointsNeeded points to claim this voucher. You currently have $_userPoints points.'),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-            ),
-          ],
-        ),
-      );
+      showErrorDialog(context, 'You need $pointsNeeded points to claim this voucher. You currently have $_userPoints points.');
       return; // Exit if not enough points
     }else {
 
@@ -174,10 +161,9 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
           claimedVouchers.add(voucherId);
           
           // Show success message
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text('Claimed successfully!'),
-            backgroundColor: Colors.green,
-          ));
+          showSuccessDialog(context, 'Claimed successfully!', () {
+            refreshData();
+          });
 
           // Update the UI with the new points total
           setState(() {
@@ -187,10 +173,7 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
           // Optionally, refetch user data to confirm update (if there are other fields that might change)
           _fetchUserPoints();
         } catch (e) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text("Failed to claim voucher: $e"),
-            backgroundColor: Colors.red,
-          ));
+          showErrorDialog(context, "Failed to claim voucher: $e");
         } finally {
           setState(() {
             _isWritingToDatabase = false; // Stop the loading indicator
@@ -256,15 +239,13 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
       // After deletion, fetch vouchers and claimed vouchers again
       refreshData();
 
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text("Voucher deleted successfully"),
-        backgroundColor: Colors.green,
-      ));
+      showSuccessDialog(context, 'Voucher deleted successfully', () {
+        refreshData();
+      });
+
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("Error deleting voucher: $e"),
-        backgroundColor: Colors.red,
-      ));
+      showErrorDialog(context, 'Error deleting voucher: $e');
+
     } finally {
       setState(() {
         _isDeleting = false; // Turn off loading overlay
@@ -426,12 +407,7 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
                   // Check if the input for Points Needed is a number
                   if (pointsNeededController.text.isEmpty || int.tryParse(pointsNeededController.text) == null) {
                     // Show an error if it's not a valid number
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text("Please enter a valid number for Points Needed."),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
+                    showErrorDialog(context, "Please enter a valid number for Points Needed.");
                   } else {
                     // If it's a valid number, proceed to update the voucher details
                     updateVoucherDetails(
@@ -468,6 +444,8 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
         'pointsNeeded': newPoints,
         'expiredDate': newExpiredDate, // Make sure to convert DateTime to a Timestamp if needed
       }).then((_) {
+        print("About to show success dialog");
+        showSuccessDialog(context, 'Changes saved successfully!', () {});
         print("Voucher updated successfully.");
         refreshData(); // Refresh the data to show updates
       });

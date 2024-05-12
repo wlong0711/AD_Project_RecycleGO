@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -20,7 +22,51 @@ Future main() async {
 
   await companyLogo.preloadImage(); 
 
+  await ensureAdminAccountExists();
+
   runApp(MyApp(companyLogo: companyLogo));
+}
+
+Future<void> ensureAdminAccountExists() async {
+  final FirebaseAuth auth = FirebaseAuth.instance;
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+  const String defaultAdminEmail = "admin@gmail.com";
+  const String defaultAdminPassword = "admin1";
+  const String defaultAdminUsername = "Admin1";
+  const String defaultAdminPhoneNumber = "+60123456789";
+  const String defaultAdminAddress = "AdminAddress";
+
+  var userQuery = await firestore.collection('users')
+                                  .where('email', isEqualTo: defaultAdminEmail)
+                                  .limit(1)
+                                  .get();
+
+  if (userQuery.docs.isEmpty) {
+    // Admin account doesn't exist, so create one
+    try {
+      UserCredential userCredential = await auth.createUserWithEmailAndPassword(
+        email: defaultAdminEmail,
+        password: defaultAdminPassword,
+      );
+
+      // Add additional admin information to Firestore
+      await firestore.collection('users').doc(userCredential.user!.uid).set({
+        'email': defaultAdminEmail,
+        'level': 1,
+        'username' : defaultAdminUsername,
+        'userId' : userCredential.user!.uid,
+        'phoneNumber' : defaultAdminPhoneNumber,
+        'address' : defaultAdminAddress,
+      });
+
+      print("Default admin account created successfully");
+    } catch (e) {
+      print("Error creating default admin account: $e");
+    }
+  } else {
+    print("Admin account already exists");
+  }
 }
 
 class MyApp extends StatelessWidget {

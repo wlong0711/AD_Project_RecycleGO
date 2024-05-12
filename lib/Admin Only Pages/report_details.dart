@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:recycle_go/Component/dialogs.dart';
 
 class ReportDetailsPage extends StatelessWidget {
   final Map<String, dynamic> reportData;
@@ -11,12 +12,15 @@ class ReportDetailsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(reportData['title'] ?? 'Report Details'),
-        // AppBar styling...
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white), // Custom icon and color
+          onPressed: () => Navigator.of(context).pop(), // Go back on press
+        ),
+        title: Text(reportData['title'] ?? 'Report Details', style: const TextStyle(color: Colors.white),),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Colors.greenAccent, Colors.green],
+              colors: [Colors.green, Colors.green],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
             ),
@@ -30,7 +34,10 @@ class ReportDetailsPage extends StatelessWidget {
             Map<String, dynamic> userData = snapshot.data!.data() as Map<String, dynamic>;
             return _buildReportDetails(context, userData);
           } else if (snapshot.hasError) {
-            return Center(child: Text("Error: ${snapshot.error}"));
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              showErrorDialog(context, "Error: ${snapshot.error}");
+            });
+            return const SizedBox.shrink();
           }
           return const Center(child: CircularProgressIndicator());
         },
@@ -88,7 +95,7 @@ class ReportDetailsPage extends StatelessWidget {
                 ),
                 child: const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 32.0, vertical: 12.0),
-                  child: Text("Mark as Solved"),
+                  child: Text("Mark as Solved", style: TextStyle(color: Colors.white),),
                 ),
               ),
             ),
@@ -98,11 +105,15 @@ class ReportDetailsPage extends StatelessWidget {
   }
 
   void _markAsSolved(BuildContext context) async {
-    await FirebaseFirestore.instance
-        .collection('issues')
-        .doc(documentId)
-        .update({'status': 'solved'});
-
-    Navigator.of(context).pop('refresh'); // Pop back to the previous page after marking as solved
+    try {
+      await FirebaseFirestore.instance
+          .collection('issues')
+          .doc(documentId)
+          .update({'status': 'solved'});
+      Navigator.of(context).pop('refresh'); // Pop back to the previous page
+    } catch (e) {
+      // Use the centralized error dialog
+      showErrorDialog(context, 'Failed to mark as solved: $e');
+    }
   }
 }
