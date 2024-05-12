@@ -12,89 +12,69 @@ class WelcomePage extends StatelessWidget {
     CompanyLogo companyLogo = Provider.of<CompanyLogo>(context, listen: false);
     
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("RecycleGo"),
-        automaticallyImplyLeading: false,
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.greenAccent, Colors.green],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
-          ),
-        ),
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
+      body: Stack(
         children: [
-          Center(
-            child: Column(
-              children: [
-                SizedBox(
-                  width: 150,
-                  height: 150,
-                  child: companyLogo.image, // Changed to use the provided CompanyLogo
-                ),
-                const SizedBox(height: 10),
-                const Text(
-                  'WELCOME',
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.green,
-                  ),
-                ),
-              ],
+          Positioned.fill(
+            child: Image.asset(
+              'assets/images/startup background.png',
+              fit: BoxFit.cover,
             ),
           ),
-
-          const SizedBox(height: 40),
-
-          // Register Button
-          _buildButton(
-            "Register",
-            Colors.green, // Changed button color to green
-            () {
-              // Navigate to the RegisterPage when the button is clicked
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const RegisterPage()),
-              );
-            },
-          ),
-
-          const SizedBox(height: 20),
-
-          // Login Button
-          _buildButton(
-            "Login",
-            Colors.green, // Changed button color to green
-            () {
-              // Navigate to the LoginPage when the button is clicked
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const LoginPage()),
-              );
-            },
-          ),
-
-          const SizedBox(height: 40),
-
-          const Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'RecycleGo',
-                style: TextStyle(color: Colors.green), // Text color changed to green
+          Center(
+            child: SingleChildScrollView( // Added to ensure the content fits on all screen sizes
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 150,
+                    height: 150,
+                    child: companyLogo.image,
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    'WELCOME',
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green,
+                    ),
+                  ),
+                  const SizedBox(height: 40),
+                  _buildButton(
+                    "Register",
+                    Colors.green,
+                    () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const RegisterPage()),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  _buildButton(
+                    "Login",
+                    Colors.green,
+                    () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const LoginPage()),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 40),
+                  const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('RecycleGo', style: TextStyle(color: Colors.green)),
+                      SizedBox(width: 20),
+                      Text('@2023AKA', style: TextStyle(color: Colors.green)),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                ],
               ),
-              SizedBox(width: 20),
-              Text(
-                '@2023AKA',
-                style: TextStyle(color: Colors.green), // Text color changed to green
-              ),
-            ],
+            ),
           ),
         ],
       ),

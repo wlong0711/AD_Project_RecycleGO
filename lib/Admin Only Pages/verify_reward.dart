@@ -66,8 +66,14 @@ class _VerifyRewardPageState extends State<VerifyRewardPage> {
   }
 
   Future<void> fetchUploads() async {
-    QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('uploads').get();
-    List<Upload> fetchedUploads = querySnapshot.docs.map((doc) => Upload.fromFirestore(doc)).toList();
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('uploads')
+        .where('status', isEqualTo: 'pending') // Filter for pending uploads
+        .get();
+
+    List<Upload> fetchedUploads = querySnapshot.docs
+        .map((doc) => Upload.fromFirestore(doc))
+        .toList();
 
     // Sort the uploads initially as per the default sort order
     fetchedUploads.sort((a, b) {
@@ -80,9 +86,7 @@ class _VerifyRewardPageState extends State<VerifyRewardPage> {
       uploads = fetchedUploads;
       // Create a set to eliminate duplicates and then convert it to a list
       locations = fetchedUploads.map((u) => u.locationName).toSet().toList();
-      // If you want to sort the locations, add the following line
       locations.sort((a, b) => a.compareTo(b));
-      print("Locations after fetch: $locations"); // Debug print
       if (!locations.contains(selectedLocation)) {
         selectedLocation = null; // Reset if no longer valid
       }
@@ -236,11 +240,18 @@ class _VerifyRewardPageState extends State<VerifyRewardPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Verify Rewards"),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white), // Custom icon and color
+          onPressed: () => Navigator.of(context).pop('refresh'), // Go back on press
+        ),
+        title: const Text(
+          "Verify Rewards",
+          style: TextStyle(color: Colors.white),
+        ),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Colors.greenAccent, Colors.green],
+              colors: [Colors.green, Colors.green],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
             ),
@@ -255,16 +266,16 @@ class _VerifyRewardPageState extends State<VerifyRewardPage> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    'Sort by ${_isSortedByOldest ? "Oldest" : "Latest"}',
+                    'Sort by ${_isSortedByOldest ? "Latest" : "Oldest"}',
                     style: const TextStyle(
-                      color: Colors.black,
+                      color: Colors.white,
                       fontWeight: FontWeight.bold, // Make text bold
                       fontSize: 16, // Optionally adjust font size as needed
                     ),
                   ),
                   Icon(
                     _isSortedByOldest ? Icons.arrow_upward : Icons.arrow_downward,
-                    color: Colors.black,
+                    color: Colors.white,
                     size: 24,
                   ),
                 ],

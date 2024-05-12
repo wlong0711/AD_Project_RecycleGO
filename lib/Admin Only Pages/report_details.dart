@@ -99,10 +99,10 @@ class ReportDetailsPage extends StatelessWidget {
 
   void _markAsSolved(BuildContext context) async {
     await FirebaseFirestore.instance
-        .collection('reports issues')
+        .collection('issues')
         .doc(documentId)
         .update({'status': 'solved'});
 
-    Navigator.of(context).pop(); // Pop back to the previous page after marking as solved
+    Navigator.of(context).pop('refresh'); // Pop back to the previous page after marking as solved
   }
 }

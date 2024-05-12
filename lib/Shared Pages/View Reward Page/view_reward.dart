@@ -206,6 +206,28 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
     fetchClaimedVouchers();
   }
 
+  Future<bool> _confirmDeletion() async {
+    return await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Confirm Deletion"),
+          content: const Text("Are you sure you want to delete this voucher? This action cannot be undone."),
+          actions: <Widget>[
+            TextButton(
+              child: const Text("Cancel"),
+              onPressed: () => Navigator.of(context).pop(false), // User pressed "Cancel", return false
+            ),
+            TextButton(
+              child: const Text("Delete", style: TextStyle(color: Colors.red)),
+              onPressed: () => Navigator.of(context).pop(true), // User pressed "Delete", return true
+            ),
+          ],
+        );
+      },
+    ) ?? false; // In case the dialog is dismissed by clicking outside of it, default to returning false
+}
+
   void deleteVoucher(String voucherId, int index) async {
     setState(() {
       _isDeleting = true; // Turn on loading overlay
@@ -384,9 +406,13 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
                                   color: Colors.red,
                                 ),
                               ),
-                onPressed: () => {
-                  deleteVoucher(voucher.voucherID, index),
-                  Navigator.of(context).pop(), // Close the dialog
+                onPressed: () async {
+                  // Get user confirmation before deleting
+                  bool shouldDelete = await _confirmDeletion();
+                  if (shouldDelete) {
+                    deleteVoucher(voucher.voucherID, index);
+                    Navigator.of(context).pop(); // Close the dialog
+                  }
                 },
               ),
               const SizedBox(width: 70,),
@@ -461,13 +487,20 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
   Widget _buildLoadingOverlay() {
     return Stack(
       children: [
+        // Full screen semi-transparent overlay
+        Positioned.fill(
+          child: Container(
+            color: Colors.grey.withOpacity(0.5), // Semi-transparent grey color
+          ),
+        ),
+        // Centered loading indicator
         Center(
           child: Container(
-            width: 80,
-            height: 80,
+            width: 80, // Set the width of the overlay
+            height: 80, // Set the height of the overlay
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.5),
-              borderRadius: BorderRadius.circular(10),
+              color: Colors.black.withOpacity(0.5), // Semi-transparent black for the loading box
+              borderRadius: BorderRadius.circular(10), // Rounded corners for the loading box
             ),
             child: const Center(
               child: CircularProgressIndicator(),
@@ -648,11 +681,18 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
       content = Scaffold(
         key: const ValueKey("Loaded"),
         appBar: AppBar(
-          title: const Text('View Rewards'),
+          leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white), // Custom icon and color
+          onPressed: () => Navigator.of(context).pop('refresh'), // Go back on press
+        ),
+        title: const Text(
+                'View Rewards',
+                style: TextStyle(color: Colors.white),
+              ),
           flexibleSpace: Container(
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [Colors.greenAccent, Colors.green],
+                    colors: [Colors.green, Colors.green],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                   ),
@@ -663,7 +703,7 @@ class _ViewRewardPageState extends State<ViewRewardPage> with SingleTickerProvid
               actions: [
                 if (GlobalUser.userLevel == 1)
                   IconButton(
-                    icon: const Icon(Icons.add),
+                    icon: const Icon(Icons.add, color: Colors.white),
                     onPressed: () {
                       Navigator.push(
                         context,

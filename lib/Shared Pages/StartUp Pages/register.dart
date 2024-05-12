@@ -56,7 +56,6 @@ class _RegisterPageState extends State<RegisterPage> {
   Future<void> _register() async {
     setState(() {
       _hasAttemptedSubmit = true;
-      _isLoading = true; // Show the loading overlay
     });
 
     String fullPhoneNumber = _selectedCountryCode + _phoneNumberController.text;
@@ -66,6 +65,9 @@ class _RegisterPageState extends State<RegisterPage> {
     }
 
     try {
+      setState(() {
+        _isLoading = true; // Show the loading overlay
+      });
       // Create a new user with email and password
       UserCredential userCredential =
           await FirebaseAuth.instance.createUserWithEmailAndPassword(
@@ -192,21 +194,23 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget _buildLoadingOverlay() {
     return Stack(
       children: [
-        Positioned(
-          top: MediaQuery.of(context).size.height * 0.3, // Adjust the position from top
-          left: 0,
-          right: 0,
-          child: Center(
-            child: Container(
-              width: 80, // Set the width of the overlay
-              height: 80, // Set the height of the overlay
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.5), // Semi-transparent overlay
-                borderRadius: BorderRadius.circular(10), // Rounded corners
-              ),
-              child: const Center(
-                child: CircularProgressIndicator(),
-              ),
+        // Full screen semi-transparent overlay
+        Positioned.fill(
+          child: Container(
+            color: Colors.grey.withOpacity(0.5), // Semi-transparent grey color
+          ),
+        ),
+        // Centered loading indicator
+        Center(
+          child: Container(
+            width: 80, // Set the width of the overlay
+            height: 80, // Set the height of the overlay
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.5), // Semi-transparent black for the loading box
+              borderRadius: BorderRadius.circular(10), // Rounded corners for the loading box
+            ),
+            child: const Center(
+              child: CircularProgressIndicator(),
             ),
           ),
         ),
@@ -224,10 +228,9 @@ class _RegisterPageState extends State<RegisterPage> {
         );
       },
       child: const Text(
-        'Already a member? Login.',
+        'Already a member? Login here',
         style: TextStyle(
-          color: Colors.blue,
-          decoration: TextDecoration.underline,
+          color: Colors.green,
         ),
       ),
     );
@@ -290,21 +293,16 @@ class _RegisterPageState extends State<RegisterPage> {
     CompanyLogo companyLogo = Provider.of<CompanyLogo>(context, listen: false);
     return Stack(
       children: [
-        Scaffold(
-          appBar: AppBar(
-            title: const Text('Register'),
-            centerTitle: true,
-            flexibleSpace: Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.greenAccent, Colors.green],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-              ),
+        Positioned.fill(
+            child: Image.asset(
+              'assets/images/startup background.png',
+              fit: BoxFit.cover,
             ),
-            elevation: 10,
-            shadowColor: Colors.greenAccent.withOpacity(0.5),
+          ),
+        Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
           ),
           body: Center(
             child: SingleChildScrollView(
@@ -325,7 +323,11 @@ class _RegisterPageState extends State<RegisterPage> {
                       child: companyLogo.image, // Use the provided CompanyLogo's image
                     ),
                     const SizedBox(height: 20),
-
+                    const Text(
+                      'Register',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+                    ),
+                    const SizedBox(height: 20),
                     // Input Boxes and Buttons
                     _buildInputBox("Email", _emailController, isPassword: false),
                     _buildInputBox("Username", _usernameController, isPassword: false),
