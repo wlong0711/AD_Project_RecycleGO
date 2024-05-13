@@ -68,7 +68,7 @@ class WelcomePage extends StatelessWidget {
                     children: [
                       Text('RecycleGo', style: TextStyle(color: Colors.green)),
                       SizedBox(width: 20),
-                      Text('@2023AKA', style: TextStyle(color: Colors.green)),
+                      Text('@2024AKA', style: TextStyle(color: Colors.green)),
                     ],
                   ),
                   const SizedBox(height: 20),

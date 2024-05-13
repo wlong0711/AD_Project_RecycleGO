@@ -85,10 +85,10 @@ class _LoginPageState extends State<LoginPage> {
               _saveAuthenticationState();
             }
 
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const HomePage()),
-            );
+            // Navigator.pushReplacement(
+            //   context,
+            //   MaterialPageRoute(builder: (context) => const HomePage()),
+            // );
           } else {
             // Not an admin and email not verified
             _showErrorSnackBar('Please verify your email before logging in.');
