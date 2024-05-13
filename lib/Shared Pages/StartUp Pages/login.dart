@@ -139,7 +139,7 @@ class _LoginPageState extends State<LoginPage> {
     if (_scaffoldKey.currentState != null) {
       _scaffoldKey.currentState!.showSnackBar(
         SnackBar(
-          content: Text(message, style: TextStyle(color: Colors.white),),
+          content: Text(message, style: const TextStyle(color: Colors.white),),
           backgroundColor: Colors.red,
           behavior: SnackBarBehavior.floating, // optional: to float the snackbar
         ),
@@ -233,14 +233,14 @@ Widget build(BuildContext context) {
         },
         decoration: InputDecoration(
           labelText: controller.text.isEmpty ? label : '',
-          labelStyle: TextStyle(color: Colors.grey), // Grey label text
-          border: OutlineInputBorder(
+          labelStyle: const TextStyle(color: Colors.grey), // Grey label text
+          border: const OutlineInputBorder(
             borderSide: BorderSide(color: Colors.grey), // Grey border
           ),
-          enabledBorder: OutlineInputBorder(
+          enabledBorder: const OutlineInputBorder(
             borderSide: BorderSide(color: Colors.grey), // Grey border
           ),
-          focusedBorder: OutlineInputBorder(
+          focusedBorder: const OutlineInputBorder(
             borderSide: BorderSide(color: Colors.grey), // Grey border
           ),
         ),
@@ -260,14 +260,14 @@ Widget build(BuildContext context) {
         },
         decoration: InputDecoration(
           labelText: _passwordController.text.isEmpty ? 'Password' : '',
-          labelStyle: TextStyle(color: Colors.grey), // Grey label text
-          border: OutlineInputBorder(
+          labelStyle: const TextStyle(color: Colors.grey), // Grey label text
+          border: const OutlineInputBorder(
             borderSide: BorderSide(color: Colors.grey), // Grey border
           ),
-          enabledBorder: OutlineInputBorder(
+          enabledBorder: const OutlineInputBorder(
             borderSide: BorderSide(color: Colors.grey), // Grey border
           ),
-          focusedBorder: OutlineInputBorder(
+          focusedBorder: const OutlineInputBorder(
             borderSide: BorderSide(color: Colors.grey), // Grey border
           ),
           suffixIcon: GestureDetector(

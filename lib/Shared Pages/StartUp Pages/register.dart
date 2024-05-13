@@ -261,7 +261,7 @@ class _RegisterPageState extends State<RegisterPage> {
               // Dropdown for selecting country code
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   borderRadius: BorderRadius.horizontal(left: Radius.circular(4.0)),
                 ),
                 child: DropdownButtonHideUnderline(
@@ -316,16 +316,16 @@ class _RegisterPageState extends State<RegisterPage> {
             padding: const EdgeInsets.only(top: 4, left: 52, bottom: 4,),
             child: Row(
               children: [
-                Icon(Icons.error_outline, color: Colors.red, size: 12),
-                SizedBox(width: 5),
+                const Icon(Icons.error_outline, color: Colors.red, size: 12),
+                const SizedBox(width: 5),
                 Text(
                   errorText ?? '',
-                  style: TextStyle(color: Colors.red, fontSize: 12),
+                  style: const TextStyle(color: Colors.red, fontSize: 12),
                 ),
               ],
             ),
           )
-          : SizedBox(height: 23), // Reserve space for the error message
+          : const SizedBox(height: 23), // Reserve space for the error message
       ],
     );
   }
@@ -429,7 +429,7 @@ class _RegisterPageState extends State<RegisterPage> {
       ),
     );
 
-    return Container(
+    return SizedBox(
       width: 300, // Set the width of the input field container
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -463,7 +463,7 @@ class _RegisterPageState extends State<RegisterPage> {
               ) : null,
             ),
           ),
-          hasError ? errorWidget ?? SizedBox.shrink() : SizedBox(height: 23),
+          hasError ? errorWidget ?? const SizedBox.shrink() : const SizedBox(height: 23),
         ],
       ),
     );
@@ -550,11 +550,11 @@ class _RegisterPageState extends State<RegisterPage> {
         padding: const EdgeInsets.only(top: 4, bottom: 4, left: 7,),
         child: Row(
           children: [
-            Icon(Icons.error_outline, color: Colors.red, size: 12),
-            SizedBox(width: 5),
+            const Icon(Icons.error_outline, color: Colors.red, size: 12),
+            const SizedBox(width: 5),
             Text(
               errorMessage,
-              style: TextStyle(color: Colors.red, fontSize: 12),
+              style: const TextStyle(color: Colors.red, fontSize: 12),
             ),
           ],
         ),
@@ -590,7 +590,7 @@ class _RegisterPageState extends State<RegisterPage> {
   void _showErrorSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message, style: TextStyle(color: Colors.white)),
+        content: Text(message, style: const TextStyle(color: Colors.white)),
         backgroundColor: Colors.red,
         behavior: SnackBarBehavior.floating,
       ),

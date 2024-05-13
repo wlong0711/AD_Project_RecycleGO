@@ -84,7 +84,7 @@ class _EditUserProfilePageState extends State<EditUserProfilePage> {
     FirebaseAuth.instance.signOut();
 
     Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (context) => LoginPage()),
+      MaterialPageRoute(builder: (context) => const LoginPage()),
       (Route<dynamic> route) => false,
     );
   }
