@@ -27,15 +27,15 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     });
 
     try {
-      // Check if the email is registered
-      var methods = await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
-      if (methods.isEmpty) {
-        _showErrorSnackBar("Email not registered. Please check your email address.");
-        setState(() {
-          _isLoading = false;
-        });
-        return;
-      }
+      // // Check if the email is registered
+      // var methods = await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
+      // if (methods.isEmpty) {
+      //   _showErrorSnackBar("Email not registered. Please check your email address.");
+      //   setState(() {
+      //     _isLoading = false;
+      //   });
+      //   return;
+      // }
 
       // Send password reset email
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
@@ -190,7 +190,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     if (_scaffoldKey.currentState != null) {
       _scaffoldKey.currentState!.showSnackBar(
         SnackBar(
-          content: Text(message, style: TextStyle(color: Colors.white),),
+          content: Text(message, style: const TextStyle(color: Colors.white),),
           backgroundColor: Colors.red,
           behavior: SnackBarBehavior.floating, // optional: to float the snackbar
         ),
