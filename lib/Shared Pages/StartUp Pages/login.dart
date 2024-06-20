@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:recycle_go/Shared%20Pages/StartUp%20Pages/UserProfilePage.dart';
 import 'package:recycle_go/Shared%20Pages/StartUp%20Pages/home_page.dart';
 import 'package:recycle_go/models/company_logo.dart';
 import 'package:recycle_go/models/global_user.dart';
@@ -85,10 +86,10 @@ class _LoginPageState extends State<LoginPage> {
               _saveAuthenticationState();
             }
 
-            // Navigator.pushReplacement(
-            //   context,
-            //   MaterialPageRoute(builder: (context) => const HomePage()),
-            // );
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const HomePage()),
+            );
           } else {
             // Not an admin and email not verified
             _showErrorSnackBar('Please verify your email before logging in.');
@@ -349,18 +350,18 @@ Widget build(BuildContext context) {
     );
   }
 
-  Widget _buildOtherLoginMethods() {
-    return const Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(Icons.facebook, size: 40),
-        SizedBox(width: 20),
-        Icon(Icons.mail, size: 40),
-        SizedBox(width: 20),
-        Icon(Icons.phone, size: 40),
-      ],
-    );
-  }
+  // Widget _buildOtherLoginMethods() {
+  //   return const Row(
+  //     mainAxisAlignment: MainAxisAlignment.center,
+  //     children: [
+  //       Icon(Icons.facebook, size: 40),
+  //       SizedBox(width: 20),
+  //       Icon(Icons.mail, size: 40),
+  //       SizedBox(width: 20),
+  //       Icon(Icons.phone, size: 40),
+  //     ],
+  //   );
+  // }
 
   Widget _buildCreateAccountText() {
     return GestureDetector(
