@@ -128,7 +128,7 @@ class _HomePageState extends State<HomePage> {
       duration: const Duration(seconds: 1), // Duration of the transition
       child: Center(
         child: _isLoadingUploadData
-          ? CircularProgressIndicator(color: Colors.green) // Show loading indicator while fetching data
+          ? const CircularProgressIndicator(color: Colors.green) // Show loading indicator while fetching data
           : Container(
               width: MediaQuery.of(context).size.width * 0.9,
               decoration: BoxDecoration(

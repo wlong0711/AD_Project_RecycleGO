@@ -184,7 +184,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   ),
                   const SizedBox(height: 10),
                   if (GlobalUser.userLevel == 1) // Conditionally display 'Admin Account' text
-                    Center(
+                    const Center(
                       child: Text(
                         'Admin Account',
                         style: TextStyle(fontSize: 15, color: Colors.grey),

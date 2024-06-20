@@ -17,7 +17,8 @@ class _DropPointMapState extends State<DropPointMap> {
   Marker? tempMarker;
   LatLng? tempPoint;
   LatLng _currentPosition = const LatLng(0.0, 0.0);
-  final String _dropPointTitle = '';
+  String _dropPointTitle = '';
+
 
   final List<String> _pickupDays = [];
   final List<String> _recycleItems = [];
@@ -42,23 +43,24 @@ class _DropPointMapState extends State<DropPointMap> {
   }
 
   void _onAddDropPointPressed() async {
-    if (tempPoint != null) {
-      await _showDetailsDialog(tempPoint!); // This should set _pickupDays and _recycleItems
-      if (_dropPointTitle.isNotEmpty) {
-        // Ensure the address is fetched before saving the drop point
-        String address = await _getAddressFromLatLng(tempPoint!);
-        Marker newMarker = Marker(
-          markerId: MarkerId(tempPoint.toString()),
-          position: tempPoint!,
-          infoWindow: InfoWindow(title: _dropPointTitle, snippet: address),
-        );
-        setState(() {
-          markers.add(newMarker);
-          tempMarker = null;
-        });
-      }
+  if (tempPoint != null) {
+    await _showDetailsDialog(tempPoint!);
+    if (_dropPointTitle.isNotEmpty) {
+      String address = await _getAddressFromLatLng(tempPoint!);
+      Marker newMarker = Marker(
+        markerId: MarkerId(tempPoint.toString()),
+        position: tempPoint!,
+        infoWindow: InfoWindow(title: _dropPointTitle, snippet: address),
+      );
+      setState(() {
+        markers.add(newMarker);
+        tempMarker = null;
+      });
+      _saveDropPoint(tempPoint!, _dropPointTitle, address, _pickupDays, _recycleItems, 30); // Use the default max capacity or update it as needed
     }
   }
+}
+
 
    Future<void> _determinePosition() async {
     bool serviceEnabled;
@@ -321,124 +323,120 @@ double _getBinColorHue(int capacity) {
   }
 
   Future<int?> _showDetailsDialog(LatLng point) async {
-    TextEditingController titleController = TextEditingController();
-    TextEditingController maxCapacityController = TextEditingController(text: '30');
-    List<String> daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-    List<bool> selectedDays = List.generate(7, (_) => false);
-    List<String> recyclableItems = ['Paper', 'Glass', 'Cans', 'Plastic'];
-    Map<String, bool> recycleItemsMap = {
-      for (var item in recyclableItems) item: false,
-    };
+  TextEditingController titleController = TextEditingController();
+  TextEditingController maxCapacityController = TextEditingController(text: '30');
+  List<String> daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+  List<bool> selectedDays = List.generate(7, (_) => false);
+  List<String> recyclableItems = ['Paper', 'Glass', 'Cans', 'Plastic'];
+  Map<String, bool> recycleItemsMap = {
+    for (var item in recyclableItems) item: false,
+  };
 
-    // Fetch address from the given LatLng point
-    String address = await _getAddressFromLatLng(point);
-
-    int? maxCapacity;
-    await showDialog(
-      context: context,
-      barrierDismissible: false, // User must tap button to close dialog
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Enter Drop Point Details'),
-          content: StatefulBuilder(
-            builder: (BuildContext context, StateSetter setStateDialog) {
-              return SingleChildScrollView(
-                child: ListBody(
-                  children: <Widget>[
-                    TextField(
-                      controller: titleController,
-                      decoration: const InputDecoration(hintText: "Enter title"),
-                    ),
-                    const SizedBox(height: 20),
-                    const Text("Enter maximum capacity:"),
-                    TextField(
-                      controller: maxCapacityController,
-                      decoration: const InputDecoration(hintText: "Enter maximum capacity"),
-                      keyboardType: TextInputType.number, // To ensure only numbers are entered
-                    ),
-                    const SizedBox(height: 20),
-                    const Text("Select Pickup Days:"),
-                    Wrap(
-                      children: List<Widget>.generate(
-                        daysOfWeek.length,
-                        (index) => ChoiceChip(
-                          label: Text(daysOfWeek[index]),
-                          selected: selectedDays[index],
-                          selectedColor: Colors.green, // Color when selected
-                          backgroundColor: Colors.grey, // Color when not selected
-                          onSelected: (bool selected) {
-                            setStateDialog(() {
-                              selectedDays[index] = selected;
-                            });
-                          },
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    const Text("Select Recyclable Items:"),
-                    Column(
-                      children: recyclableItems.map((item) => CheckboxListTile(
-                        title: Text(item),
-                        value: recycleItemsMap[item],
-                        onChanged: (bool? value) {
+  String address = await _getAddressFromLatLng(point);
+  int? maxCapacity;
+  await showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Enter Drop Point Details'),
+        content: StatefulBuilder(
+          builder: (BuildContext context, StateSetter setStateDialog) {
+            return SingleChildScrollView(
+              child: ListBody(
+                children: <Widget>[
+                  TextField(
+                    controller: titleController,
+                    decoration: const InputDecoration(hintText: "Enter title"),
+                  ),
+                  const SizedBox(height: 20),
+                  const Text("Enter maximum capacity:"),
+                  TextField(
+                    controller: maxCapacityController,
+                    decoration: const InputDecoration(hintText: "Enter maximum capacity"),
+                    keyboardType: TextInputType.number,
+                  ),
+                  const SizedBox(height: 20),
+                  const Text("Select Pickup Days:"),
+                  Wrap(
+                    children: List<Widget>.generate(
+                      daysOfWeek.length,
+                      (index) => ChoiceChip(
+                        label: Text(daysOfWeek[index]),
+                        selected: selectedDays[index],
+                        selectedColor: Colors.green,
+                        backgroundColor: Colors.grey,
+                        onSelected: (bool selected) {
                           setStateDialog(() {
-                            recycleItemsMap[item] = value!;
+                            selectedDays[index] = selected;
                           });
                         },
-                        checkColor: Colors.white,
-                        activeColor: Colors.green,
-                      )).toList(),
+                      ),
                     ),
-                  ],
-                ),
-              );
+                  ),
+                  const SizedBox(height: 20),
+                  const Text("Select Recyclable Items:"),
+                  Column(
+                    children: recyclableItems.map((item) => CheckboxListTile(
+                      title: Text(item),
+                      value: recycleItemsMap[item],
+                      onChanged: (bool? value) {
+                        setStateDialog(() {
+                          recycleItemsMap[item] = value!;
+                        });
+                      },
+                      checkColor: Colors.white,
+                      activeColor: Colors.green,
+                    )).toList(),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Cancel'),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          TextButton(
+            child: const Text('Confirm'),
+            onPressed: () {
+              if (titleController.text.isEmpty) {
+                _showErrorDialog(context, 'Please enter a title.');
+                return;
+              }
+
+              _pickupDays.clear();
+              _pickupDays.addAll(daysOfWeek.asMap().entries.where((entry) => selectedDays[entry.key]).map((entry) => entry.value).toList());
+
+
+              if (_pickupDays.isEmpty) {
+                _showErrorDialog(context, 'Please select at least one pickup day.');
+                return;
+              }
+
+              _recycleItems.clear();
+              _recycleItems.addAll(recycleItemsMap.entries.where((entry) => entry.value).map((entry) => entry.key).toList());
+
+              if (_recycleItems.isEmpty) {
+                _showErrorDialog(context, 'Please select at least one recyclable item.');
+                return;
+              }
+
+              maxCapacity = int.tryParse(maxCapacityController.text) ?? 30;
+              _dropPointTitle = titleController.text;
+
+              Navigator.of(context).pop();
             },
           ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Cancel'),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-            TextButton(
-              child: const Text('Confirm'),
-              onPressed: () {
-                // Validation checks before confirming
-                if (titleController.text.isEmpty) {
-                  _showErrorDialog(context, 'Please enter a title.');
-                  return;
-                }
+        ],
+      );
+    },
+  );
+  return null;
+}
 
-                List<String> selectedPickupDays = daysOfWeek
-                    .asMap()
-                    .entries
-                    .where((entry) => selectedDays[entry.key])
-                    .map((entry) => entry.value)
-                    .toList();
-                if (selectedPickupDays.isEmpty) {
-                  _showErrorDialog(context, 'Please select at least one pickup day.');
-                  return;
-                }
-
-                List<String> selectedRecycleItems = recycleItemsMap.entries
-                    .where((entry) => entry.value)
-                    .map((entry) => entry.key)
-                    .toList();
-                if (selectedRecycleItems.isEmpty) {
-                  _showErrorDialog(context, 'Please select at least one recyclable item.');
-                  return;
-                }
-
-                maxCapacity = int.tryParse(maxCapacityController.text) ?? 30;
-                Navigator.of(context).pop(); // Close the dialog
-                _saveDropPoint(point, titleController.text, address, _pickupDays, _recycleItems, maxCapacity!);
-              },
-            ),
-          ],
-        );
-      },
-    );
-    return null;
-  }
 
 void _showErrorDialog(BuildContext context, String message) {
   showDialog(
@@ -472,24 +470,22 @@ void _showErrorDialog(BuildContext context, String message) {
   }
 
   void _saveDropPoint(LatLng point, String title, String address, List<String> pickupDays, List<String> recycleItems, int maxCapacity) async {
-    FirebaseFirestore.instance.collection('drop_points').add({
-      'latitude': point.latitude,
-      'longitude': point.longitude,
-      'title': title,
-      'address': address,
-      'pickupDays': pickupDays,
-      'recycleItems': recycleItems,
-      'currentCapacity' : 0,
-      'maxCapacity': maxCapacity,
-    }).then((result) {
-      print("Drop point added");
-      //Refresh Data
-      // Call loadDropPoints again to refresh the list of markers
-      _loadDropPoints();
-    }).catchError((error) {
-      print("Failed to add drop point: $error");
-    });
-  }
+  FirebaseFirestore.instance.collection('drop_points').add({
+    'latitude': point.latitude,
+    'longitude': point.longitude,
+    'title': title,
+    'address': address,
+    'pickupDays': pickupDays,
+    'recycleItems': recycleItems,
+    'currentCapacity': 0,
+    'maxCapacity': maxCapacity,
+  }).then((result) {
+    print("Drop point added");
+    _loadDropPoints();
+  }).catchError((error) {
+    print("Failed to add drop point: $error");
+  });
+}
 
   
   void _onMapCreated(GoogleMapController controller) {

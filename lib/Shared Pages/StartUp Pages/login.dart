@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:recycle_go/Shared%20Pages/StartUp%20Pages/UserProfilePage.dart';
 import 'package:recycle_go/Shared%20Pages/StartUp%20Pages/home_page.dart';
 import 'package:recycle_go/models/company_logo.dart';
 import 'package:recycle_go/models/global_user.dart';
@@ -139,7 +140,7 @@ class _LoginPageState extends State<LoginPage> {
     if (_scaffoldKey.currentState != null) {
       _scaffoldKey.currentState!.showSnackBar(
         SnackBar(
-          content: Text(message, style: TextStyle(color: Colors.white),),
+          content: Text(message, style: const TextStyle(color: Colors.white),),
           backgroundColor: Colors.red,
           behavior: SnackBarBehavior.floating, // optional: to float the snackbar
         ),
@@ -233,14 +234,14 @@ Widget build(BuildContext context) {
         },
         decoration: InputDecoration(
           labelText: controller.text.isEmpty ? label : '',
-          labelStyle: TextStyle(color: Colors.grey), // Grey label text
-          border: OutlineInputBorder(
+          labelStyle: const TextStyle(color: Colors.grey), // Grey label text
+          border: const OutlineInputBorder(
             borderSide: BorderSide(color: Colors.grey), // Grey border
           ),
-          enabledBorder: OutlineInputBorder(
+          enabledBorder: const OutlineInputBorder(
             borderSide: BorderSide(color: Colors.grey), // Grey border
           ),
-          focusedBorder: OutlineInputBorder(
+          focusedBorder: const OutlineInputBorder(
             borderSide: BorderSide(color: Colors.grey), // Grey border
           ),
         ),
@@ -260,14 +261,14 @@ Widget build(BuildContext context) {
         },
         decoration: InputDecoration(
           labelText: _passwordController.text.isEmpty ? 'Password' : '',
-          labelStyle: TextStyle(color: Colors.grey), // Grey label text
-          border: OutlineInputBorder(
+          labelStyle: const TextStyle(color: Colors.grey), // Grey label text
+          border: const OutlineInputBorder(
             borderSide: BorderSide(color: Colors.grey), // Grey border
           ),
-          enabledBorder: OutlineInputBorder(
+          enabledBorder: const OutlineInputBorder(
             borderSide: BorderSide(color: Colors.grey), // Grey border
           ),
-          focusedBorder: OutlineInputBorder(
+          focusedBorder: const OutlineInputBorder(
             borderSide: BorderSide(color: Colors.grey), // Grey border
           ),
           suffixIcon: GestureDetector(
@@ -349,18 +350,18 @@ Widget build(BuildContext context) {
     );
   }
 
-  Widget _buildOtherLoginMethods() {
-    return const Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(Icons.facebook, size: 40),
-        SizedBox(width: 20),
-        Icon(Icons.mail, size: 40),
-        SizedBox(width: 20),
-        Icon(Icons.phone, size: 40),
-      ],
-    );
-  }
+  // Widget _buildOtherLoginMethods() {
+  //   return const Row(
+  //     mainAxisAlignment: MainAxisAlignment.center,
+  //     children: [
+  //       Icon(Icons.facebook, size: 40),
+  //       SizedBox(width: 20),
+  //       Icon(Icons.mail, size: 40),
+  //       SizedBox(width: 20),
+  //       Icon(Icons.phone, size: 40),
+  //     ],
+  //   );
+  // }
 
   Widget _buildCreateAccountText() {
     return GestureDetector(
